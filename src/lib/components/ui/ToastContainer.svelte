@@ -1,0 +1,77 @@
+<script lang="ts">
+    import { toastStore } from "$stores/toast.store";
+    import type { Toast } from "$stores/toast.store";
+
+    const iconos: Record<Toast["tipo"], string> = {
+        success: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
+        error: "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z",
+        warning:
+            "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
+        info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+    };
+
+    const colores: Record<Toast["tipo"], string> = {
+        success: "bg-white border-l-4 border-primary-400",
+        error: "bg-white border-l-4 border-danger-400",
+        warning: "bg-white border-l-4 border-warning-400",
+        info: "bg-white border-l-4 border-blue-400",
+    };
+
+    const iconColores: Record<Toast["tipo"], string> = {
+        success: "text-primary-400",
+        error: "text-danger-400",
+        warning: "text-warning-400",
+        info: "text-blue-400",
+    };
+</script>
+
+<div
+    class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-80"
+    aria-live="polite"
+    aria-label="Notificaciones"
+>
+    {#each $toastStore as toast (toast.id)}
+        <div
+            class="flex items-start gap-3 p-4 rounded-lg shadow-lg {colores[
+                toast.tipo
+            ]} animate-slide-in"
+            role="alert"
+        >
+            <svg
+                class="w-5 h-5 flex-shrink-0 mt-0.5 {iconColores[toast.tipo]}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d={iconos[toast.tipo]}
+                />
+            </svg>
+
+            <p class="text-sm text-gray-800 flex-1">{toast.mensaje}</p>
+
+            <button
+                onclick={() => toastStore.quitar(toast.id)}
+                class="text-gray-400 hover:text-gray-600 flex-shrink-0"
+                aria-label="Cerrar"
+            >
+                <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        </div>
+    {/each}
+</div>

@@ -1,0 +1,41 @@
+version: '3.9'
+
+# ══════════════════════════════════════════════════════════════
+# PRODUCCIÓN — Frontend SvelteKit
+# Comando: docker compose -f docker-compose.prod.yml up -d
+#
+# El frontend corre en el puerto 3001 (interno).
+# Nginx hace reverse proxy desde :80/:443.
+# ══════════════════════════════════════════════════════════════
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        API_URL:        ${API_URL}
+        PUBLIC_API_URL: ${PUBLIC_API_URL}
+        PUBLIC_APP_URL: ${PUBLIC_APP_URL}
+    image: ferreteria-frontend:latest
+    container_name: ferreteria_frontend
+    restart: unless-stopped
+    expose:
+      - '3001'           # Solo accesible desde nginx
+    environment:
+      PORT:            3001
+      API_URL:         ${API_URL}
+      PUBLIC_API_URL:  ${PUBLIC_API_URL}
+      PUBLIC_APP_URL:  ${PUBLIC_APP_URL}
+    networks:
+      - ferreteria_net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  ferreteria_net:
+    external: true    # La misma red que usa el backend
