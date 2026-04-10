@@ -53,7 +53,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
-
+    console.log(`Usuario ${sesion.usuario.nombre} con rol ${rol} accediendo a ${pathname}`);
     if (pathname.startsWith('/admin') && rol !== 'admin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }

@@ -46,7 +46,7 @@
                 q,
                 activo: true,
                 limit: 8,
-            });
+            }, token);
             resultados = res.data;
             mostrarResultados = true;
         } catch {

@@ -2,16 +2,16 @@ import { api } from './fetch';
 import type { Dashboard } from '$types/index';
 
 export const reportesApi = {
-	dashboard: () => api.get<Dashboard>('/reportes/dashboard'),
+	dashboard: (token?: string) => api.get<Dashboard>('/reportes/dashboard', { token }),
 
 	ventas: (filtros: {
 		desde: string;
 		hasta: string;
 		agrupacion?: 'dia' | 'semana' | 'mes';
 		usuarioId?: string;
-	}) => {
+	}, token?: string) => {
 		const params = new URLSearchParams(filtros as Record<string, string>);
-		return api.get(`/reportes/ventas?${params}`);
+		return api.get(`/reportes/ventas?${params}`, { token });
 	},
 
 	topProductos: (filtros: {
@@ -19,24 +19,24 @@ export const reportesApi = {
 		hasta: string;
 		top?: number;
 		categoriaId?: string;
-	}) => {
+	}, token?: string) => {
 		const params = new URLSearchParams();
 		Object.entries(filtros).forEach(([k, v]) => {
 			if (v !== undefined) params.append(k, String(v));
 		});
-		return api.get(`/reportes/productos/top?${params}`);
+		return api.get(`/reportes/productos/top?${params}`, { token });
 	},
 
-	rotacion: (filtros: { desde: string; hasta: string; categoriaId?: string; bodegaId?: string }) => {
+	rotacion: (filtros: { desde: string; hasta: string; categoriaId?: string; bodegaId?: string }, token?: string) => {
 		const params = new URLSearchParams();
 		Object.entries(filtros).forEach(([k, v]) => {
 			if (v) params.append(k, String(v));
 		});
-		return api.get(`/reportes/inventario/rotacion?${params}`);
+		return api.get(`/reportes/inventario/rotacion?${params}`, { token });
 	},
 
-	cuentasPorCobrar: () => api.get('/reportes/credito'),
+	cuentasPorCobrar: (token?: string) => api.get('/reportes/credito', { token }),
 
-	compras: (filtros: { desde: string; hasta: string }) =>
-		api.get(`/reportes/compras?desde=${filtros.desde}&hasta=${filtros.hasta}`),
+	compras: (filtros: { desde: string; hasta: string }, token?: string) =>
+		api.get(`/reportes/compras?desde=${filtros.desde}&hasta=${filtros.hasta}`, { token }),
 };

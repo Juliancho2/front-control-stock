@@ -15,29 +15,29 @@ export interface FiltroProductos {
 }
 
 export const productosApi = {
-	listar: (filtros: FiltroProductos = {}): Promise<Paginado<Producto>> => {
+	listar: (filtros: FiltroProductos = {}, token?: string): Promise<Paginado<Producto>> => {
 		const params = new URLSearchParams();
 		Object.entries(filtros).forEach(([k, v]) => {
 			if (v !== undefined && v !== '') params.append(k, String(v));
 		});
-		return api.get<Paginado<Producto>>(`/productos?${params}`);
+		return api.get<Paginado<Producto>>(`/productos?${params}`, { token });
 	},
 
 	buscarPorSku: (sku: string, token?: string): Promise<Producto> =>
 		api.get<Producto>(`/productos/sku/${sku}`, { token }),
 
-	obtener: (id: string, conStock = false): Promise<Producto> =>
-		api.get<Producto>(`/productos/${id}?conStock=${conStock}`),
+	obtener: (id: string, conStock = false, token?: string): Promise<Producto> =>
+		api.get<Producto>(`/productos/${id}?conStock=${conStock}`, { token }),
 
-	stockBajo: (): Promise<Producto[]> =>
-		api.get<Producto[]>('/productos/stock-bajo'),
+	stockBajo: (token?: string): Promise<Producto[]> =>
+		api.get<Producto[]>('/productos/stock-bajo', { token }),
 
-	crear: (data: Partial<Producto>): Promise<Producto> =>
-		api.post<Producto>('/productos', data),
+	crear: (data: Partial<Producto>, token?: string): Promise<Producto> =>
+		api.post<Producto>('/productos', data, { token }),
 
-	actualizar: (id: string, data: Partial<Producto>): Promise<Producto> =>
-		api.patch<Producto>(`/productos/${id}`, data),
+	actualizar: (id: string, data: Partial<Producto>, token?: string): Promise<Producto> =>
+		api.patch<Producto>(`/productos/${id}`, data, { token }),
 
-	eliminar: (id: string): Promise<void> =>
-		api.delete(`/productos/${id}`),
+	eliminar: (id: string, token?: string): Promise<void> =>
+		api.delete(`/productos/${id}`, { token }),
 };

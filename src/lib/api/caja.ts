@@ -8,14 +8,14 @@ export const cajaApi = {
 	abrir: (montoApertura: number, observaciones?: string, token?: string): Promise<TurnoCaja> =>
 		api.post<TurnoCaja>('/caja/turnos/abrir', { montoApertura, observaciones }, { token }),
 
-	cerrar: (id: string, montoCierre: number, observaciones?: string): Promise<TurnoCaja & { diferencia: number }> =>
-		api.patch(`/caja/turnos/${id}/cerrar`, { montoCierre, observaciones }),
+	cerrar: (id: string, montoCierre: number, observaciones?: string, token?: string): Promise<TurnoCaja & { diferencia: number }> =>
+		api.patch(`/caja/turnos/${id}/cerrar`, { montoCierre, observaciones }, { token }),
 
-	cuadre: (id: string) =>
-		api.get(`/caja/turnos/${id}/cuadre`),
+	cuadre: (id: string, token?: string) =>
+		api.get(`/caja/turnos/${id}/cuadre`, { token }),
 
-	listar: (filtros: Record<string, string> = {}) => {
+	listar: (filtros: Record<string, string> = {}, token?: string) => {
 		const params = new URLSearchParams(filtros);
-		return api.get(`/caja/turnos?${params}`);
+		return api.get(`/caja/turnos?${params}`, { token });
 	},
 };

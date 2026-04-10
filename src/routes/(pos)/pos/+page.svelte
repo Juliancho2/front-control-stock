@@ -69,7 +69,7 @@
         try {
             if ($estaOnline) {
                 // Online: registrar directamente
-                const venta = await ventasApi.crear(payload);
+                const venta = await ventasApi.crear(payload, accessToken);
                 carritoStore.limpiar();
                 modalCobroAbierto = false;
                 toastStore.exito(`Venta ${venta.numeroFactura} registrada`);

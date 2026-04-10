@@ -37,20 +37,20 @@ export interface FiltroVentas {
 }
 
 export const ventasApi = {
-	listar: (filtros: FiltroVentas = {}): Promise<Paginado<Venta>> => {
+	listar: (filtros: FiltroVentas = {}, token?: string): Promise<Paginado<Venta>> => {
 		const params = new URLSearchParams();
 		Object.entries(filtros).forEach(([k, v]) => {
 			if (v !== undefined && v !== '') params.append(k, String(v));
 		});
-		return api.get<Paginado<Venta>>(`/ventas?${params}`);
+		return api.get<Paginado<Venta>>(`/ventas?${params}`, { token });
 	},
 
-	obtener: (id: string): Promise<Venta> =>
-		api.get<Venta>(`/ventas/${id}`),
+	obtener: (id: string, token?: string): Promise<Venta> =>
+		api.get<Venta>(`/ventas/${id}`, { token }),
 
-	crear: (data: CreateVentaPayload): Promise<Venta> =>
-		api.post<Venta>('/ventas', data),
+	crear: (data: CreateVentaPayload, token?: string): Promise<Venta> =>
+		api.post<Venta>('/ventas', data, { token }),
 
-	anular: (id: string, motivo: string, devolverStock = true): Promise<Venta> =>
-		api.patch<Venta>(`/ventas/${id}/anular`, { motivo, devolverStock }),
+	anular: (id: string, motivo: string, devolverStock = true, token?: string): Promise<Venta> =>
+		api.patch<Venta>(`/ventas/${id}/anular`, { motivo, devolverStock }, { token }),
 };

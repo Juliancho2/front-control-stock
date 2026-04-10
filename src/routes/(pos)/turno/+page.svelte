@@ -65,6 +65,7 @@
                 $turnoActivo.id,
                 montoCierre,
                 observaciones || undefined,
+                accessToken,
             );
             cuadre = res;
             turnoStore.cerrar();
