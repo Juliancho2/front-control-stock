@@ -27,14 +27,14 @@
     }
 </script>
 
-<svelte:window on:keydown={onKeydown} />
+<svelte:window onkeydown={onKeydown} />
 
 {#if open}
     <!-- Backdrop -->
     <div
         class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
         transition:fade={{ duration: 150 }}
-        on:click={cerrar}
+        onclick={cerrar}
         role="presentation"
     />
 

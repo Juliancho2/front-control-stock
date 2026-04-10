@@ -2,7 +2,7 @@
   export let label: string | undefined = undefined;
   export let error: string | undefined = undefined;
   export let value: string | number | undefined = undefined;
-  export let placeholder = 'Seleccionar...';
+  export let placeholder = "Seleccionar...";
   export let disabled = false;
   export let required = false;
   export let options: { value: string | number; label: string }[] = [];
@@ -17,10 +17,14 @@
   {/if}
 
   <select
-    {id} {disabled} {required}
+    {id}
+    {disabled}
+    {required}
     bind:value
-    class="input {error ? 'input-error' : ''} appearance-none bg-no-repeat bg-right pr-8"
-    style="background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E\"); background-size: 1.2rem;"
+    class="input {error
+      ? 'input-error'
+      : ''} appearance-none bg-no-repeat bg-right pr-8"
+    style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E&quot;); background-size: 1.2rem;"
     on:change
     {...$$restProps}
   >
