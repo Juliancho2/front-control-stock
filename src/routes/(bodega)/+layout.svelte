@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Sidebar from "$components/layout/Sidebar.svelte";
 	import Topbar from "$components/layout/Topbar.svelte";
+	import { esAdmin } from "$stores/auth.store";
 
 	let colapsado = false;
 
@@ -39,7 +40,34 @@
 </script>
 
 <div class="h-screen flex overflow-hidden bg-gray-50">
-	<Sidebar items={nav} bind:colapsado />
+	<Sidebar items={nav} bind:colapsado>
+		<svelte:fragment slot="footer">
+			{#if $esAdmin}
+				<a
+					href="/seleccionar-panel"
+					class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"
+					title={colapsado ? "Cambiar panel" : undefined}
+				>
+					<svg
+						class="w-5 h-5 flex-shrink-0"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="1.75"
+							d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+						/>
+					</svg>
+					{#if !colapsado}
+						<span class="truncate">Cambiar panel</span>
+					{/if}
+				</a>
+			{/if}
+		</svelte:fragment>
+	</Sidebar>
 
 	<div class="flex-1 flex flex-col overflow-hidden">
 		<Topbar mostrarMenuLateral={false}>

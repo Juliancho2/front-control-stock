@@ -5,7 +5,7 @@
 
 // ─── Enums ────────────────────────────────────────────────────
 
-export type RolUsuario = 'admin' | 'cajero' | 'vendedor' | 'bodeguero';
+export type RolUsuario = 'admin' | 'cajero' | 'bodeguero';
 export type TipoCliente = 'consumidor_final' | 'empresa' | 'mayorista';
 export type EstadoVenta = 'pendiente' | 'pagada' | 'credito' | 'anulada';
 export type TipoComprobante = 'boleta' | 'factura' | 'nota_credito' | 'proforma';

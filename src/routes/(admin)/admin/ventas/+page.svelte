@@ -233,14 +233,14 @@
 {#if !cargando && ventas.length > 0}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <div
-            class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 p-4 text-white"
+            class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 p-4 text-white"
         >
             <div class="relative z-10">
-                <p class="text-xs font-medium text-primary-100">Monto total</p>
+                <p class="text-xs font-medium text-white/80">Monto total</p>
                 <p class="text-2xl font-bold mt-1">
                     {formatCurrency(totalMonto)}
                 </p>
-                <p class="text-xs text-primary-200 mt-1">
+                <p class="text-xs text-white/70 mt-1">
                     {total} transacciones
                 </p>
             </div>
@@ -481,7 +481,7 @@
                         <td class="px-4 py-3.5">
                             <div>
                                 <p class="text-sm font-medium text-gray-800">
-                                    {v.clienteNombre ?? "Consumidor final"}
+                                    {v.cliente?.nombre ?? "Consumidor final"}
                                 </p>
                                 <p class="text-xs text-gray-400">
                                     {v.items?.length ?? 0} producto{(v.items
@@ -496,12 +496,12 @@
                                 <div
                                     class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500"
                                 >
-                                    {v.usuarioNombre
+                                    {v.usuario?.nombre
                                         ?.charAt(0)
                                         ?.toUpperCase() ?? "?"}
                                 </div>
                                 <span class="text-xs text-gray-500"
-                                    >{v.usuarioNombre}</span
+                                    >{v.usuario?.nombre}</span
                                 >
                             </div>
                         </td>
@@ -694,14 +694,14 @@
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-400">Cliente</span>
                         <span class="font-medium text-gray-700"
-                            >{ventaDetalle.clienteNombre ??
+                            >{ventaDetalle.cliente?.nombre ??
                                 "Consumidor final"}</span
                         >
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-400">Cajero</span>
                         <span class="font-medium text-gray-700"
-                            >{ventaDetalle.usuarioNombre}</span
+                            >{ventaDetalle.usuario?.nombre}</span
                         >
                     </div>
                     <div class="flex justify-between text-sm">

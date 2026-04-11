@@ -9,6 +9,9 @@ export const usuariosApi = {
 
     obtener: (id: string, token?: string) => api.get<Usuario>(`/usuarios/${id}`, { token }),
 
+    crear: (data: { nombre: string; email: string; password: string; rol: string }, token?: string) =>
+        api.post<Usuario>('/usuarios', data, { token }),
+
     actualizar: (id: string, data: Partial<Usuario>, token?: string) =>
         api.patch<Usuario>(`/usuarios/${id}`, data, { token }),
 

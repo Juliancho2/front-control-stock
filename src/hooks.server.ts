@@ -7,7 +7,7 @@ const RUTAS_PUBLICAS = ['/login', '/health'];
 // Mapa de rol → ruta de inicio
 const INICIO_POR_ROL: Record<RolUsuario, string> = {
     cajero: '/pos',
-    admin: '/admin/dashboard',
+    admin: '/seleccionar-panel',
     bodeguero: '/bodega/inventario',
     vendedor: '/pos',
 };
@@ -53,7 +53,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
-    console.log(`Usuario ${sesion.usuario.nombre} con rol ${rol} accediendo a ${pathname}`);
+
     if (pathname.startsWith('/admin') && rol !== 'admin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }

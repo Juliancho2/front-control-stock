@@ -88,7 +88,8 @@
 	</nav>
 
 	<!-- Toggle colapsado -->
-	<div class="px-2 py-3 border-t border-gray-700/50">
+	<div class="px-2 py-3 border-t border-gray-700/50 space-y-1">
+		<slot name="footer" />
 		<button
 			onclick={() => (colapsado = !colapsado)}
 			class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors text-sm"
