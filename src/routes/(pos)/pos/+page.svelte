@@ -5,6 +5,7 @@
     import ModalCobro from "$components/pos/ModalCobro.svelte";
     import Button from "$components/ui/Button.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
+    import Spinner from "$components/ui/Spinner.svelte";
     import {
         carritoStore,
         subtotalCarrito,
@@ -13,24 +14,35 @@
         cantidadItemsCarrito,
         turnoStore,
         hayTurnoAbierto,
+        turnoActivo,
         toastStore,
         offlineStore,
         estaOnline,
     } from "../../../lib/index";
     import { ventasApi } from "$api/ventas";
-    import { formatCurrency } from "$utils/index";
+    import { cajaApi } from "$api/caja";
+    import { formatCurrency, formatFechaHora } from "$utils/index";
     import type { Producto } from "$types/index";
     import { goto } from "$app/navigation";
 
     let modalCobroAbierto = false;
     let procesandoVenta = false;
+    let cargandoTurno = true;
 
     export let data;
 
     const { accessToken } = data;
 
-    onMount(() => {
-        // Si no hay turno abierto, redirigir a apertura
+    onMount(async () => {
+        try {
+            const t = await cajaApi.turnoActivo(accessToken);
+            turnoStore.inicializar(t);
+        } catch {
+            turnoStore.inicializar(null);
+        } finally {
+            cargandoTurno = false;
+        }
+        // Si no hay turno abierto después de cargar, redirigir
         if (!$hayTurnoAbierto) goto("/turno");
     });
 
@@ -95,23 +107,56 @@
     }
 </script>
 
-<div class="pos-screen">
-    <!-- ─── Panel izquierdo: buscador ─────────────────────────── -->
-    <div class="pos-panel-left">
-        <!-- Buscador fijo arriba -->
-        <div class="p-4 border-b border-gray-100 bg-white">
-            <BuscadorProducto
-                on:seleccionar={agregarProducto}
-                token={accessToken}
-            />
-        </div>
-
-        <!-- Área de categorías / acceso rápido (expandible en el futuro) -->
-        <div class="flex-1 overflow-y-auto p-4">
-            <div class="flex items-center justify-center h-full text-gray-300">
-                <div class="text-center">
+{#if cargandoTurno}
+    <div class="flex items-center justify-center h-screen">
+        <Spinner size="lg" />
+    </div>
+{:else}
+    <div class="pos-screen">
+        <!-- ─── Panel izquierdo: buscador ─────────────────────────── -->
+        <div class="pos-panel-left">
+            <!-- Barra superior POS -->
+            <div
+                class="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white"
+            >
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    {#if $turnoActivo}
+                        <svg
+                            class="w-4 h-4 text-primary-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        <span
+                            >Turno desde <strong
+                                >{formatFechaHora(
+                                    $turnoActivo.abiertoEn,
+                                )}</strong
+                            ></span
+                        >
+                        <span class="text-gray-300">|</span>
+                        <span
+                            >Ventas: <strong
+                                >{formatCurrency(
+                                    $turnoActivo.totalVentas,
+                                )}</strong
+                            ></span
+                        >
+                    {/if}
+                </div>
+                <button
+                    onclick={() => goto("/turno")}
+                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-danger-600 bg-danger-50 hover:bg-danger-100 rounded-lg transition-colors"
+                >
                     <svg
-                        class="w-12 h-12 mx-auto mb-3 text-gray-200"
+                        class="w-4 h-4"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -119,134 +164,171 @@
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="1.5"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"
+                            stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                         />
                     </svg>
-                    <p class="text-sm text-gray-300">
-                        Busca un producto arriba<br />o escanea el código de
-                        barras
-                    </p>
+                    Cerrar turno
+                </button>
+            </div>
+
+            <!-- Buscador fijo arriba -->
+            <div class="p-4 border-b border-gray-100 bg-white">
+                <BuscadorProducto
+                    on:seleccionar={agregarProducto}
+                    token={accessToken}
+                />
+            </div>
+
+            <!-- Área de categorías / acceso rápido (expandible en el futuro) -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div
+                    class="flex items-center justify-center h-full text-gray-300"
+                >
+                    <div class="text-center">
+                        <svg
+                            class="w-12 h-12 mx-auto mb-3 text-gray-200"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"
+                            />
+                        </svg>
+                        <p class="text-sm text-gray-300">
+                            Busca un producto arriba<br />o escanea el código de
+                            barras
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ─── Panel derecho: carrito ────────────────────────────── -->
-    <div class="pos-panel-right flex flex-col">
-        <!-- Cabecera carrito -->
-        <div
-            class="flex items-center justify-between px-4 py-3 border-b border-gray-200"
-        >
-            <div class="flex items-center gap-2">
-                <svg
-                    class="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.75"
-                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                </svg>
-                <span class="text-sm font-medium text-gray-700">Carrito</span>
-                {#if $cantidadItemsCarrito > 0}
-                    <span
-                        class="w-5 h-5 bg-primary-400 text-white text-xs rounded-full flex items-center justify-center font-medium"
+        <!-- ─── Panel derecho: carrito ────────────────────────────── -->
+        <div class="pos-panel-right flex flex-col">
+            <!-- Cabecera carrito -->
+            <div
+                class="flex items-center justify-between px-4 py-3 border-b border-gray-200"
+            >
+                <div class="flex items-center gap-2">
+                    <svg
+                        class="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                     >
-                        {$cantidadItemsCarrito}
-                    </span>
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.75"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                    </svg>
+                    <span class="text-sm font-medium text-gray-700"
+                        >Carrito</span
+                    >
+                    {#if $cantidadItemsCarrito > 0}
+                        <span
+                            class="w-5 h-5 bg-primary-400 text-white text-xs rounded-full flex items-center justify-center font-medium"
+                        >
+                            {$cantidadItemsCarrito}
+                        </span>
+                    {/if}
+                </div>
+                {#if $carritoStore.length > 0}
+                    <button
+                        onclick={() => carritoStore.limpiar()}
+                        class="text-xs text-gray-400 hover:text-danger-500 transition-colors"
+                    >
+                        Limpiar
+                    </button>
                 {/if}
             </div>
-            {#if $carritoStore.length > 0}
-                <button
-                    onclick={() => carritoStore.limpiar()}
-                    class="text-xs text-gray-400 hover:text-danger-500 transition-colors"
-                >
-                    Limpiar
-                </button>
-            {/if}
-        </div>
 
-        <!-- Items del carrito -->
-        <div class="flex-1 overflow-y-auto px-4">
-            {#if $carritoStore.length === 0}
-                <EmptyState
-                    titulo="Carrito vacío"
-                    descripcion="Agrega productos usando el buscador"
-                    icono="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-            {:else}
-                {#each $carritoStore as item (item.productoId)}
-                    <ItemCarrito
-                        {item}
-                        on:quitar={(e) => carritoStore.quitar(e.detail)}
+            <!-- Items del carrito -->
+            <div class="flex-1 overflow-y-auto px-4">
+                {#if $carritoStore.length === 0}
+                    <EmptyState
+                        titulo="Carrito vacío"
+                        descripcion="Agrega productos usando el buscador"
+                        icono="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                     />
-                {/each}
-            {/if}
-        </div>
-
-        <!-- Totales -->
-        {#if $carritoStore.length > 0}
-            <div class="border-t border-gray-200 px-4 py-3 bg-white space-y-1">
-                <div class="flex justify-between text-sm text-gray-500">
-                    <span>Subtotal</span>
-                    <span>{formatCurrency($subtotalCarrito)}</span>
-                </div>
-                <div class="flex justify-between text-sm text-gray-500">
-                    <span>IVA 12%</span>
-                    <span>{formatCurrency($impuestoCarrito)}</span>
-                </div>
-                <div
-                    class="flex justify-between text-lg font-bold text-gray-900 pt-1 border-t border-gray-100"
-                >
-                    <span>Total</span>
-                    <span>{formatCurrency($totalCarrito)}</span>
-                </div>
+                {:else}
+                    {#each $carritoStore as item (item.productoId)}
+                        <ItemCarrito
+                            {item}
+                            on:quitar={(e) => carritoStore.quitar(e.detail)}
+                        />
+                    {/each}
+                {/if}
             </div>
-        {/if}
 
-        <!-- Botón cobrar -->
-        <div class="p-4">
-            <Button
-                variant="primary"
-                fullWidth
-                disabled={$carritoStore.length === 0 || !$hayTurnoAbierto}
-                onclick={() => (modalCobroAbierto = true)}
-            >
-                <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            <!-- Totales -->
+            {#if $carritoStore.length > 0}
+                <div
+                    class="border-t border-gray-200 px-4 py-3 bg-white space-y-1"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                </svg>
-                Cobrar · {formatCurrency($totalCarrito)}
-            </Button>
-
-            {#if !$hayTurnoAbierto}
-                <p class="text-xs text-center text-danger-500 mt-2">
-                    Debes <a href="/turno" class="underline">abrir un turno</a> para
-                    vender
-                </p>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>Subtotal</span>
+                        <span>{formatCurrency($subtotalCarrito)}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>IVA 12%</span>
+                        <span>{formatCurrency($impuestoCarrito)}</span>
+                    </div>
+                    <div
+                        class="flex justify-between text-lg font-bold text-gray-900 pt-1 border-t border-gray-100"
+                    >
+                        <span>Total</span>
+                        <span>{formatCurrency($totalCarrito)}</span>
+                    </div>
+                </div>
             {/if}
+
+            <!-- Botón cobrar -->
+            <div class="p-4">
+                <Button
+                    variant="primary"
+                    fullWidth
+                    disabled={$carritoStore.length === 0 || !$hayTurnoAbierto}
+                    onclick={() => (modalCobroAbierto = true)}
+                >
+                    <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                    </svg>
+                    Cobrar · {formatCurrency($totalCarrito)}
+                </Button>
+
+                {#if !$hayTurnoAbierto}
+                    <p class="text-xs text-center text-danger-500 mt-2">
+                        Debes <a href="/turno" class="underline"
+                            >abrir un turno</a
+                        > para vender
+                    </p>
+                {/if}
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Modal de cobro -->
-<ModalCobro
-    bind:open={modalCobroAbierto}
-    total={$totalCarrito}
-    procesando={procesandoVenta}
-    on:confirmar={procesarVenta}
-/>
+    <!-- Modal de cobro -->
+    <ModalCobro
+        bind:open={modalCobroAbierto}
+        total={$totalCarrito}
+        procesando={procesandoVenta}
+        on:confirmar={procesarVenta}
+    />
+{/if}

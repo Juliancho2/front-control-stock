@@ -42,11 +42,15 @@
                 }
             }
 
-            const res = await productosApi.listar({
-                q,
-                activo: true,
-                limit: 8,
-            }, token);
+            const res = await productosApi.listar(
+                {
+                    q,
+                    activo: true,
+                    limit: 8,
+                },
+                token,
+            );
+            console.log(res);
             resultados = res.data;
             mostrarResultados = true;
         } catch {
@@ -187,7 +191,7 @@
 
                     <div class="text-right flex-shrink-0">
                         <p class="text-sm font-semibold text-gray-900">
-                            ${producto.precioVenta.toFixed(2)}
+                            ${Number(producto.precioVenta).toFixed(2)}
                         </p>
                     </div>
                 </button>

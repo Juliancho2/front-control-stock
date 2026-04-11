@@ -35,8 +35,7 @@
     async function cargar() {
         cargando = true;
         try {
-            const res = await bodegasApi.listar({ limit: "100" }, accessToken);
-            bodegas = res.data;
+            bodegas = await bodegasApi.listar({}, accessToken);
         } catch {
             toastStore.error("Error al cargar bodegas");
         } finally {

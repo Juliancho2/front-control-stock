@@ -12,6 +12,7 @@
     import Input from "$components/ui/Input.svelte";
     import { inventarioApi } from "$api/inventario";
     import { bodegasApi } from "$api/bodegas";
+    import { productosApi } from "$api/productos";
     import { toastStore } from "$stores/toast.store";
     import { formatCurrency, formatFechaHora } from "$utils/index";
     import type {
@@ -19,6 +20,7 @@
         MovimientoInventario,
         Bodega,
         ResumenStock,
+        Producto,
     } from "$types/index";
 
     export let data: { accessToken: string };
@@ -51,6 +53,84 @@
     let cantidadNueva = 0;
     let motivoAjuste = "";
     let ajustando = false;
+
+    // Ingreso de stock inicial
+    let modalIngreso = false;
+    let busquedaProducto = "";
+    let productosEncontrados: Producto[] = [];
+    let buscandoProducto = false;
+    let productoSeleccionado: Producto | null = null;
+    let ingresoBodegaId = "";
+    let ingresoCantidad = 1;
+    let ingresoMotivo = "Ingreso de stock inicial";
+    let ingresando = false;
+
+    let timerBusqueda: ReturnType<typeof setTimeout> | null = null;
+
+    function buscarProducto(query: string) {
+        busquedaProducto = query;
+        if (timerBusqueda) clearTimeout(timerBusqueda);
+        if (!query.trim()) {
+            productosEncontrados = [];
+            return;
+        }
+        timerBusqueda = setTimeout(async () => {
+            buscandoProducto = true;
+            try {
+                const res = await productosApi.listar(
+                    { q: query, limit: 10 },
+                    accessToken,
+                );
+                productosEncontrados = res.data;
+            } catch {
+                productosEncontrados = [];
+            } finally {
+                buscandoProducto = false;
+            }
+        }, 300);
+    }
+
+    function seleccionarProducto(p: Producto) {
+        productoSeleccionado = p;
+        productosEncontrados = [];
+        busquedaProducto = p.nombre;
+    }
+
+    function abrirIngreso() {
+        productoSeleccionado = null;
+        busquedaProducto = "";
+        productosEncontrados = [];
+        ingresoBodegaId = bodegas.length ? bodegas[0].id : "";
+        ingresoCantidad = 1;
+        ingresoMotivo = "Ingreso de stock inicial";
+        modalIngreso = true;
+    }
+
+    async function realizarIngreso() {
+        if (!productoSeleccionado || !ingresoBodegaId || ingresoCantidad < 1)
+            return;
+        ingresando = true;
+        try {
+            await inventarioApi.ajustar(
+                {
+                    productoId: productoSeleccionado.id,
+                    bodegaId: ingresoBodegaId,
+                    cantidadNueva: ingresoCantidad,
+                    motivo: ingresoMotivo.trim(),
+                },
+                accessToken,
+            );
+            toastStore.exito(
+                `Stock ingresado: ${ingresoCantidad} unidades de "${productoSeleccionado.nombre}"`,
+            );
+            modalIngreso = false;
+            cargarStock();
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al ingresar stock");
+        } finally {
+            ingresando = false;
+        }
+    }
 
     async function cargarStock() {
         cargandoStock = true;
@@ -95,8 +175,7 @@
 
     onMount(async () => {
         try {
-            const res = await bodegasApi.listar({ limit: "100" }, accessToken);
-            bodegas = res.data;
+            bodegas = await bodegasApi.listar({}, accessToken);
         } catch {
             /* ignore */
         }
@@ -155,7 +234,10 @@
 
 <svelte:head><title>Inventario — Ferretería ERP</title></svelte:head>
 
-<PageHeader titulo="Inventario" />
+<div class="flex items-center justify-between mb-4">
+    <PageHeader titulo="Inventario" />
+    <Button variant="primary" onclick={abrirIngreso}>+ Ingreso de stock</Button>
+</div>
 
 <!-- Resumen KPIs -->
 {#if resumen}
@@ -432,5 +514,104 @@
             disabled={!motivoAjuste.trim()}
             onclick={realizarAjuste}>Confirmar ajuste</Button
         >
+    </svelte:fragment>
+</Modal>
+
+<!-- Modal ingreso de stock inicial -->
+<Modal bind:open={modalIngreso} title="Ingreso de stock" size="md">
+    <div class="space-y-4">
+        <!-- Buscador de producto -->
+        <div class="relative">
+            <Input
+                label="Buscar producto"
+                placeholder="Nombre o SKU del producto..."
+                value={busquedaProducto}
+                oninput={(e) => buscarProducto(e.currentTarget.value)}
+            />
+            {#if buscandoProducto}
+                <div class="absolute right-3 top-9">
+                    <Spinner size="sm" />
+                </div>
+            {/if}
+            {#if productosEncontrados.length > 0}
+                <div
+                    class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto"
+                >
+                    {#each productosEncontrados as p}
+                        <button
+                            type="button"
+                            class="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-primary-50 transition-colors"
+                            onclick={() => seleccionarProducto(p)}
+                        >
+                            <div class="flex-1 min-w-0">
+                                <p
+                                    class="text-sm font-medium text-gray-900 truncate"
+                                >
+                                    {p.nombre}
+                                </p>
+                                <p class="text-xs text-gray-400">
+                                    SKU: {p.sku} — {formatCurrency(
+                                        p.precioVenta,
+                                    )}
+                                </p>
+                            </div>
+                        </button>
+                    {/each}
+                </div>
+            {/if}
+        </div>
+
+        {#if productoSeleccionado}
+            <div class="bg-primary-50 border border-primary-200 rounded-xl p-3">
+                <p class="text-sm font-medium text-primary-900">
+                    {productoSeleccionado.nombre}
+                </p>
+                <p class="text-xs text-primary-600">
+                    SKU: {productoSeleccionado.sku}
+                </p>
+            </div>
+        {/if}
+
+        <div class="w-full">
+            <Select
+                label="Bodega"
+                options={bodegas.map((b) => ({ value: b.id, label: b.nombre }))}
+                bind:value={ingresoBodegaId}
+            />
+        </div>
+
+        <Input
+            label="Cantidad"
+            type="number"
+            bind:value={ingresoCantidad}
+            min="1"
+        />
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Motivo</label
+            >
+            <textarea
+                bind:value={ingresoMotivo}
+                rows="2"
+                class="input resize-none"
+                placeholder="Motivo del ingreso..."
+            ></textarea>
+        </div>
+    </div>
+    <svelte:fragment slot="footer">
+        <Button variant="secondary" onclick={() => (modalIngreso = false)}>
+            Cancelar
+        </Button>
+        <Button
+            variant="primary"
+            loading={ingresando}
+            disabled={!productoSeleccionado ||
+                !ingresoBodegaId ||
+                ingresoCantidad < 1}
+            onclick={realizarIngreso}
+        >
+            Ingresar stock
+        </Button>
     </svelte:fragment>
 </Modal>

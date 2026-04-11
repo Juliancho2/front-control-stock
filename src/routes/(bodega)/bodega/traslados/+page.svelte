@@ -63,8 +63,7 @@
 
     onMount(async () => {
         try {
-            const res = await bodegasApi.listar({ limit: "100" }, accessToken);
-            bodegas = res.data;
+            bodegas = await bodegasApi.listar({}, accessToken);
         } catch {
             /* ignore */
         }

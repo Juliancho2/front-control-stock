@@ -37,7 +37,7 @@
     <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 truncate">{item.nombre}</p>
         <p class="text-xs text-gray-400 mt-0.5">
-            {item.sku} · ${item.precioUnitario.toFixed(2)} c/u
+            {item.sku} · ${Number(item.precioUnitario).toFixed(2)} c/u
         </p>
     </div>
 
