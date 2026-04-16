@@ -2,6 +2,7 @@
 	import "../app.css";
 	import { onMount } from "svelte";
 	import { authStore } from "$stores/auth.store";
+	import { setAccessToken } from "$api/fetch";
 	import {
 		offlineStore,
 		estaOnline,
@@ -14,17 +15,20 @@
 
 	export let data: LayoutData;
 
-	// Inicializar auth store con los datos del servidor
-	$: authStore.inicializar(
-		data.usuario
-			? {
-					usuario: data.usuario,
-					accessToken: "",
-					refreshToken: "",
-					expiresIn: 0,
-				}
-			: null,
-	);
+	// Inicializar auth store y token en memoria con datos del servidor
+	$: {
+		setAccessToken(data.accessToken ?? null);
+		authStore.inicializar(
+			data.usuario
+				? {
+						usuario: data.usuario,
+						accessToken: data.accessToken ?? "",
+						refreshToken: "",
+						expiresIn: 0,
+					}
+				: null,
+		);
+	}
 
 	// Detector de conectividad + offline sync
 	onMount(async () => {

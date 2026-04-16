@@ -1,11 +1,9 @@
-import { api, guardarTokens, limpiarTokens } from './fetch';
+import { api, limpiarTokens } from './fetch';
 import type { SesionActiva, Usuario } from '$types/index';
 
 export const authApi = {
 	login: async (email: string, password: string): Promise<SesionActiva> => {
-		const sesion = await api.post<SesionActiva>('/auth/login', { email, password });
-		guardarTokens(sesion.accessToken, sesion.refreshToken);
-		return sesion;
+		return api.post<SesionActiva>('/auth/login', { email, password });
 	},
 
 	logout: async (): Promise<void> => {

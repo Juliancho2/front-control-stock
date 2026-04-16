@@ -31,45 +31,33 @@ export class ApiException extends Error {
 	get esValidacion(): boolean { return this.statusCode === 400; }
 }
 
-// ─── Helpers de token ─────────────────────────────────────────
+// ─── Token en memoria (NO en localStorage) ───────────────────
 
-function getToken(): string | null {
-	if (!browser) return null;
-	return localStorage.getItem('accessToken');
+let _accessToken: string | null = null;
+
+/** Llamado desde el layout al inicializar con datos del servidor */
+export function setAccessToken(token: string | null): void {
+	_accessToken = token;
 }
 
-function getRefreshToken(): string | null {
-	if (!browser) return null;
-	return localStorage.getItem('refreshToken');
+export function getToken(): string | null {
+	return _accessToken;
 }
 
-function guardarTokens(accessToken: string, refreshToken: string): void {
-	localStorage.setItem('accessToken', accessToken);
-	localStorage.setItem('refreshToken', refreshToken);
+export function limpiarTokens(): void {
+	_accessToken = null;
 }
 
-function limpiarTokens(): void {
-	localStorage.removeItem('accessToken');
-	localStorage.removeItem('refreshToken');
-}
-
-// ─── Refresh automático ───────────────────────────────────────
+// ─── Refresh automático (via endpoint server-side) ────────────
 
 let refreshPromise: Promise<string> | null = null;
 
 async function refrescarToken(): Promise<string> {
-	// Si ya hay un refresh en curso, esperar ese en lugar de lanzar otro
 	if (refreshPromise) return refreshPromise;
 
 	refreshPromise = (async () => {
-		const refreshToken = getRefreshToken();
-		if (!refreshToken) throw new Error('Sin refresh token');
-
-		const res = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ refreshToken }),
-		});
+		// Llama al endpoint SvelteKit que usa las cookies httpOnly
+		const res = await fetch('/api/refresh', { method: 'POST' });
 
 		if (!res.ok) {
 			limpiarTokens();
@@ -77,9 +65,8 @@ async function refrescarToken(): Promise<string> {
 			throw new Error('Sesión expirada');
 		}
 
-		const json = await res.json();
-		const { accessToken, refreshToken: newRefresh } = json.data;
-		guardarTokens(accessToken, newRefresh);
+		const { accessToken } = await res.json();
+		_accessToken = accessToken;
 		return accessToken;
 	})().finally(() => {
 		refreshPromise = null;
@@ -176,5 +163,3 @@ export const api = {
 	delete: <T>(path: string, opts?: FetchOptions) =>
 		apiFetch<T>(path, 'DELETE', undefined, opts),
 };
-
-export { guardarTokens, limpiarTokens, getToken };
