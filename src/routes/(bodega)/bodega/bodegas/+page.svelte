@@ -27,6 +27,7 @@
     let ubicacion = "";
     let principal = false;
     let guardando = false;
+    let errores: Record<string, string> = {};
 
     // Eliminar
     let bodegaEliminar: Bodega | null = null;
@@ -64,10 +65,11 @@
     }
 
     async function guardar() {
-        if (!nombre.trim()) {
-            toastStore.error("El nombre es obligatorio");
-            return;
-        }
+        errores = {};
+        if (!nombre.trim()) errores.nombre = "El nombre es obligatorio";
+        else if (nombre.trim().length < 2)
+            errores.nombre = "Mínimo 2 caracteres";
+        if (Object.keys(errores).length > 0) return;
         guardando = true;
         try {
             const payload: Partial<Bodega> = {
@@ -196,6 +198,7 @@
         <Input
             label="Nombre"
             bind:value={nombre}
+            error={errores.nombre}
             required
             placeholder="Ej: Bodega central"
         />

@@ -67,6 +67,7 @@
         montoRecibido = total;
         referencia = "";
         pagosMixto = [];
+        errorCobro = "";
     }
 
     function agregarPagoMixto() {
@@ -90,7 +91,10 @@
         return map[fp] ?? "efectivo";
     }
 
+    let errorCobro = "";
+
     function confirmar() {
+        errorCobro = "";
         let pagos: {
             metodo: MetodoPago;
             monto: number;
@@ -98,12 +102,18 @@
         }[];
 
         if (formaPago === "mixto") {
-            if (totalMixto < total) return;
+            if (totalMixto < total) {
+                errorCobro = "Los pagos no cubren el total";
+                return;
+            }
             pagos = pagosMixto.map((p) => ({
                 metodo: p.metodo,
                 monto: Number(p.monto),
                 referencia: p.referencia || undefined,
             }));
+        } else if (formaPago === "efectivo" && Number(montoRecibido) < total) {
+            errorCobro = "El monto recibido es insuficiente";
+            return;
         } else {
             pagos = [
                 {
@@ -288,6 +298,10 @@
             </div>
         {/if}
     </div>
+
+    {#if errorCobro}
+        <p class="text-xs text-danger-600 text-center mt-2">{errorCobro}</p>
+    {/if}
 
     <svelte:fragment slot="footer">
         <Button variant="secondary" onclick={() => (open = false)}>

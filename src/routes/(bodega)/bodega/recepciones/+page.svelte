@@ -22,6 +22,7 @@
     let modalRecepcion = false;
     let recibiendo = false;
     let observaciones = "";
+    let errorRecepcion = "";
 
     // Items a recibir
     let itemsRecepcion: {
@@ -92,11 +93,19 @@
 
     async function confirmarRecepcion() {
         if (!ordenSeleccionada) return;
+        errorRecepcion = "";
+        const excedido = itemsRecepcion.find(
+            (i) => i.cantidadRecibida > i.cantidadPendiente,
+        );
+        if (excedido) {
+            errorRecepcion = `"${excedido.productoNombre}" excede la cantidad pendiente (${excedido.cantidadPendiente})`;
+            return;
+        }
         const itemsValidos = itemsRecepcion.filter(
             (i) => i.cantidadRecibida > 0,
         );
         if (itemsValidos.length === 0) {
-            toastStore.error("Ingresa al menos una cantidad");
+            errorRecepcion = "Ingresa al menos una cantidad";
             return;
         }
         recibiendo = true;
@@ -252,6 +261,9 @@
             />
         </div>
     {/if}
+    {#if errorRecepcion}<p class="text-xs text-danger-600 text-center mt-2">
+            {errorRecepcion}
+        </p>{/if}
     <svelte:fragment slot="footer">
         <Button variant="secondary" onclick={() => (modalRecepcion = false)}
             >Cancelar</Button

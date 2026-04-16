@@ -24,6 +24,7 @@
     let editando: Categoria | null = null;
     let guardando = false;
     let form = resetForm();
+    let errores: Record<string, string> = {};
 
     // Eliminar
     let categoriaEliminar: Categoria | null = null;
@@ -63,10 +64,11 @@
     }
 
     async function guardar() {
-        if (!form.nombre.trim()) {
-            toastStore.error("El nombre es obligatorio");
-            return;
-        }
+        errores = {};
+        if (!form.nombre.trim()) errores.nombre = "El nombre es obligatorio";
+        else if (form.nombre.trim().length < 2)
+            errores.nombre = "Mínimo 2 caracteres";
+        if (Object.keys(errores).length > 0) return;
         guardando = true;
         try {
             const payload = {
@@ -306,6 +308,7 @@
         <Input
             label="Nombre"
             bind:value={form.nombre}
+            error={errores.nombre}
             required
             placeholder="Herramientas manuales"
         />

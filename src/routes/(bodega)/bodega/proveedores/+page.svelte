@@ -12,7 +12,7 @@
     import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import { comprasApi } from "$api/compras";
     import { toastStore } from "$stores/toast.store";
-    import { formatFechaHora } from "$utils/index";
+    import { formatFechaHora, esEmailValido } from "$utils/index";
     import type { Proveedor } from "$types/index";
 
     export let data: { accessToken: string };
@@ -30,6 +30,7 @@
     let proveedorEditId = "";
     let form = resetForm();
     let guardando = false;
+    let errores: Record<string, string> = {};
 
     // Eliminar
     let proveedorEliminar: Proveedor | null = null;
@@ -93,10 +94,12 @@
     }
 
     async function guardar() {
-        if (!form.nombre.trim()) {
-            toastStore.error("El nombre es obligatorio");
-            return;
-        }
+        errores = {};
+        if (!form.nombre.trim()) errores.nombre = "El nombre es obligatorio";
+        if (form.email && !esEmailValido(form.email))
+            errores.email = "Formato de correo inválido";
+        if (form.diasCredito < 0) errores.diasCredito = "No puede ser negativo";
+        if (Object.keys(errores).length > 0) return;
         guardando = true;
         try {
             const payload: Partial<Proveedor> = {
@@ -255,6 +258,7 @@
         <Input
             label="Nombre"
             bind:value={form.nombre}
+            error={errores.nombre}
             required
             placeholder="Razón social o nombre comercial"
         />
@@ -275,6 +279,7 @@
                 label="Email"
                 type="email"
                 bind:value={form.email}
+                error={errores.email}
                 placeholder="Opcional"
             />
             <Input
@@ -292,6 +297,7 @@
             label="Días de crédito"
             type="number"
             bind:value={form.diasCredito}
+            error={errores.diasCredito}
             min={0}
         />
     </div>

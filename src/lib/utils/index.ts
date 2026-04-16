@@ -93,6 +93,26 @@ export function calcularImpuesto(subtotal: number): number {
 	return Math.round(subtotal * IVA * 100) / 100;
 }
 
+// ─── Validación ───────────────────────────────────────────────
+
+export type Errores = Record<string, string>;
+
+/**
+ * Ejecuta un mapa de reglas y devuelve los errores encontrados.
+ * Cada regla es [condición_de_error, nombre_campo, mensaje].
+ */
+export function validar(reglas: [boolean, string, string][]): Errores {
+	const errores: Errores = {};
+	for (const [falla, campo, msg] of reglas) {
+		if (falla && !errores[campo]) errores[campo] = msg;
+	}
+	return errores;
+}
+
+export function sinErrores(e: Errores): boolean {
+	return Object.keys(e).length === 0;
+}
+
 export function calcularTotal(subtotal: number, descuentoGlobal = 0): number {
 	const base = subtotal - descuentoGlobal;
 	return Math.round((base + calcularImpuesto(base)) * 100) / 100;

@@ -53,6 +53,7 @@
     let cantidadNueva = 0;
     let motivoAjuste = "";
     let ajustando = false;
+    let erroresAjuste: Record<string, string> = {};
 
     // Ingreso de stock inicial
     let modalIngreso = false;
@@ -64,6 +65,7 @@
     let ingresoCantidad = 1;
     let ingresoMotivo = "Ingreso de stock inicial";
     let ingresando = false;
+    let erroresIngreso: Record<string, string> = {};
 
     let timerBusqueda: ReturnType<typeof setTimeout> | null = null;
 
@@ -107,8 +109,12 @@
     }
 
     async function realizarIngreso() {
-        if (!productoSeleccionado || !ingresoBodegaId || ingresoCantidad < 1)
-            return;
+        erroresIngreso = {};
+        if (!productoSeleccionado)
+            erroresIngreso.producto = "Selecciona un producto";
+        if (!ingresoBodegaId) erroresIngreso.bodega = "Selecciona una bodega";
+        if (ingresoCantidad < 1) erroresIngreso.cantidad = "Mínimo 1 unidad";
+        if (Object.keys(erroresIngreso).length > 0) return;
         ingresando = true;
         try {
             await inventarioApi.ajustar(
@@ -190,7 +196,12 @@
     }
 
     async function realizarAjuste() {
-        if (!ajusteItem || !motivoAjuste.trim()) return;
+        erroresAjuste = {};
+        if (!ajusteItem) return;
+        if (cantidadNueva < 0) erroresAjuste.cantidad = "No puede ser negativo";
+        if (!motivoAjuste.trim())
+            erroresAjuste.motivo = "El motivo es obligatorio";
+        if (Object.keys(erroresAjuste).length > 0) return;
         ajustando = true;
         try {
             await inventarioApi.ajustar(
@@ -489,6 +500,7 @@
                 label="Nueva cantidad"
                 type="number"
                 bind:value={cantidadNueva}
+                error={erroresAjuste.cantidad}
                 hint="La diferencia se registrará como ajuste"
             />
             <div>
@@ -499,8 +511,14 @@
                     bind:value={motivoAjuste}
                     rows="2"
                     class="input resize-none"
+                    class:border-danger-400={erroresAjuste.motivo}
                     placeholder="Razón del ajuste..."
                 />
+                {#if erroresAjuste.motivo}<p
+                        class="text-xs text-danger-600 mt-1"
+                    >
+                        {erroresAjuste.motivo}
+                    </p>{/if}
             </div>
         </div>
     {/if}
@@ -561,6 +579,10 @@
             {/if}
         </div>
 
+        {#if !productoSeleccionado && erroresIngreso.producto}
+            <p class="text-xs text-danger-600">{erroresIngreso.producto}</p>
+        {/if}
+
         {#if productoSeleccionado}
             <div class="bg-primary-50 border border-primary-200 rounded-xl p-3">
                 <p class="text-sm font-medium text-primary-900">
@@ -584,6 +606,7 @@
             label="Cantidad"
             type="number"
             bind:value={ingresoCantidad}
+            error={erroresIngreso.cantidad}
             min="1"
         />
 

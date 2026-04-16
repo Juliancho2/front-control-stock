@@ -6,6 +6,22 @@
 
 	let cargando = false;
 	let mostrarPassword = false;
+	let errores: Record<string, string> = {};
+
+	function validarLocal(formData: FormData): boolean {
+		errores = {};
+		const email = formData.get("email")?.toString().trim() ?? "";
+		const password = formData.get("password")?.toString() ?? "";
+
+		if (!email) errores.email = "El correo es obligatorio";
+		else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+			errores.email = "Formato de correo inválido";
+
+		if (!password) errores.password = "La contraseña es obligatoria";
+		else if (password.length < 6) errores.password = "Mínimo 6 caracteres";
+
+		return Object.keys(errores).length === 0;
+	}
 </script>
 
 <svelte:head>
@@ -44,7 +60,11 @@
 			<div class="card-body">
 				<form
 					method="POST"
-					use:enhance={() => {
+					use:enhance={({ formData, cancel }) => {
+						if (!validarLocal(formData)) {
+							cancel();
+							return;
+						}
 						cargando = true;
 						return async ({ update }) => {
 							await update();
@@ -90,8 +110,14 @@
 							value={form?.email ?? ""}
 							placeholder="cajero@ferreteria.com"
 							class="input"
+							class:border-danger-400={errores.email}
 							disabled={cargando}
 						/>
+						{#if errores.email}<p
+								class="text-xs text-danger-600 mt-1"
+							>
+								{errores.email}
+							</p>{/if}
 					</div>
 
 					<!-- Password -->
@@ -157,6 +183,11 @@
 								{/if}
 							</button>
 						</div>
+						{#if errores.password}<p
+								class="text-xs text-danger-600 mt-1"
+							>
+								{errores.password}
+							</p>{/if}
 					</div>
 
 					<!-- Botón submit -->

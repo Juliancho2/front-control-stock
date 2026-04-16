@@ -12,7 +12,11 @@
     import Select from "$components/ui/Select.svelte";
     import { clientesApi, type FiltroClientes } from "$api/clientes";
     import { toastStore } from "$stores/toast.store";
-    import { formatCurrency, formatFechaHora } from "$utils/index";
+    import {
+        formatCurrency,
+        formatFechaHora,
+        esEmailValido,
+    } from "$utils/index";
     import type { Cliente, TipoCliente } from "$types/index";
 
     export let data: { accessToken: string };
@@ -30,6 +34,7 @@
     let clienteEditar: Cliente | null = null;
     let guardando = false;
     let form = resetForm();
+    let errores: Record<string, string> = {};
 
     // Modal detalle/crédito
     let clienteDetalle: Cliente | null = null;
@@ -89,10 +94,13 @@
     }
 
     async function guardar() {
-        if (!form.nombre.trim()) {
-            toastStore.error("El nombre es obligatorio");
-            return;
-        }
+        errores = {};
+        if (!form.nombre.trim()) errores.nombre = "El nombre es obligatorio";
+        if (form.email && !esEmailValido(form.email))
+            errores.email = "Formato de correo inválido";
+        if (form.limiteCredito < 0)
+            errores.limiteCredito = "No puede ser negativo";
+        if (Object.keys(errores).length > 0) return;
         guardando = true;
         try {
             const payload = {
@@ -295,7 +303,12 @@
 >
     <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Nombre" bind:value={form.nombre} required />
+            <Input
+                label="Nombre"
+                bind:value={form.nombre}
+                error={errores.nombre}
+                required
+            />
             <Select
                 label="Tipo"
                 options={[
@@ -315,12 +328,18 @@
             <Input label="Teléfono" bind:value={form.telefono} />
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Email" type="email" bind:value={form.email} />
+            <Input
+                label="Email"
+                type="email"
+                bind:value={form.email}
+                error={errores.email}
+            />
             <Input
                 label="Límite de crédito"
                 type="number"
                 step="0.01"
                 bind:value={form.limiteCredito}
+                error={errores.limiteCredito}
             />
         </div>
         <Input label="Dirección" bind:value={form.direccion} />

@@ -39,6 +39,7 @@
         precioUnitario: number;
     }[] = [];
     let creando = false;
+    let erroresOC: Record<string, string> = {};
 
     // Buscar producto para agregar
     let busquedaProducto = "";
@@ -140,14 +141,15 @@
     }
 
     async function crearOrden() {
-        if (!proveedorId) {
-            toastStore.error("Selecciona un proveedor");
-            return;
-        }
-        if (items.length === 0) {
-            toastStore.error("Agrega al menos un producto");
-            return;
-        }
+        erroresOC = {};
+        if (!proveedorId) erroresOC.proveedor = "Selecciona un proveedor";
+        if (items.length === 0) erroresOC.items = "Agrega al menos un producto";
+        const itemInvalido = items.find(
+            (i) => i.cantidad < 1 || i.precioUnitario <= 0,
+        );
+        if (itemInvalido)
+            erroresOC.items = "Cada ítem debe tener cantidad ≥ 1 y precio > 0";
+        if (Object.keys(erroresOC).length > 0) return;
         creando = true;
         try {
             await comprasApi.ordenes.crear(
@@ -337,13 +339,20 @@
 <Modal bind:open={modalCrear} title="Nueva orden de compra" size="xl">
     <div class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select
-                label="Proveedor"
-                options={opcionesProv}
-                bind:value={proveedorId}
-                required
-                placeholder="Seleccionar proveedor"
-            />
+            <div>
+                <Select
+                    label="Proveedor"
+                    options={opcionesProv}
+                    bind:value={proveedorId}
+                    required
+                    placeholder="Seleccionar proveedor"
+                />
+                {#if erroresOC.proveedor}<p
+                        class="text-xs text-danger-600 mt-1"
+                    >
+                        {erroresOC.proveedor}
+                    </p>{/if}
+            </div>
             <Input
                 label="Fecha de entrega"
                 type="date"
@@ -394,6 +403,9 @@
         </div>
 
         <!-- Items -->
+        {#if erroresOC.items}<p class="text-xs text-danger-600">
+                {erroresOC.items}
+            </p>{/if}
         {#if items.length > 0}
             <div class="border rounded-lg overflow-hidden">
                 <table class="table w-full text-sm">

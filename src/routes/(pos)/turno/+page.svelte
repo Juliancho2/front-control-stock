@@ -25,6 +25,7 @@
     let montoCierre = 0;
     let observaciones = "";
     let cuadre: any = null;
+    let errores: Record<string, string> = {};
 
     onMount(async () => {
         try {
@@ -39,6 +40,11 @@
     });
 
     async function abrir() {
+        errores = {};
+        if (montoApertura < 0) {
+            errores.montoApertura = "El monto no puede ser negativo";
+            return;
+        }
         procesando = true;
         try {
             console.log(accessToken);
@@ -59,6 +65,11 @@
 
     async function cerrar() {
         if (!$turnoActivo) return;
+        errores = {};
+        if (montoCierre < 0) {
+            errores.montoCierre = "El monto no puede ser negativo";
+            return;
+        }
         procesando = true;
         try {
             const res = await cajaApi.cerrar(
@@ -176,6 +187,7 @@
                         label="Monto contado en caja"
                         type="number"
                         bind:value={montoCierre}
+                        error={errores.montoCierre}
                         hint="Cuenta el efectivo físico en la caja"
                     />
                     <Input
@@ -214,6 +226,7 @@
                         label="Fondo de apertura (USD)"
                         type="number"
                         bind:value={montoApertura}
+                        error={errores.montoApertura}
                         hint="Dinero en efectivo disponible para dar cambio"
                     />
                     <Input
