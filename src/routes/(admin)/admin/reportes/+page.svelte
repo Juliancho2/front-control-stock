@@ -37,15 +37,12 @@
     async function cargarVentas() {
         cargando = true;
         try {
-            const res = await reportesApi.ventas(
+            const res: any = await reportesApi.ventas(
                 { desde, hasta, agrupacion: agrupacion as any },
                 accessToken,
             );
-            datosVentas = Array.isArray(res) ? res : [];
-            totalVentas = datosVentas.reduce(
-                (s: number, d: any) => s + (d.monto ?? 0),
-                0,
-            );
+            datosVentas = Array.isArray(res?.porPeriodo) ? res.porPeriodo : [];
+            totalVentas = res?.montoTotal ?? 0;
         } catch {
             toastStore.error("Error al cargar reporte de ventas");
         } finally {
@@ -71,8 +68,12 @@
     async function cargarCxC() {
         cargando = true;
         try {
-            const res = await reportesApi.cuentasPorCobrar(accessToken);
-            cxc = Array.isArray(res) ? res : [];
+            const res: any = await reportesApi.cuentasPorCobrar(accessToken);
+            cxc = Array.isArray(res?.clientes)
+                ? res.clientes
+                : Array.isArray(res)
+                  ? res
+                  : [];
         } catch {
             toastStore.error("Error al cargar cuentas por cobrar");
         } finally {
@@ -112,7 +113,7 @@
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-500 hover:text-gray-700'}"
             onclick={() => {
-                tab = t.key;
+                tab = t.key as typeof tab;
                 cargarTab();
             }}
         >
@@ -189,13 +190,15 @@
                         {#each datosVentas as d}
                             <tr>
                                 <td
-                                    >{d.fecha
-                                        ? formatFecha(d.fecha)
-                                        : (d.periodo ?? "—")}</td
+                                    >{d.periodo
+                                        ? agrupacion === "dia"
+                                            ? formatFecha(d.periodo)
+                                            : d.periodo
+                                        : "—"}</td
                                 >
-                                <td class="text-right">{d.cantidad ?? 0}</td>
+                                <td class="text-right">{d.totalVentas ?? 0}</td>
                                 <td class="text-right font-semibold"
-                                    >{formatCurrency(d.monto ?? 0)}</td
+                                    >{formatCurrency(d.montoTotal ?? 0)}</td
                                 >
                             </tr>
                         {/each}
@@ -285,12 +288,15 @@
                                     >{c.clienteNombre ?? c.nombre}</td
                                 >
                                 <td class="font-mono text-xs"
-                                    >{c.rucCedula ?? "—"}</td
+                                    >{c.clienteRuc ?? c.rucCedula ?? "—"}</td
                                 >
                                 <td
                                     class="text-right font-semibold text-danger-600"
                                     >{formatCurrency(
-                                        c.saldoCredito ?? c.deuda ?? 0,
+                                        c.saldoDeuda ??
+                                            c.saldoCredito ??
+                                            c.deuda ??
+                                            0,
                                     )}</td
                                 >
                                 <td class="text-right"
@@ -298,13 +304,13 @@
                                 >
                                 <td>
                                     <Badge
-                                        variant={(c.saldoCredito ??
-                                            c.deuda ??
+                                        variant={(c.saldoDeuda ??
+                                            c.saldoCredito ??
                                             0) > (c.limiteCredito ?? 0)
                                             ? "red"
                                             : "yellow"}
                                     >
-                                        {(c.saldoCredito ?? c.deuda ?? 0) >
+                                        {(c.saldoDeuda ?? c.saldoCredito ?? 0) >
                                         (c.limiteCredito ?? 0)
                                             ? "Excedido"
                                             : "Pendiente"}
