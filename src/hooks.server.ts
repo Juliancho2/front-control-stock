@@ -2,14 +2,13 @@ import type { RolUsuario } from '$types/index';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 // Rutas que no necesitan autenticación
-const RUTAS_PUBLICAS = ['/login', '/health'];
+const RUTAS_PUBLICAS = ['/login', '/health', '/api/refresh'];
 
 // Mapa de rol → ruta de inicio
 const INICIO_POR_ROL: Record<RolUsuario, string> = {
     cajero: '/pos',
     admin: '/seleccionar-panel',
-    bodeguero: '/bodega/inventario',
-    vendedor: '/pos',
+    bodeguero: '/bodega/inventario'
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -48,17 +47,28 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     // ─── Redirigir la raíz al panel correcto según rol ────────────
     if (pathname === '/') {
+        console.log('Redirigiendo a inicio según rol:', sesion.usuario.rol);
         throw redirect(303, INICIO_POR_ROL[sesion.usuario.rol] ?? '/login');
     }
 
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
 
+    if (pathname.startsWith('/seleccionar-panel') && rol !== 'admin') {
+        throw redirect(303, INICIO_POR_ROL[rol]);
+    }
+
     if (pathname.startsWith('/admin') && rol !== 'admin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 
     if (pathname.startsWith('/bodega') && !['admin', 'bodeguero'].includes(rol)) {
+        throw redirect(303, INICIO_POR_ROL[rol]);
+    }
+
+    // Rutas del cajero (grupo POS): /pos, /turno, /ventas
+    const esPOS = ['/pos', '/turno', '/ventas'].some(r => pathname.startsWith(r));
+    if (esPOS && rol !== 'cajero') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 

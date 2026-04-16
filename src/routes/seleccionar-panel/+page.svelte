@@ -131,14 +131,16 @@
             </a>
         </div>
 
-        <!-- Logout link -->
+        <!-- Logout -->
         <div class="text-center mt-8">
-            <a
-                href="/logout"
-                class="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-            >
-                Cerrar sesión
-            </a>
+            <form method="POST" action="/logout">
+                <button
+                    type="submit"
+                    class="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                    Cerrar sesión
+                </button>
+            </form>
         </div>
     </div>
 </div>
