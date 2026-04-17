@@ -10,7 +10,7 @@
     import Pagination from "$components/ui/Pagination.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
     import Select from "$components/ui/Select.svelte";
-    import ConfirmDialog from "$components/ui/Confirmdialog.svelte";
+    import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import { productosApi, type FiltroProductos } from "$api/productos";
     import { categoriasApi } from "$api/categorias";
     import { toastStore } from "$stores/toast.store";

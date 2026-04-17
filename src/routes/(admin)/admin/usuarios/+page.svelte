@@ -9,7 +9,7 @@
     import Select from "$components/ui/Select.svelte";
     import Input from "$components/ui/Input.svelte";
     import Button from "$components/ui/Button.svelte";
-    import ConfirmDialog from "$components/ui/Confirmdialog.svelte";
+    import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import { usuariosApi } from "$api/usuarios";
     import { toastStore } from "$stores/toast.store";
     import { formatFechaHora } from "$utils/index";

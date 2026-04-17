@@ -7,7 +7,7 @@
     import Modal from "$components/ui/Modal.svelte";
     import Input from "$components/ui/Input.svelte";
     import Select from "$components/ui/Select.svelte";
-    import ConfirmDialog from "$components/ui/Confirmdialog.svelte";
+    import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
     import { categoriasApi } from "$api/categorias";
     import { toastStore } from "$stores/toast.store";

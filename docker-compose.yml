@@ -1,4 +1,4 @@
-version: '3.9'
+
 
 # ══════════════════════════════════════════════════════════════
 # DESARROLLO — Frontend SvelteKit
@@ -12,11 +12,11 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: ferreteria_frontend_dev
     restart: unless-stopped
     ports:
-      - '5173:5173'
+      - '5173:3000'
     environment:
       API_URL:         http://host.docker.internal:3000
       PUBLIC_API_URL:  http://localhost:3000
