@@ -4,6 +4,7 @@
 	import { esAdmin } from "$stores/auth.store";
 
 	let colapsado = false;
+	let sidebarAbierto = false;
 
 	const nav = [
 		{
@@ -45,7 +46,7 @@
 </script>
 
 <div class="h-screen flex overflow-hidden bg-gray-50">
-	<Sidebar items={nav} bind:colapsado>
+	<Sidebar items={nav} bind:colapsado bind:abierto={sidebarAbierto}>
 		<svelte:fragment slot="footer">
 			{#if $esAdmin}
 				<a
@@ -75,11 +76,11 @@
 	</Sidebar>
 
 	<div class="flex-1 flex flex-col overflow-hidden">
-		<Topbar mostrarMenuLateral={false}>
+		<Topbar>
 			<svelte:fragment slot="menu-toggle">
 				<button
-					onclick={() => (colapsado = !colapsado)}
-					class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+					onclick={() => (sidebarAbierto = !sidebarAbierto)}
+					class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors md:hidden"
 					aria-label="Toggle menú"
 				>
 					<svg
@@ -99,7 +100,7 @@
 			</svelte:fragment>
 		</Topbar>
 
-		<main class="flex-1 overflow-y-auto p-6">
+		<main class="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
 			<slot />
 		</main>
 	</div>

@@ -42,16 +42,17 @@
 			<!-- Indicador offline -->
 			{#if !$estaOnline}
 				<div
-					class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-warning-50 border border-warning-200"
+					class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-warning-50 border border-warning-200"
 				>
 					<span
 						class="w-2 h-2 rounded-full bg-warning-400 animate-pulse"
 					></span>
-					<span class="text-xs font-medium text-warning-700"
+					<span
+						class="text-xs font-medium text-warning-700 hidden sm:inline"
 						>Sin conexión</span
 					>
 					{#if $ventasPendientes > 0}
-						<span class="text-xs text-warning-600"
+						<span class="text-xs text-warning-600 hidden sm:inline"
 							>· {$ventasPendientes} pendiente{$ventasPendientes >
 							1
 								? "s"
@@ -64,20 +65,22 @@
 			<!-- Estado turno -->
 			{#if $hayTurnoAbierto}
 				<div
-					class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary-50 border border-primary-200"
+					class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-primary-50 border border-primary-200"
 				>
 					<span class="w-2 h-2 rounded-full bg-primary-400"></span>
-					<span class="text-xs font-medium text-primary-700"
+					<span
+						class="text-xs font-medium text-primary-700 hidden sm:inline"
 						>Turno abierto</span
 					>
 				</div>
 			{:else}
 				<a
 					href="/turno"
-					class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-danger-50 border border-danger-200 hover:bg-danger-100 transition-colors"
+					class="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-danger-50 border border-danger-200 hover:bg-danger-100 transition-colors"
 				>
 					<span class="w-2 h-2 rounded-full bg-danger-400"></span>
-					<span class="text-xs font-medium text-danger-700"
+					<span
+						class="text-xs font-medium text-danger-700 hidden sm:inline"
 						>Abrir turno</span
 					>
 				</a>

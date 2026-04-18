@@ -9,17 +9,33 @@
 	}[] = [];
 
 	export let colapsado = false;
+	export let abierto = false;
 
 	$: rutaActual = $page.url.pathname;
 
 	function esActivo(ruta: string, href: string) {
 		return ruta === href || ruta.startsWith(href + "/");
 	}
+
+	// Cerrar sidebar mobile al navegar
+	$: if (rutaActual) abierto = false;
 </script>
 
+<!-- Backdrop mobile -->
+{#if abierto}
+	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+	<div
+		class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+		onclick={() => (abierto = false)}
+	></div>
+{/if}
+
 <aside
-	class="flex flex-col bg-gray-900 text-white transition-all duration-200 flex-shrink-0 h-full overflow-hidden
-         {colapsado ? 'w-sidebar-collapsed' : 'w-sidebar'}"
+	class="flex flex-col bg-gray-900 text-white transition-all duration-200 flex-shrink-0 h-full overflow-hidden z-50
+         fixed inset-y-0 left-0 md:static
+         {abierto ? 'w-sidebar translate-x-0' : '-translate-x-full'}
+         md:translate-x-0
+         {colapsado ? 'md:w-sidebar-collapsed' : 'md:w-sidebar'}"
 >
 	<!-- Logo -->
 	<div class="flex items-center gap-3 px-4 py-4 border-b border-gray-700/50">
@@ -87,12 +103,12 @@
 		{/each}
 	</nav>
 
-	<!-- Toggle colapsado -->
+	<!-- Toggle colapsado (desktop only) -->
 	<div class="px-2 py-3 border-t border-gray-700/50 space-y-1">
 		<slot name="footer" />
 		<button
 			onclick={() => (colapsado = !colapsado)}
-			class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors text-sm"
+			class="hidden md:flex w-full items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors text-sm"
 			title={colapsado ? "Expandir menú" : "Colapsar menú"}
 		>
 			<svg

@@ -80,10 +80,10 @@
 	</div>
 
 	<!-- ─── KPI Hero: Ventas hoy destacado ───────────────────────── -->
-	<div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+	<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
 		<!-- Card principal: ventas hoy -->
 		<div
-			class="lg:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 p-6 text-white"
+			class="md:col-span-2 relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 p-6 text-white"
 		>
 			<div class="relative z-10">
 				<div class="flex items-center gap-2 mb-4">
@@ -125,7 +125,7 @@
 		</div>
 
 		<!-- Sub-KPIs -->
-		<div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+		<div class="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
 			<!-- Ventas del mes -->
 			<div
 				class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between"
@@ -264,10 +264,10 @@
 	</div>
 
 	<!-- ─── Main grid: Chart + Stock alerts ──────────────────────── -->
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 		<!-- Gráfico de ventas -->
 		<div
-			class="lg:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
+			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
 		>
 			<div
 				class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"

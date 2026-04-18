@@ -19,7 +19,7 @@
 <header
 	class="h-topbar bg-white border-b border-gray-200 flex items-center px-4 gap-3 z-30 sticky top-0"
 >
-	<!-- Botón toggle sidebar (en layouts con sidebar) -->
+	<!-- Botón toggle sidebar -->
 	{#if mostrarMenuLateral}
 		<slot name="menu-toggle" />
 	{/if}

@@ -43,8 +43,12 @@
     </div>
 {:else}
     <!-- Tarjetas de métricas -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div
+        class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8"
+    >
+        <div
+            class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6"
+        >
             <div class="flex items-center gap-4">
                 <div
                     class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center"
@@ -217,8 +221,8 @@
                         <div
                             class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0"
                         >
-                            <div>
-                                <p class="font-medium text-gray-900">
+                            <div class="min-w-0 flex-1">
+                                <p class="font-medium text-gray-900 truncate">
                                     {tenant.nombre}
                                 </p>
                                 <p class="text-xs text-gray-500">
@@ -227,7 +231,9 @@
                                     )}
                                 </p>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div
+                                class="flex items-center gap-2 flex-shrink-0 ml-3"
+                            >
                                 <span class="text-xs text-gray-500"
                                     >{tenant.plan?.nombre ?? "Sin plan"}</span
                                 >
