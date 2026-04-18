@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Sidebar from "$components/layout/Sidebar.svelte";
 	import Topbar from "$components/layout/Topbar.svelte";
-	import { esAdmin } from "$stores/auth.store";
+	import { esAdmin, esSuperAdmin } from "$stores/auth.store";
 
 	let colapsado = false;
 
-	const nav = [
+	const baseNav = [
 		{
 			label: "Dashboard",
 			href: "/admin/dashboard",
@@ -41,12 +41,17 @@
 			href: "/admin/reportes",
 			icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
 		},
+	];
+
+	const superAdminNav = [
 		{
 			label: "Tenants",
 			href: "/admin/tenants",
 			icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
 		},
 	];
+
+	$: nav = $esSuperAdmin ? [...baseNav, ...superAdminNav] : baseNav;
 </script>
 
 <div class="h-screen flex overflow-hidden bg-gray-50">
