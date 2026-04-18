@@ -1,12 +1,9 @@
-import { browser } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import { goto } from '$app/navigation';
 import type { ApiError, ApiResponse } from '$types/index';
 
 // ─── Configuración ────────────────────────────────────────────
-
-const API_BASE = browser
-	? (import.meta.env.PUBLIC_API_URL ?? 'http://localhost:3000')
-	: (import.meta.env.API_URL ?? 'http://localhost:3000');
+const API_BASE = env.PUBLIC_API_URL ?? 'http://localhost:3000'
 
 // ─── Error tipado ─────────────────────────────────────────────
 
