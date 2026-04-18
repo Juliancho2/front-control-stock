@@ -225,9 +225,19 @@
 			</div>
 		</div>
 
-		<!-- Footer -->
-		<p class="text-center text-xs text-gray-400 mt-6">
-			Ferretería ERP v1.0 — Solo personal autorizado
+		<!-- Registro -->
+		<p class="text-center text-sm text-gray-500 mt-6">
+			¿No tienes cuenta?
+			<a
+				href="/registro"
+				class="font-medium text-primary-600 hover:text-primary-800"
+			>
+				Registra tu negocio gratis
+			</a>
+		</p>
+
+		<p class="text-center text-xs text-gray-400 mt-3">
+			Ferretería ERP v1.0
 		</p>
 	</div>
 </div>

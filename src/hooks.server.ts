@@ -2,10 +2,11 @@ import type { RolUsuario } from '$types/index';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 // Rutas que no necesitan autenticación
-const RUTAS_PUBLICAS = ['/login', '/health', '/api/refresh'];
+const RUTAS_PUBLICAS = ['/login', '/registro', '/health', '/api/refresh'];
 
 // Mapa de rol → ruta de inicio
 const INICIO_POR_ROL: Record<RolUsuario, string> = {
+    superadmin: '/superadmin/dashboard',
     cajero: '/pos',
     admin: '/seleccionar-panel',
     bodeguero: '/bodega/inventario'
@@ -54,15 +55,19 @@ export const handle: Handle = async ({ event, resolve }) => {
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
 
-    if (pathname.startsWith('/seleccionar-panel') && rol !== 'admin') {
+    if (pathname.startsWith('/superadmin') && rol !== 'superadmin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 
-    if (pathname.startsWith('/admin') && rol !== 'admin') {
+    if (pathname.startsWith('/seleccionar-panel') && rol !== 'admin' && rol !== 'superadmin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 
-    if (pathname.startsWith('/bodega') && !['admin', 'bodeguero'].includes(rol)) {
+    if (pathname.startsWith('/admin') && rol !== 'admin' && rol !== 'superadmin') {
+        throw redirect(303, INICIO_POR_ROL[rol]);
+    }
+
+    if (pathname.startsWith('/bodega') && !['admin', 'superadmin', 'bodeguero'].includes(rol)) {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 

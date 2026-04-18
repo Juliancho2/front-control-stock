@@ -6,6 +6,15 @@ export const tenantsApi = {
 
     obtener: (id: string, token?: string) => api.get<Tenant>(`/tenants/${id}`, { token }),
 
+    dashboard: (token?: string) => api.get<{
+        totalTenants: number;
+        tenantsActivos: number;
+        tenantsInactivos: number;
+        totalPlanes: number;
+        tenantsPorPlan: { plan: string; cantidad: number }[];
+        ultimosTenants: Tenant[];
+    }>('/tenants/dashboard', { token }),
+
     crear: (
         data: {
             nombre: string;
