@@ -1,9 +1,9 @@
-import { PUBLIC_API_URL } from '$env/static/public'
+import { env } from '$env/dynamic/public';
 import { goto } from '$app/navigation';
 import type { ApiError, ApiResponse } from '$types/index';
 
 // ─── Configuración ────────────────────────────────────────────
-const API_BASE = PUBLIC_API_URL ?? 'http://localhost:3000'
+const API_BASE = env.PUBLIC_API_URL ?? 'http://localhost:3000'
 
 // ─── Error tipado ─────────────────────────────────────────────
 
