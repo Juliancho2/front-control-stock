@@ -17,7 +17,6 @@
 
     export let data;
     const { accessToken } = data;
-    console.log(data);
 
     let cargando = true;
     let procesando = false;
@@ -223,7 +222,7 @@
                         cambio).
                     </p>
                     <Input
-                        label="Fondo de apertura (USD)"
+                        label="Fondo de apertura (COP)"
                         type="number"
                         bind:value={montoApertura}
                         error={errores.montoApertura}

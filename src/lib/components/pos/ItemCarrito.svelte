@@ -31,7 +31,7 @@
 </script>
 
 <div
-    class="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0 group"
+    class="flex items-start gap-3 mt-1 py-3 border-b bg-white p-4 rounded-lg border-primary-500 last:border-0 group"
 >
     <!-- Info producto -->
     <div class="flex-1 min-w-0">

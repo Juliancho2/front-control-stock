@@ -116,9 +116,7 @@
         <!-- ─── Panel izquierdo: buscador ─────────────────────────── -->
         <div class="pos-panel-left">
             <!-- Barra superior POS -->
-            <div
-                class="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white"
-            >
+            <div class="flex items-center justify-between px-4 py-2 bg-white">
                 <div class="flex items-center gap-2 text-sm text-gray-500">
                     {#if $turnoActivo}
                         <svg
@@ -209,7 +207,7 @@
         </div>
 
         <!-- ─── Panel derecho: carrito ────────────────────────────── -->
-        <div class="pos-panel-right flex flex-col">
+        <div class="pos-panel-right flex flex-col pt-16">
             <!-- Cabecera carrito -->
             <div
                 class="flex items-center justify-between px-4 py-3 border-b border-gray-200"
@@ -250,7 +248,7 @@
             </div>
 
             <!-- Items del carrito -->
-            <div class="flex-1 overflow-y-auto px-4">
+            <div class="flex-1 py-3 overflow-y-auto px-4">
                 {#if $carritoStore.length === 0}
                     <EmptyState
                         titulo="Carrito vacío"
