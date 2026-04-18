@@ -14,6 +14,18 @@ export type MetodoPago = 'efectivo' | 'tarjeta_debito' | 'tarjeta_credito' | 'tr
 export type EstadoTurno = 'abierto' | 'cerrado';
 export type EstadoOrdenCompra = 'borrador' | 'enviada' | 'parcial' | 'recibida' | 'anulada';
 export type TipoMovimiento = 'entrada' | 'salida' | 'ajuste_positivo' | 'ajuste_negativo' | 'traslado_entrada' | 'traslado_salida' | 'devolucion_compra' | 'devolucion_venta';
+// ─── Planes ───────────────────────────────────────────────────
+
+export interface Plan {
+	id: string;
+	nombre: string;
+	codigo: string;
+	precioMensual: number;
+	moneda: string;
+	activo: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
 
 // ─── Respuesta base de la API ─────────────────────────────────
 
@@ -127,6 +139,19 @@ export interface Bodega {
 	nombre: string;
 	ubicacion: string | null;
 	principal: boolean;
+	activo: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
+
+// ─── Tenants ──────────────────────────────────────────────────
+
+export interface Tenant {
+	id: string;
+	nombre: string;
+	slug: string;
+	plan: Plan | null;
+	planId: string | null;
 	activo: boolean;
 	createdAt: string;
 	updatedAt: string;
