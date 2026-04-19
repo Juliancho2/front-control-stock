@@ -202,7 +202,7 @@
     }));
 </script>
 
-<svelte:head><title>Órdenes de compra — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Órdenes de compra — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Órdenes de compra">
     <Button variant="primary" onclick={abrirCrear}>

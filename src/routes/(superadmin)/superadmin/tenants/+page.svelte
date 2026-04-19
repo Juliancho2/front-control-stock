@@ -186,7 +186,7 @@
         }));
 </script>
 
-<svelte:head><title>Tenants — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Tenants — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Tenants (Empresas)" />
 

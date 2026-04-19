@@ -139,7 +139,7 @@
     }
 </script>
 
-<svelte:head><title>Planes — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Planes — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Planes" descripcion="Gestión de planes de suscripción" />
 

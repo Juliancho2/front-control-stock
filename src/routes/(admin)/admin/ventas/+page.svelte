@@ -110,6 +110,7 @@
             if (usuarioId) filtros.usuarioId = usuarioId;
             const res = await ventasApi.listar(filtros, accessToken);
             ventas = res.data;
+            console.log(res);
             total = res.total;
         } catch {
             toastStore.error("Error al cargar ventas");
@@ -163,6 +164,7 @@
     async function verDetalle(v: Venta) {
         try {
             ventaDetalle = await ventasApi.obtener(v.id, accessToken);
+            console.log(ventaDetalle);
         } catch {
             ventaDetalle = v;
         }
@@ -182,7 +184,7 @@
         hasta !== fechaISO();
 </script>
 
-<svelte:head><title>Ventas — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Ventas — FerreControl</title></svelte:head>
 
 <!-- Header -->
 <div class="flex items-center justify-between mb-6">
@@ -728,7 +730,7 @@
                                     <p
                                         class="text-sm font-medium text-gray-800 truncate"
                                     >
-                                        {item.productoNombre ?? "Producto"}
+                                        {item.producto?.nombre ?? "Producto"}
                                     </p>
                                     <p class="text-xs text-gray-400">
                                         {item.cantidad} × {formatCurrency(

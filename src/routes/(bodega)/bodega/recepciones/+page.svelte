@@ -140,7 +140,7 @@
     };
 </script>
 
-<svelte:head><title>Recepciones — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Recepciones — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Recepciones de mercadería" />
 

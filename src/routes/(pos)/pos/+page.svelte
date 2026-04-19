@@ -75,6 +75,7 @@
                 cantidad: i.cantidad,
                 precioUnitario: i.precioUnitario,
                 descuento: i.descuento,
+                iva: i.iva,
             })),
         };
 

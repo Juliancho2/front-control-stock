@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
 import type { ItemCarrito, Producto } from '$types/index';
 
-const IVA = 0.12;
+const IVA_DEFAULT = 0.12;
 
 function crearCarritoStore() {
 	const { subscribe, set, update } = writable<ItemCarrito[]>([]);
@@ -29,6 +29,7 @@ function crearCarritoStore() {
 					precioUnitario: producto.precioVenta,
 					descuento: 0,
 					subtotal: cantidad * producto.precioVenta,
+					iva: producto.iva ?? IVA_DEFAULT * 100,
 				};
 
 				return [...items, nuevo];
@@ -79,8 +80,11 @@ export const descuentoCarrito = derived(
 );
 
 export const impuestoCarrito = derived(
-	subtotalCarrito,
-	$sub => Math.round($sub * IVA * 100) / 100,
+	carritoStore,
+	$items => $items.reduce((sum, i) => {
+		const tasa = (i.iva ?? IVA_DEFAULT * 100) / 100;
+		return sum + Math.round(i.subtotal * tasa * 100) / 100;
+	}, 0),
 );
 
 export const totalCarrito = derived(

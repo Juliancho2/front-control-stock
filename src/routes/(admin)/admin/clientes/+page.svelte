@@ -170,7 +170,7 @@
     ];
 </script>
 
-<svelte:head><title>Clientes — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Clientes — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Clientes">
     <Button variant="primary" onclick={abrirCrear}>

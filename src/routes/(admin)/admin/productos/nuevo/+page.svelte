@@ -36,7 +36,7 @@
     }
 </script>
 
-<svelte:head><title>Nuevo producto — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Nuevo producto — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Nuevo producto" />
 

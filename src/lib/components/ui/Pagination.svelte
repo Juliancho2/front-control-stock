@@ -28,6 +28,7 @@
     function ir(p: number) {
         const url = new URL($page.url);
         url.searchParams.set("page", String(p));
+        currentPage = p;
         goto(url.toString(), { replaceState: true });
     }
 </script>

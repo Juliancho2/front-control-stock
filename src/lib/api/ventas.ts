@@ -12,6 +12,7 @@ export interface CreateVentaPayload {
 		cantidad: number;
 		precioUnitario: number;
 		descuento?: number;
+		iva?: number;
 	}[];
 	pagos: {
 		metodo: MetodoPago;

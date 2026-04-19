@@ -58,7 +58,7 @@
 		</div>
 		{#if !colapsado}
 			<span class="text-sm font-semibold text-white truncate"
-				>Ferretería ERP</span
+				>FerreControl</span
 			>
 		{/if}
 	</div>

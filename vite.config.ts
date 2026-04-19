@@ -33,7 +33,7 @@ export default defineConfig({
     //     ],
     //   },
     //   manifest: {
-    //     name: 'Ferretería ERP',
+    //     name: 'FerreControl',
     //     short_name: 'Ferretería',
     //     description: 'Sistema de gestión para ferretería',
     //     theme_color: '#1D9E75',

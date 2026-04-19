@@ -2,7 +2,7 @@
 	import { enhance } from "$app/forms";
 	import { usuarioActual } from "../../stores/auth.store";
 
-	export let titulo = "Ferretería ERP";
+	export let titulo = "FerreControl";
 	export let mostrarMenuLateral = true;
 
 	let menuUsuarioAbierto = false;

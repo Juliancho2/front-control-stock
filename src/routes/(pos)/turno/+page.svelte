@@ -88,7 +88,7 @@
     }
 </script>
 
-<svelte:head><title>Turno de caja — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Turno de caja — FerreControl</title></svelte:head>
 
 <div class="h-full flex items-center justify-center p-6 bg-gray-100">
     <div class="w-full max-w-md">

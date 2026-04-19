@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>Iniciar sesión — Ferretería ERP</title>
+	<title>Iniciar sesión — FerreControl</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -49,7 +49,7 @@
 					/>
 				</svg>
 			</div>
-			<h1 class="text-2xl font-semibold text-gray-900">Ferretería ERP</h1>
+			<h1 class="text-2xl font-semibold text-gray-900">FerreControl</h1>
 			<p class="text-sm text-gray-500 mt-1">
 				Ingresa tus credenciales para continuar
 			</p>
@@ -236,8 +236,6 @@
 			</a>
 		</p>
 
-		<p class="text-center text-xs text-gray-400 mt-3">
-			Ferretería ERP v1.0
-		</p>
+		<p class="text-center text-xs text-gray-400 mt-3">FerreControl v1.0</p>
 	</div>
 </div>

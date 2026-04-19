@@ -106,6 +106,7 @@ export interface Producto {
 	stock?: StockBodega[];
 	createdAt: string;
 	updatedAt: string;
+	iva: number | null;
 }
 
 export interface StockBodega {
@@ -323,4 +324,5 @@ export interface ItemCarrito {
 	precioUnitario: number;
 	descuento: number;
 	subtotal: number;
+	iva: number;
 }

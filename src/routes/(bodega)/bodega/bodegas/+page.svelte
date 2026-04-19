@@ -109,7 +109,7 @@
     }
 </script>
 
-<svelte:head><title>Bodegas — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Bodegas — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Bodegas">
     <Button variant="primary" onclick={abrirCrear}>

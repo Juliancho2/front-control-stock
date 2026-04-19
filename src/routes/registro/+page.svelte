@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-    <title>Registrar negocio — Ferretería ERP</title>
+    <title>Registrar negocio — FerreControl</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">

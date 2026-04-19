@@ -140,7 +140,7 @@
     ];
 </script>
 
-<svelte:head><title>Categorías — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Categorías — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Categorías">
     <Button variant="primary" onclick={() => abrirCrear()}>

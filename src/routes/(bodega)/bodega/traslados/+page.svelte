@@ -148,7 +148,7 @@
     };
 </script>
 
-<svelte:head><title>Traslados — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Traslados — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Traslados entre bodegas">
     <Button variant="primary" onclick={abrirCrear}>

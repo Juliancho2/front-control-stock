@@ -25,6 +25,7 @@
     let stockMinimo = producto.stockMinimo ?? 5;
     let categoriaId = producto.categoriaId ?? "";
     let activo = producto.activo ?? true;
+    let iva = producto.iva ?? 0;
 
     let errores: Record<string, string> = {};
 
@@ -48,6 +49,7 @@
             precioCompra,
             precioVenta,
             precioMayorista: precioMayorista || null,
+            iva: iva || null,
             stockMinimo,
             categoriaId: categoriaId || null,
             activo,
@@ -64,6 +66,13 @@
         { value: "rollo", label: "Rollo" },
         { value: "par", label: "Par" },
         { value: "galón", label: "Galón" },
+    ];
+    $: opcionesIVA = [
+        { value: 0, label: "Sin IVA" },
+        { value: 5, label: "5%" },
+        { value: 10, label: "10%" },
+        { value: 15, label: "15%" },
+        { value: 21, label: "21%" },
     ];
 </script>
 
@@ -133,6 +142,12 @@
             bind:value={precioVenta}
             error={errores.precioVenta}
             required
+        />
+        <Select
+            label="IVA (%)"
+            options={opcionesIVA}
+            bind:value={iva}
+            placeholder="Sin IVA"
         />
         <Input
             label="Precio mayorista"

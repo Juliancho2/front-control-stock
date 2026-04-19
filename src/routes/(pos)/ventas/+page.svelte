@@ -53,7 +53,12 @@
         if (!ventaAnular || !motivoAnulacion.trim()) return;
         anulando = true;
         try {
-            await ventasApi.anular(ventaAnular.id, motivoAnulacion, true, accessToken);
+            await ventasApi.anular(
+                ventaAnular.id,
+                motivoAnulacion,
+                true,
+                accessToken,
+            );
             toastStore.exito("Venta anulada correctamente");
             ventaAnular = null;
             motivoAnulacion = "";
@@ -66,7 +71,7 @@
     }
 </script>
 
-<svelte:head><title>Ventas del turno — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Ventas del turno — FerreControl</title></svelte:head>
 
 <div class="p-4 h-full flex flex-col overflow-hidden">
     <PageHeader titulo="Ventas del turno">

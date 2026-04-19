@@ -100,7 +100,7 @@
             : 1;
 </script>
 
-<svelte:head><title>Reportes — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Reportes — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Reportes" />
 

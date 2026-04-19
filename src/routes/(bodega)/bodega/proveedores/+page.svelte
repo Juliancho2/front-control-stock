@@ -150,7 +150,7 @@
     }
 </script>
 
-<svelte:head><title>Proveedores — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Proveedores — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Proveedores">
     <Button variant="primary" onclick={abrirCrear}>

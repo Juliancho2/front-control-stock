@@ -2,7 +2,7 @@
     export let data: { usuario: { nombre: string } };
 </script>
 
-<svelte:head><title>Seleccionar Panel — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Seleccionar Panel — FerreControl</title></svelte:head>
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div class="w-full max-w-xl">

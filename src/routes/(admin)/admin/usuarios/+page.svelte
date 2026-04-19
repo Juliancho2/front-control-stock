@@ -212,7 +212,7 @@
     ];
 </script>
 
-<svelte:head><title>Usuarios — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Usuarios — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Usuarios" />
 

@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-	<title>Error {$page.status} — Ferretería ERP</title>
+	<title>Error {$page.status} — FerreControl</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">

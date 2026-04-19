@@ -41,6 +41,7 @@
             if (categoriaId) filtros.categoriaId = categoriaId;
             if (soloStockBajo) filtros.stockBajo = true;
             const res = await productosApi.listar(filtros, accessToken);
+
             productos = res.data;
             total = res.total;
         } catch {
@@ -93,9 +94,13 @@
     }
 
     $: opcionesCat = categorias.map((c) => ({ value: c.id, label: c.nombre }));
+
+    $: if (pagina) {
+        cargar();
+    }
 </script>
 
-<svelte:head><title>Productos — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Productos — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Productos">
     <Button variant="primary" href="/admin/productos/nuevo">

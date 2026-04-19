@@ -50,7 +50,7 @@
     }
 </script>
 
-<svelte:head><title>Editar producto — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Editar producto — FerreControl</title></svelte:head>
 
 <PageHeader titulo="Editar producto" />
 

@@ -66,7 +66,7 @@
 	}
 </script>
 
-<svelte:head><title>Dashboard — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Dashboard — FerreControl</title></svelte:head>
 
 {#if cargando}
 	<div class="flex items-center justify-center py-20">

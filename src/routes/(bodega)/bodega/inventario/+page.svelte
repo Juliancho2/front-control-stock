@@ -243,7 +243,7 @@
     };
 </script>
 
-<svelte:head><title>Inventario — Ferretería ERP</title></svelte:head>
+<svelte:head><title>Inventario — FerreControl</title></svelte:head>
 
 <div class="flex items-center justify-between mb-4">
     <PageHeader titulo="Inventario" />
