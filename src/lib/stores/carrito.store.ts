@@ -1,10 +1,29 @@
 import { writable, derived } from 'svelte/store';
 import type { ItemCarrito, Producto } from '$types/index';
+import { browser } from '$app/environment';
 
 const IVA_DEFAULT = 0.12;
+const STORAGE_KEY = 'carrito_items';
 
 function crearCarritoStore() {
-	const { subscribe, set, update } = writable<ItemCarrito[]>([]);
+	let initialValue: ItemCarrito[] = [];
+	
+	if (browser) {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (stored) initialValue = JSON.parse(stored);
+		} catch (error) {
+			console.error('Error al cargar el carrito desde localStorage:', error);
+		}
+	}
+
+	const { subscribe, set, update } = writable<ItemCarrito[]>(initialValue);
+
+	if (browser) {
+		subscribe((value) => {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+		});
+	}
 
 	return {
 		subscribe,

@@ -29,7 +29,6 @@
     onMount(async () => {
         try {
             const t = await cajaApi.turnoActivo(accessToken);
-            console.log(t);
             turnoStore.inicializar(t);
         } catch {
             turnoStore.inicializar(null);
@@ -46,7 +45,6 @@
         }
         procesando = true;
         try {
-            console.log(accessToken);
             const t = await cajaApi.abrir(
                 montoApertura,
                 observaciones || undefined,
@@ -77,7 +75,10 @@
                 observaciones || undefined,
                 accessToken,
             );
-            cuadre = res;
+            cuadre = {
+                turno: res,
+                diferencia: res.diferencia,
+            };
             turnoStore.cerrar();
             toastStore.exito("Turno cerrado. Revisa el cuadre.");
         } catch (e: any) {
@@ -163,20 +164,22 @@
                         <div class="flex justify-between text-sm">
                             <span class="text-primary-700">Cajero</span>
                             <span class="font-medium text-primary-900"
-                                >{$turnoActivo.usuarioNombre}</span
+                                >{$turnoActivo?.usuario?.nombre}</span
                             >
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-primary-700">Apertura</span>
                             <span class="font-medium text-primary-900"
-                                >{formatFechaHora($turnoActivo.abiertoEn)}</span
+                                >{formatFechaHora(
+                                    $turnoActivo?.abiertoEn,
+                                )}</span
                             >
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-primary-700">Total ventas</span>
                             <span class="font-semibold text-primary-900"
                                 >{formatCurrency(
-                                    $turnoActivo.totalVentas,
+                                    $turnoActivo?.totalVentas,
                                 )}</span
                             >
                         </div>

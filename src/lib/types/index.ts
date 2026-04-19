@@ -217,7 +217,7 @@ export interface Cliente {
 export interface TurnoCaja {
 	id: string;
 	usuarioId: string;
-	usuarioNombre: string;
+	usuario: Pick<Usuario, 'id' | 'nombre'>;
 	montoApertura: number;
 	montoCierre: number | null;
 	totalVentas: number;
