@@ -33,11 +33,12 @@
 <div
     class="flex items-start gap-3 mt-1 py-3 border-b bg-white p-4 rounded-lg border-primary-500 last:border-0 group"
 >
-    <!-- Info producto -->
+    <!-- Info Producto -->
     <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 truncate">{item.nombre}</p>
         <p class="text-xs text-gray-400 mt-0.5">
-            {item.sku} · ${Number(item.precioUnitario).toFixed(2)} c/u
+            {item.sku} · ${Number(item.precioUnitario).toFixed(2)} / {item.unidadMedida}
+            · IVA: {item.iva ?? 12}%
         </p>
     </div>
 

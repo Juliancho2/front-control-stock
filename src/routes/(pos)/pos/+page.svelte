@@ -276,7 +276,7 @@
                         <span>{formatCurrency($subtotalCarrito)}</span>
                     </div>
                     <div class="flex justify-between text-sm text-gray-500">
-                        <span>IVA 12%</span>
+                        <span>IVA total</span>
                         <span>{formatCurrency($impuestoCarrito)}</span>
                     </div>
                     <div

@@ -30,6 +30,7 @@ function crearCarritoStore() {
 					descuento: 0,
 					subtotal: cantidad * producto.precioVenta,
 					iva: producto.iva ?? IVA_DEFAULT * 100,
+					unidadMedida: producto.unidadMedida
 				};
 
 				return [...items, nuevo];

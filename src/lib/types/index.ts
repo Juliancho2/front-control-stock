@@ -323,6 +323,7 @@ export interface ItemCarrito {
 	cantidad: number;
 	precioUnitario: number;
 	descuento: number;
+	unidadMedida: string;
 	subtotal: number;
 	iva: number;
 }
