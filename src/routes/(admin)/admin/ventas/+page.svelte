@@ -110,7 +110,6 @@
             if (usuarioId) filtros.usuarioId = usuarioId;
             const res = await ventasApi.listar(filtros, accessToken);
             ventas = res.data;
-            console.log(res);
             total = res.total;
         } catch {
             toastStore.error("Error al cargar ventas");

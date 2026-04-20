@@ -13,6 +13,7 @@
 		"input",
 		error ? "input-error" : "",
 		$$slots.icon ? "pl-9" : "",
+		$$slots.suffix ? "pr-10" : "",
 	].join(" ");
 </script>
 
