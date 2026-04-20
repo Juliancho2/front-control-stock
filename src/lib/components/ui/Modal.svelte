@@ -45,7 +45,7 @@
         <div
             class="w-full {sizes[
                 size
-            ]} bg-white rounded-2xl shadow-xl pointer-events-auto"
+            ]} max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-xl pointer-events-auto"
             transition:fly={{ y: 16, duration: 200 }}
             role="dialog"
             aria-modal="true"

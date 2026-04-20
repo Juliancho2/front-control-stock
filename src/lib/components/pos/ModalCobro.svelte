@@ -223,7 +223,7 @@
         {#if formaPago === "mixto"}
             <div class="space-y-3">
                 {#each pagosMixto as pago, idx}
-                    <div class="flex items-end gap-2 p-3 bg-gray-50 rounded-lg">
+                    <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto] gap-2 p-3 bg-gray-50 rounded-lg items-end">
                         <div class="flex-1">
                             <Select
                                 label="Método"
@@ -231,7 +231,7 @@
                                 bind:value={pago.metodo}
                             />
                         </div>
-                        <div class="w-28">
+                        <div class="w-full sm:w-28">
                             <Input
                                 label="Monto"
                                 type="number"

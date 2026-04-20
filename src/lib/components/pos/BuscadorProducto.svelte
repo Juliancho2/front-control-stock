@@ -146,7 +146,7 @@
     <!-- Resultados dropdown -->
     {#if mostrarResultados && resultados.length > 0}
         <div
-            class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden"
+            class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-y-auto max-h-[60vh]"
         >
             {#each resultados as producto}
                 <button

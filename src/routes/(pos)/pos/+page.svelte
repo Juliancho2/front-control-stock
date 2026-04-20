@@ -28,6 +28,7 @@
     let modalCobroAbierto = false;
     let procesandoVenta = false;
     let cargandoTurno = true;
+    let vistaMovil: "productos" | "carrito" = "productos";
 
     export let data;
 
@@ -49,6 +50,7 @@
     function agregarProducto(e: CustomEvent<Producto>) {
         carritoStore.agregar(e.detail);
         toastStore.exito(`${e.detail.nombre} agregado`, 1500);
+        if (window.innerWidth < 768) vistaMovil = 'carrito';
     }
 
     async function procesarVenta(
@@ -115,9 +117,9 @@
 {:else}
     <div class="pos-screen">
         <!-- ─── Panel izquierdo: buscador ─────────────────────────── -->
-        <div class="pos-panel-left">
+        <div class="pos-panel-left flex-col pb-14 md:pb-0 {vistaMovil === 'productos' ? 'flex' : 'hidden md:flex'}">
             <!-- Barra superior POS -->
-            <div class="flex items-center justify-between px-4 py-2 bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-white">
                 <div class="flex items-center gap-2 text-sm text-gray-500">
                     {#if $turnoActivo}
                         <svg
@@ -208,7 +210,7 @@
         </div>
 
         <!-- ─── Panel derecho: carrito ────────────────────────────── -->
-        <div class="pos-panel-right flex flex-col pt-16">
+        <div class="pos-panel-right flex-col pt-16 pb-14 md:pb-0 {vistaMovil === 'carrito' ? 'flex' : 'hidden md:flex'}">
             <!-- Cabecera carrito -->
             <div
                 class="flex items-center justify-between px-4 py-3 border-b border-gray-200"
@@ -320,6 +322,39 @@
                     </p>
                 {/if}
             </div>
+        </div>
+
+        <!-- Tab bar móvil -->
+        <div class="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-gray-200 bg-white">
+            <button
+                onclick={() => (vistaMovil = 'productos')}
+                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors"
+                class:text-primary-600={vistaMovil === 'productos'}
+                class:bg-primary-50={vistaMovil === 'productos'}
+                class:text-gray-500={vistaMovil !== 'productos'}
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Productos
+            </button>
+            <button
+                onclick={() => (vistaMovil = 'carrito')}
+                class="flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors relative"
+                class:text-primary-600={vistaMovil === 'carrito'}
+                class:bg-primary-50={vistaMovil === 'carrito'}
+                class:text-gray-500={vistaMovil !== 'carrito'}
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Carrito
+                {#if $cantidadItemsCarrito > 0}
+                    <span class="absolute top-2 right-1/4 w-5 h-5 bg-primary-400 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                        {$cantidadItemsCarrito}
+                    </span>
+                {/if}
+            </button>
         </div>
     </div>
 
