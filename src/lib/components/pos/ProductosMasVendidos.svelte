@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
     import Spinner from "$components/ui/Spinner.svelte";
     import { productosApi } from "$api/productos";
-    import { toastStore } from "$stores/toast.store";
     import type { Producto } from "$types/index";
     import { formatCurrency } from "$utils/index";
 
@@ -18,7 +17,7 @@
                 {
                     activo: true,
                     limit: 8,
-                    orden: "-ventas", // descendente por ventas
+                    orden: "creado_desc", // más recientes primero
                 },
                 token,
             );
@@ -75,7 +74,7 @@
                     />
                 </svg>
                 <span class="text-xs font-medium text-gray-500">
-                    Más vendidos
+                    Acceso rápido
                 </span>
             </div>
 
