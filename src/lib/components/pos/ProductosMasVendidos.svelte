@@ -84,54 +84,63 @@
                 {#each productos as producto (producto.id)}
                     <button
                         onclick={() => agregarProducto(producto)}
-                        class="flex flex-col items-start p-2 md:p-3 rounded-lg border border-gray-100 bg-white hover:bg-primary-50 hover:border-primary-200 transition-all group cursor-pointer"
+                        class="flex flex-col p-2 rounded-lg border border-gray-200 bg-white
+           hover:border-primary-300 hover:border-primary-200 active:scale-[0.98]
+           active:bg-primary-50 transition-all group text-left"
                     >
-                        <!-- Imagen -->
-                        <div
-                            class="w-full aspect-square rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden mb-2"
-                        >
-                            {#if producto.imagenUrl}
-                                <img
-                                    src={producto.imagenUrl}
-                                    alt={producto.nombre}
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                />
-                            {:else}
-                                <svg
-                                    class="w-8 h-8 text-gray-300"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="1.5"
-                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        <!-- Header: imagen pequeña + info -->
+                        <div class="flex items-center gap-2 mb-1">
+                            <!-- Imagen pequeña -->
+                            <div
+                                class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden shrink-0"
+                            >
+                                {#if producto.imagenUrl}
+                                    <img
+                                        src={producto.imagenUrl}
+                                        alt={producto.nombre}
+                                        class="w-full h-full object-cover"
                                     />
-                                </svg>
-                            {/if}
+                                {:else}
+                                    <svg
+                                        class="w-4 h-4 text-gray-300"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="1.5"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                                        />
+                                    </svg>
+                                {/if}
+                            </div>
+
+                            <!-- Nombre + SKU -->
+                            <div class="min-w-0">
+                                <p
+                                    class="text-sm font-semibold text-gray-900 leading-tight truncate"
+                                >
+                                    {producto.nombre}
+                                </p>
+                                <p class="text-[11px] text-gray-400 truncate">
+                                    {producto.sku}
+                                </p>
+                            </div>
                         </div>
 
-                        <!-- Info -->
-                        <div class="w-full min-w-0 flex-1">
-                            <p
-                                class="text-xs md:text-sm font-medium text-gray-900 truncate line-clamp-2"
-                            >
-                                {producto.nombre}
-                            </p>
-                            <p class="text-xs text-gray-400 truncate mt-0.5">
-                                {producto.sku}
-                            </p>
-                        </div>
-
-                        <!-- Precio -->
-                        <div class="w-full mt-2 pt-2 border-t border-gray-100">
-                            <p
-                                class="text-xs md:text-sm font-bold text-primary-600"
-                            >
+                        <!-- Precio + acción -->
+                        <div class="flex items-center justify-between mt-1">
+                            <p class="text-base font-bold text-primary-600">
                                 {formatCurrency(producto.precioVenta)}
                             </p>
+
+                            <span
+                                class="text-[10px] text-primary-500 opacity-0 group-hover:opacity-100 transition"
+                            >
+                                + Agregar
+                            </span>
                         </div>
                     </button>
                 {/each}

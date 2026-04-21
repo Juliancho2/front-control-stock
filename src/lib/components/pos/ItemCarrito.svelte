@@ -3,6 +3,7 @@
     import { carritoStore } from "$stores/carrito.store";
     import { formatCurrency } from "$utils/index";
     import type { ItemCarrito } from "$types/index";
+    import Badge from "$components/ui/Badge.svelte";
 
     export let item: ItemCarrito;
 
@@ -36,10 +37,11 @@
     <!-- Info Producto -->
     <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 truncate">{item.nombre}</p>
-        <p class="text-xs text-gray-400 mt-0.5">
-            {item.sku} · ${Number(item.precioUnitario).toFixed(2)} / {item.unidadMedida}
-            · IVA: {item.iva ?? 12}%
+        <p class="text-xs text-gray-500 my-0.5 font-semibold">
+            ${Number(item.precioUnitario).toFixed(2)}
+            {item.unidadMedida}
         </p>
+        <Badge variant="gray">IVA: {item.iva ?? 12}%</Badge>
     </div>
 
     <!-- Controles cantidad -->

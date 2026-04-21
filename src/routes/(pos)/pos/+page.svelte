@@ -1,12 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import BuscadorProducto from "$components/pos/BuscadorProducto.svelte";
-    import ProductosMasVendidos from "$components/pos/ProductosMasVendidos.svelte";
     import ItemCarrito from "$components/pos/ItemCarrito.svelte";
     import ModalCobro from "$components/pos/ModalCobro.svelte";
+    import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import Button from "$components/ui/Button.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
     import Spinner from "$components/ui/Spinner.svelte";
+    import ProductosMasVendidos from "$components/pos/ProductosMasVendidos.svelte";
     import {
         carritoStore,
         subtotalCarrito,
@@ -27,6 +28,7 @@
     import { goto } from "$app/navigation";
 
     let modalCobroAbierto = false;
+    let modalLimpiarAbierto = false;
     let procesandoVenta = false;
     let cargandoTurno = true;
     let vistaMovil: "productos" | "carrito" = "productos";
@@ -238,8 +240,8 @@
                 </div>
                 {#if $carritoStore.length > 0}
                     <button
-                        onclick={() => carritoStore.limpiar()}
-                        class="text-xs text-gray-400 hover:text-danger-500 transition-colors"
+                        onclick={() => (modalLimpiarAbierto = true)}
+                        class="text-xs text-red-600 font-semibold hover:text-danger-500 transition-colors"
                     >
                         Limpiar
                     </button>
@@ -269,16 +271,16 @@
                 <div
                     class="border-t border-gray-200 px-4 py-3 bg-white space-y-1"
                 >
-                    <div class="flex justify-between text-sm text-gray-500">
+                    <div class="flex justify-between text-xs text-gray-500">
                         <span>Subtotal</span>
                         <span>{formatCurrency($subtotalCarrito)}</span>
                     </div>
-                    <div class="flex justify-between text-sm text-gray-500">
+                    <div class="flex justify-between text-xs text-gray-500">
                         <span>IVA total</span>
                         <span>{formatCurrency($impuestoCarrito)}</span>
                     </div>
                     <div
-                        class="flex justify-between text-lg font-bold text-gray-900 pt-1 border-t border-gray-100"
+                        class="flex justify-between text-2xl font-bold text-gray-900 pt-3 border-t border-gray-100"
                     >
                         <span>Total</span>
                         <span>{formatCurrency($totalCarrito)}</span>
@@ -289,13 +291,14 @@
             <!-- Botón cobrar -->
             <div class="p-4">
                 <Button
+                    size="lg"
                     variant="primary"
                     fullWidth
                     disabled={$carritoStore.length === 0 || !$hayTurnoAbierto}
                     onclick={() => (modalCobroAbierto = true)}
                 >
                     <svg
-                        class="w-5 h-5"
+                        class="w-9 h-9"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -384,5 +387,16 @@
         total={$totalCarrito}
         procesando={procesandoVenta}
         on:confirmar={procesarVenta}
+    />
+
+    <ConfirmDialog
+        bind:open={modalLimpiarAbierto}
+        titulo="¿Vaciar carrito?"
+        mensaje="Se eliminarán todos los productos agregados."
+        labelConfirmar="Vaciar"
+        on:confirmar={() => {
+            carritoStore.limpiar();
+            modalLimpiarAbierto = false;
+        }}
     />
 {/if}
