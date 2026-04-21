@@ -61,7 +61,7 @@
             precioCompra,
             precioVenta,
             precioMayorista: precioMayorista || null,
-            iva: iva || null,
+            iva,
             stockMinimo,
             categoriaId: categoriaId || null,
             activo,
@@ -136,7 +136,9 @@
     </div>
 
     <div>
-        <label for="descripcion" class="text-sm font-medium text-gray-700 mb-1 block"
+        <label
+            for="descripcion"
+            class="text-sm font-medium text-gray-700 mb-1 block"
             >Descripción</label
         >
         <textarea

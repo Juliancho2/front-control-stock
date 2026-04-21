@@ -50,7 +50,7 @@
                 },
                 token,
             );
-            console.log(res);
+
             resultados = res.data;
             mostrarResultados = true;
         } catch {
