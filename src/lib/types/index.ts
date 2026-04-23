@@ -327,3 +327,21 @@ export interface ItemCarrito {
 	subtotal: number;
 	iva: number;
 }
+
+// ─── Notificaciones ───────────────────────────────────────────
+
+export type TipoNotificacion = 'stock_bajo' | 'sin_stock' | 'venta_exitosa' | 'error_stock' | 'venta_nueva';
+
+export interface Notificacion {
+	id: string;
+	tenantId: string;
+	titulo: string;
+	mensaje: string;
+	tipo: TipoNotificacion;
+	leida: boolean;
+	rolesDestino: RolUsuario[] | null;
+	usuarioId: string | null;
+	referenciaId: string | null;
+	createdAt: string;
+	updatedAt: string;
+}

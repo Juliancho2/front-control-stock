@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import { usuarioActual } from "../../stores/auth.store";
+	import NotificationBell from "./NotificationBell.svelte";
 
 	export let titulo = "FerreControl";
 	export let mostrarMenuLateral = true;
@@ -35,6 +36,11 @@
 
 	<!-- Acciones adicionales -->
 	<slot name="acciones" />
+
+	<!-- Notificaciones -->
+	{#if $usuarioActual}
+		<NotificationBell />
+	{/if}
 
 	<!-- Menú de usuario -->
 	{#if $usuarioActual}
