@@ -232,7 +232,7 @@
 
 <!-- KPI Cards -->
 {#if !cargando && ventas.length > 0}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-3 mb-6">
         <div
             class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 p-4 text-white"
         >
@@ -429,7 +429,7 @@
     />
 {:else}
     <!-- Tabla de ventas -->
-    <div class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden">
+    <div class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-gray-100">

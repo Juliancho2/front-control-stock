@@ -5,8 +5,6 @@
     import Spinner from "$components/ui/Spinner.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
     import Pagination from "$components/ui/Pagination.svelte";
-    //   import ConfirmDialog from '$components/ui/Confirmdialog.svelte';
-    //   import Input         from '$components/ui/Input.svelte';
     import Button from "$components/ui/Button.svelte";
     import { ventasApi } from "./../../../lib/api/ventas";
     import { turnoActivo, toastStore } from "../../../lib/index";
