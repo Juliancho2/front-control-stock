@@ -50,6 +50,7 @@
     let ordenAnular: OrdenCompra | null = null;
     let motivoAnulacion = "";
     let anulando = false;
+    let enviandoId: string | null = null;
 
     const estadoColor: Record<
         string,
@@ -195,6 +196,19 @@
         }
     }
 
+    async function enviarOrden(orden: OrdenCompra) {
+        enviandoId = orden.id;
+        try {
+            await comprasApi.ordenes.enviar(orden.id, accessToken);
+            toastStore.exito(`Orden ${orden.numero} enviada`);
+            cargar();
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al enviar orden");
+        } finally {
+            enviandoId = null;
+        }
+    }
+
     $: totalOC = items.reduce((s, i) => s + i.cantidad * i.precioUnitario, 0);
     $: opcionesProv = proveedores.map((p) => ({
         value: p.id,
@@ -287,7 +301,7 @@
                         <td class="font-mono text-xs font-semibold"
                             >{o.numero}</td
                         >
-                        <td>{o.proveedorNombre}</td>
+                        <td>{o.proveedor?.nombre}</td>
                         <td class="text-center">{o.items?.length ?? 0}</td>
                         <td class="text-right font-semibold"
                             >{formatCurrency(o.total)}</td
@@ -308,6 +322,17 @@
                         >
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
+                                {#if o.estado === "borrador"}
+                                    <button
+                                        onclick={() => enviarOrden(o)}
+                                        disabled={enviandoId === o.id}
+                                        class="text-xs text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {enviandoId === o.id
+                                            ? "Enviando..."
+                                            : "Enviar"}
+                                    </button>
+                                {/if}
                                 {#if o.estado === "enviada" || o.estado === "parcial"}
                                     <a
                                         href="/bodega/recepciones?ordenId={o.id}"

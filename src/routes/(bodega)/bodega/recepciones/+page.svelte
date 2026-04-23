@@ -78,16 +78,18 @@
 
     function abrirRecepcion(orden: OrdenCompra) {
         ordenSeleccionada = orden;
+
         observaciones = "";
         itemsRecepcion = (orden.items ?? [])
-            .filter((i: OrdenCompraItem) => i.cantidadPendiente > 0)
+            .filter((i: OrdenCompraItem) => i.cantidad > 0)
             .map((i: OrdenCompraItem) => ({
                 ordenItemId: i.id,
-                cantidadRecibida: i.cantidadPendiente,
-                cantidadPendiente: i.cantidadPendiente,
-                productoNombre: i.productoNombre,
-                productoSku: i.productoSku,
+                cantidadRecibida: i.cantidad ?? 0,
+                cantidadPendiente: i.cantidad,
+                productoNombre: i?.producto?.nombre,
+                productoSku: i?.producto?.sku,
             }));
+
         modalRecepcion = true;
     }
 
@@ -114,7 +116,7 @@
                 ordenSeleccionada.id,
                 {
                     items: itemsValidos.map((i) => ({
-                        ordenItemId: i.ordenItemId,
+                        itemId: i.ordenItemId,
                         cantidadRecibida: i.cantidadRecibida,
                     })),
                     observaciones: observaciones || undefined,
@@ -203,7 +205,7 @@
             <div class="flex items-center gap-3 text-sm text-gray-600">
                 <span
                     >Proveedor: <strong
-                        >{ordenSeleccionada.proveedorNombre}</strong
+                        >{ordenSeleccionada?.proveedor?.nombre}</strong
                     ></span
                 >
                 <span>•</span>
@@ -228,10 +230,10 @@
                             <tr>
                                 <td>
                                     <p class="font-medium">
-                                        {item.productoNombre}
+                                        {item?.productoNombre}
                                     </p>
                                     <p class="text-xs text-gray-400">
-                                        {item.productoSku}
+                                        {item?.productoSku}
                                     </p>
                                 </td>
                                 <td class="text-center">
@@ -243,7 +245,7 @@
                                     <input
                                         type="number"
                                         min="0"
-                                        max={item.cantidadPendiente}
+                                        max={item?.cantidadPendiente}
                                         bind:value={item.cantidadRecibida}
                                         class="input py-1 px-2 text-center w-20 mx-auto block"
                                     />

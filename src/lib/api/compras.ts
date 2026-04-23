@@ -15,8 +15,10 @@ export const comprasApi = {
 			bodegaId?: string;
 			observaciones?: string;
 		}, token?: string) => api.post<OrdenCompra>('/compras', data, { token }),
+		enviar: (id: string, token?: string) =>
+			api.patch<OrdenCompra>(`/compras/${id}/enviar`, {}, { token }),
 		recibir: (id: string, data: {
-			items: { ordenItemId: string; cantidadRecibida: number }[];
+			items: { itemId: string; cantidadRecibida: number }[];
 			observaciones?: string;
 		}, token?: string) => api.patch<OrdenCompra>(`/compras/${id}/recibir`, data, { token }),
 		anular: (id: string, motivo: string, token?: string) =>
