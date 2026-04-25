@@ -89,7 +89,7 @@
 	{#if abierto}
 		<!-- Dropdown -->
 		<div
-			class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 origin-top-right"
+			class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 origin-top-right translate-x-12 sm:translate-x-0"
 			transition:slide={{ duration: 200 }}
 		>
 			<div

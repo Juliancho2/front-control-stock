@@ -252,7 +252,7 @@
 
 <!-- Resumen KPIs -->
 {#if resumen}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-1 mb-6">
         <div class="card">
             <div class="card-body py-3 text-center">
                 <p class="text-xs text-gray-500">Total productos</p>
@@ -278,7 +278,7 @@
         <div class="card">
             <div class="card-body py-3 text-center">
                 <p class="text-xs text-gray-500">Valor inventario</p>
-                <p class="text-xl font-bold">
+                <p class="text-lg sm:text-xl font-bold">
                     {formatCurrency(resumen.valorTotalInventario)}
                 </p>
             </div>
