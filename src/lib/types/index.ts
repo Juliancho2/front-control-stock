@@ -275,11 +275,15 @@ export interface Venta {
 export interface OrdenCompraItem {
 	id: string;
 	productoId: string;
-	productoNombre: string;
-	productoSku: string;
+	productoNombre?: string;
+	productoSku?: string;
+	producto?: {
+		nombre: string;
+		sku: string;
+	};
 	cantidad: number;
 	cantidadRecibida: number;
-	cantidadPendiente: number;
+	cantidadPendiente?: number;
 	precioUnitario: number;
 	subtotal: number;
 }
@@ -288,9 +292,13 @@ export interface OrdenCompra {
 	id: string;
 	numero: string;
 	proveedorId: string;
-	proveedorNombre: string;
+	proveedorNombre?: string;
+	proveedor?: {
+		nombre: string;
+		ruc: string | null;
+	};
 	usuarioId: string;
-	usuarioNombre: string;
+	usuarioNombre?: string;
 	total: number;
 	estado: EstadoOrdenCompra;
 	fechaEntrega: string | null;

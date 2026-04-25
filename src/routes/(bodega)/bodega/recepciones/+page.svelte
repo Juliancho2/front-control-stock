@@ -8,6 +8,8 @@
     import Button from "$components/ui/Button.svelte";
     import Modal from "$components/ui/Modal.svelte";
     import Input from "$components/ui/Input.svelte";
+    import Pagination from "$components/ui/Pagination.svelte";
+    import SearchInput from "$components/ui/SearchInput.svelte";
     import { comprasApi } from "$api/compras";
     import { toastStore } from "$stores/toast.store";
     import { formatCurrency, formatFechaHora } from "$utils/index";
@@ -18,6 +20,10 @@
 
     let ordenesPendientes: OrdenCompra[] = [];
     let cargando = true;
+    let total = 0;
+    let pagina = 1;
+    let busqueda = "";
+
     let ordenSeleccionada: OrdenCompra | null = null;
     let modalRecepcion = false;
     let recibiendo = false;
@@ -36,19 +42,20 @@
     async function cargar() {
         cargando = true;
         try {
-            const res = await comprasApi.ordenes.listar(
-                { estado: "enviada", limit: "50" },
-                accessToken,
-            );
-            const res2 = await comprasApi.ordenes.listar(
-                { estado: "parcial", limit: "50" },
-                accessToken,
-            );
-            ordenesPendientes = [...res.data, ...res2.data];
+            const filtros: Record<string, string> = {
+                estado: "enviada,parcial",
+                page: String(pagina),
+                limit: "12",
+            };
+            if (busqueda) filtros.q = busqueda;
+
+            const res = await comprasApi.ordenes.listar(filtros, accessToken);
+            ordenesPendientes = res.data;
+            total = res.total;
 
             // Si viene un ordenId en query params, abrirla directamente
             const ordenId = $page.url.searchParams.get("ordenId");
-            if (ordenId) {
+            if (ordenId && pagina === 1 && !busqueda) {
                 const orden = ordenesPendientes.find((o) => o.id === ordenId);
                 if (orden) abrirRecepcion(orden);
                 else {
@@ -81,14 +88,17 @@
 
         observaciones = "";
         itemsRecepcion = (orden.items ?? [])
-            .filter((i: OrdenCompraItem) => i.cantidad > 0)
-            .map((i: OrdenCompraItem) => ({
-                ordenItemId: i.id,
-                cantidadRecibida: i.cantidad ?? 0,
-                cantidadPendiente: i.cantidad,
-                productoNombre: i?.producto?.nombre,
-                productoSku: i?.producto?.sku,
-            }));
+            .map((i: OrdenCompraItem) => {
+                const pendiente = i.cantidad - (i.cantidadRecibida ?? 0);
+                return {
+                    ordenItemId: i.id,
+                    cantidadRecibida: pendiente,
+                    cantidadPendiente: pendiente,
+                    productoNombre: i.producto?.nombre ?? (i.productoNombre || ""),
+                    productoSku: i.producto?.sku ?? (i.productoSku || ""),
+                };
+            })
+            .filter((i) => i.cantidadPendiente > 0);
 
         modalRecepcion = true;
     }
@@ -146,6 +156,20 @@
 
 <PageHeader titulo="Recepciones de mercadería" />
 
+<div class="flex flex-wrap items-end gap-3 mb-4">
+    <div class="flex-1 min-w-[200px] max-w-sm">
+        <SearchInput
+            value={busqueda}
+            placeholder="Buscar por N° orden..."
+            on:search={(e) => {
+                busqueda = e.detail;
+                pagina = 1;
+                cargar();
+            }}
+        />
+    </div>
+</div>
+
 {#if cargando}
     <div class="flex items-center justify-center py-20">
         <Spinner size="lg" />
@@ -153,7 +177,9 @@
 {:else if ordenesPendientes.length === 0}
     <EmptyState
         titulo="Sin pendientes"
-        descripcion="No hay órdenes de compra pendientes de recepción"
+        descripcion={busqueda
+            ? "No se encontraron órdenes con ese criterio"
+            : "No hay órdenes de compra pendientes de recepción"}
         icono="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
     />
 {:else}
@@ -171,7 +197,9 @@
                     >
                 </div>
                 <div class="text-sm text-gray-600">
-                    <p class="font-medium">{o.proveedorNombre}</p>
+                    <p class="font-medium">
+                        {o.proveedor?.nombre ?? o.proveedorNombre}
+                    </p>
                     {#if o.fechaEntrega}
                         <p class="text-xs text-gray-400 mt-1">
                             Entrega: {formatFechaHora(o.fechaEntrega)}
@@ -182,7 +210,9 @@
                     <span class="text-gray-500"
                         >{o.items?.length ?? 0} items</span
                     >
-                    <span class="font-semibold">{formatCurrency(o.total)}</span>
+                    <span class="font-semibold"
+                        >{formatCurrency(Number(o.total))}</span
+                    >
                 </div>
                 <Button
                     variant="primary"
@@ -192,6 +222,13 @@
             </div>
         {/each}
     </div>
+
+    <Pagination
+        {total}
+        bind:currentPage={pagina}
+        limit={12}
+        on:change={cargar}
+    />
 {/if}
 
 <!-- Modal de recepción -->
@@ -205,13 +242,13 @@
             <div class="flex items-center gap-3 text-sm text-gray-600">
                 <span
                     >Proveedor: <strong
-                        >{ordenSeleccionada?.proveedor?.nombre}</strong
+                        >{ordenSeleccionada?.proveedor?.nombre ?? ordenSeleccionada?.proveedorNombre}</strong
                     ></span
                 >
                 <span>•</span>
                 <span
                     >Total: <strong
-                        >{formatCurrency(ordenSeleccionada.total)}</strong
+                        >{formatCurrency(Number(ordenSeleccionada.total))}</strong
                     ></span
                 >
             </div>
