@@ -120,7 +120,7 @@
 
     onMount(async () => {
         try {
-            const res = await usuariosApi.listar({ limit: "100" }, accessToken);
+            const res = await usuariosApi.listar({ limit: "10" }, accessToken);
             usuarios = res.data;
         } catch {
             /* ignore */
@@ -612,7 +612,7 @@
         </table>
     </div>
     <div class="mt-4">
-        <Pagination {total} bind:currentPage={pagina} />
+        <Pagination {total} bind:currentPage={pagina} limit={10} />
     </div>
 {/if}
 

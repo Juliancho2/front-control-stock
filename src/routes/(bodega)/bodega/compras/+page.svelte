@@ -85,7 +85,7 @@
     onMount(async () => {
         try {
             const res = await comprasApi.proveedores.listar(
-                { limit: "100" },
+                { limit: "10" },
                 accessToken,
             );
             proveedores = res.data;
@@ -357,7 +357,12 @@
             </tbody>
         </table>
     </div>
-    <Pagination {total} bind:currentPage={pagina} />
+    <Pagination
+        {total}
+        bind:currentPage={pagina}
+        on:change={cargar}
+        limit={10}
+    />
 {/if}
 
 <!-- Modal crear OC -->

@@ -36,7 +36,7 @@
     async function cargar() {
         cargando = true;
         try {
-            const filtros: FiltroProductos = { page: pagina, limit: 20 };
+            const filtros: FiltroProductos = { page: pagina, limit: 10 };
             if (busqueda) filtros.q = busqueda;
             if (categoriaId) filtros.categoriaId = categoriaId;
             if (soloStockBajo) filtros.stockBajo = true;
@@ -228,7 +228,7 @@
             </tbody>
         </table>
     </div>
-    <Pagination {total} bind:currentPage={pagina} />
+    <Pagination {total} bind:currentPage={pagina} limit={10} />
 {/if}
 
 <ConfirmDialog

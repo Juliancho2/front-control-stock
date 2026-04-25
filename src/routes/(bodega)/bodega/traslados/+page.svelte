@@ -47,7 +47,7 @@
         try {
             const filtros: Record<string, string> = {
                 page: String(pagina),
-                limit: "20",
+                limit: "10",
                 tipo: "traslado_entrada",
             };
             if (busqueda) filtros.q = busqueda;
@@ -244,7 +244,7 @@
             </tbody>
         </table>
     </div>
-    <Pagination {total} bind:currentPage={pagina} />
+    <Pagination {total} bind:currentPage={pagina} limit={10} />
 {/if}
 
 <!-- Modal nuevo traslado -->

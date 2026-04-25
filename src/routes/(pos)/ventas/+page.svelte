@@ -38,7 +38,7 @@
         }
         cargando = true;
         try {
-            const filtros: any = { page, limit: 20, turnoId: $turnoActivo.id };
+            const filtros: any = { page, limit: 10, turnoId: $turnoActivo.id };
             const res = await ventasApi.listar(filtros, accessToken);
             ventas = res.data;
             total = res.total;
@@ -190,7 +190,7 @@
                     </tbody>
                 </table>
             </div>
-            <Pagination {total} bind:currentPage={page} />
+            <Pagination {total} bind:currentPage={page} limit={10} />
         </div>
     {/if}
 </div>

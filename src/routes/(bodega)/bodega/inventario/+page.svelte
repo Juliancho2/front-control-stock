@@ -415,7 +415,7 @@
                 </tbody>
             </table>
         </div>
-        <Pagination total={totalStock} bind:currentPage={pagina} />
+        <Pagination total={totalStock} bind:currentPage={pagina} on:change={cargarStock} />
     {/if}
 {:else}
     <!-- Movimientos -->
@@ -479,7 +479,7 @@
                 </tbody>
             </table>
         </div>
-        <Pagination total={totalMov} bind:currentPage={paginaMov} />
+        <Pagination total={totalMov} bind:currentPage={paginaMov} on:change={cargarMovimientos} />
     {/if}
 {/if}
 

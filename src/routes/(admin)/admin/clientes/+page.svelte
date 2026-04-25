@@ -58,7 +58,7 @@
     async function cargar() {
         cargando = true;
         try {
-            const filtros: FiltroClientes = { page: pagina, limit: 20 };
+            const filtros: FiltroClientes = { page: pagina, limit: 10 };
             if (busqueda) filtros.q = busqueda;
             if (filtroTipo) filtros.tipo = filtroTipo;
             const res = await clientesApi.listar(filtros, accessToken);
@@ -292,7 +292,7 @@
             </tbody>
         </table>
     </div>
-    <Pagination {total} bind:currentPage={pagina} />
+    <Pagination {total} bind:currentPage={pagina} limit={10} />
 {/if}
 
 <!-- Modal crear/editar -->

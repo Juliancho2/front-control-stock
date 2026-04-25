@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { createEventDispatcher, onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
 
@@ -6,8 +7,15 @@
     export let limit = 20;
     export let currentPage = 1;
 
+    const dispatch = createEventDispatcher();
+
     $: totalPages = Math.ceil(total / limit);
     $: pages = getPaginas(currentPage, totalPages);
+
+    onMount(() => {
+        const p = $page.url.searchParams.get("page");
+        if (p) currentPage = Number(p);
+    });
 
     function getPaginas(actual: number, total: number): (number | "...")[] {
         if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
@@ -26,10 +34,12 @@
     }
 
     function ir(p: number) {
+        if (p < 1 || p > totalPages || p === currentPage) return;
         const url = new URL($page.url);
         url.searchParams.set("page", String(p));
         currentPage = p;
-        goto(url.toString(), { replaceState: true });
+        goto(url.toString(), { replaceState: true, keepFocus: true });
+        dispatch("change", p);
     }
 </script>
 

@@ -51,7 +51,7 @@
         try {
             const filtros: Record<string, string> = {
                 page: String(pagina),
-                limit: "20",
+                limit: "10",
             };
             if (busqueda) filtros.q = busqueda;
             const res = await usuariosApi.listar(filtros, accessToken);
@@ -309,7 +309,7 @@
             </tbody>
         </table>
     </div>
-    <Pagination {total} bind:currentPage={pagina} />
+    <Pagination {total} bind:currentPage={pagina} limit={10} />
 {/if}
 
 <!-- Modal crear usuario -->
