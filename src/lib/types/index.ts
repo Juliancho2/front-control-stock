@@ -14,6 +14,7 @@ export type MetodoPago = 'efectivo' | 'tarjeta_debito' | 'tarjeta_credito' | 'tr
 export type EstadoTurno = 'abierto' | 'cerrado';
 export type EstadoOrdenCompra = 'borrador' | 'enviada' | 'parcial' | 'recibida' | 'anulada';
 export type TipoMovimiento = 'entrada' | 'salida' | 'ajuste_positivo' | 'ajuste_negativo' | 'traslado_entrada' | 'traslado_salida' | 'devolucion_compra' | 'devolucion_venta';
+export type EstadoSuscripcion = 'trial' | 'activa' | 'vencida' | 'cancelada' | 'suspendida';
 // ─── Planes ───────────────────────────────────────────────────
 
 export interface Plan {
@@ -25,6 +26,21 @@ export interface Plan {
 	activo: boolean;
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface Suscripcion {
+	id: string;
+	tenantId: string;
+	planId: string;
+	planNombre: string;
+	planPrecio: number;
+	estado: EstadoSuscripcion;
+	fechaInicio: string;
+	fechaFinTrial: string | null;
+	fechaFinPeriodo: string;
+	autoRenovar: boolean;
+	diasRestantes: number;
+	estaVigente: boolean;
 }
 
 // ─── Respuesta base de la API ─────────────────────────────────
@@ -63,11 +79,20 @@ export interface Usuario {
 	updatedAt: string;
 }
 
+export interface InfoSuscripcion {
+	estado: EstadoSuscripcion;
+	fechaFinPeriodo: string;
+	diasRestantes: number;
+	planNombre: string;
+}
+
 export interface SesionActiva {
 	accessToken: string;
 	refreshToken: string;
 	expiresIn: number;
 	usuario: Pick<Usuario, 'id' | 'nombre' | 'email' | 'rol'>;
+	tenantId: string;
+	suscripcion?: InfoSuscripcion;
 }
 
 // ─── Categorías ───────────────────────────────────────────────

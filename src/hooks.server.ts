@@ -1,4 +1,4 @@
-import type { RolUsuario } from '$types/index';
+import type { InfoSuscripcion, RolUsuario } from '$types/index';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 // Rutas que no necesitan autenticación
@@ -28,7 +28,11 @@ export const handle: Handle = async ({ event, resolve }) => {
         throw redirect(303, `/login?redirectTo=${encodeURIComponent(pathname)}`);
     }
 
-    let sesion: { usuario: { id: string; nombre: string; email: string; rol: RolUsuario }; accessToken: string } | null = null;
+    let sesion: {
+        usuario: { id: string; nombre: string; email: string; rol: RolUsuario };
+        accessToken: string;
+        suscripcion?: InfoSuscripcion;
+    } | null = null;
 
     try {
         sesion = JSON.parse(sesionCookie);
@@ -45,6 +49,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     // ─── Exponer datos del usuario en locals ──────────────────────
     event.locals.usuario = sesion.usuario;
     event.locals.accessToken = sesion.accessToken;
+    event.locals.suscripcion = sesion.suscripcion ?? null;
 
     // ─── Redirigir la raíz al panel correcto según rol ────────────
     if (pathname === '/') {

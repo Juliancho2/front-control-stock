@@ -4,12 +4,14 @@ import type { SesionActiva, RolUsuario } from '$types/index';
 interface AuthState {
 	usuario: SesionActiva['usuario'] | null;
 	accessToken: string | null;
+	suscripcion: SesionActiva['suscripcion'] | null;
 	cargando: boolean;
 }
 
 const inicial: AuthState = {
 	usuario: null,
 	accessToken: null,
+	suscripcion: null,
 	cargando: true,
 };
 
@@ -23,16 +25,22 @@ function crearAuthStore() {
 			set({
 				usuario: sesion?.usuario ?? null,
 				accessToken: sesion?.accessToken ?? null,
+				suscripcion: sesion?.suscripcion ?? null,
 				cargando: false,
 			});
 		},
 
 		login: (sesion: SesionActiva) => {
-			set({ usuario: sesion.usuario, accessToken: sesion.accessToken, cargando: false });
+			set({
+				usuario: sesion.usuario,
+				accessToken: sesion.accessToken,
+				suscripcion: sesion.suscripcion ?? null,
+				cargando: false,
+			});
 		},
 
 		logout: () => {
-			set({ usuario: null, accessToken: null, cargando: false });
+			set({ usuario: null, accessToken: null, suscripcion: null, cargando: false });
 		},
 
 		get token(): string | null {
@@ -46,6 +54,7 @@ export const authStore = crearAuthStore();
 // Derivados útiles en templates
 export const usuarioActual = derived(authStore, $s => $s.usuario);
 export const rolActual = derived(authStore, $s => $s.usuario?.rol ?? null);
+export const suscripcionActual = derived(authStore, $s => $s.suscripcion);
 export const estaAutenticado = derived(authStore, $s => $s.usuario !== null);
 
 export const esSuperAdmin = derived(authStore, $s => $s.usuario?.rol === 'superadmin');

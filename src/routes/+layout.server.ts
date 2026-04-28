@@ -4,5 +4,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	return {
 		usuario: locals.usuario,
 		accessToken: locals.accessToken,
+		suscripcion: locals.suscripcion,
 	};
 };

@@ -1,4 +1,4 @@
-import type { RolUsuario } from '$lib/types';
+import type { InfoSuscripcion, RolUsuario } from '$lib/types';
 
 declare global {
 	namespace App {
@@ -10,6 +10,7 @@ declare global {
 				rol: RolUsuario;
 			} | null;
 			accessToken: string | null;
+			suscripcion: InfoSuscripcion | null;
 		}
 
 		interface PageData {

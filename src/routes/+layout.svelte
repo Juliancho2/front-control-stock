@@ -11,9 +11,10 @@
 	import { initDB } from "$offline/db";
 	import { ventasQueue } from "$offline/ventas.queue";
 	import { toastStore } from "$stores/toast.store";
+	import type { InfoSuscripcion } from "$types/index";
 	import type { LayoutData } from "./$types";
 
-	export let data: LayoutData;
+	export let data: LayoutData & { suscripcion?: InfoSuscripcion | null };
 
 	// Inicializar auth store y token en memoria con datos del servidor
 	$: {
@@ -25,23 +26,28 @@
 						accessToken: data.accessToken ?? "",
 						refreshToken: "",
 						expiresIn: 0,
+						tenantId: "",
+						suscripcion: data.suscripcion ?? undefined,
 					}
 				: null,
 		);
 	}
 
 	// Detector de conectividad + offline sync
-	onMount(async () => {
-		// Init IndexedDB
-		await initDB();
-
-		// Load pending sales from DB into store
-		const pendientes = await ventasQueue.getAll();
-		for (const v of pendientes) {
-			offlineStore.agregarVenta(v.payload);
-		}
-
+	onMount(() => {
 		const actualizarOnline = () => offlineStore.setOnline(navigator.onLine);
+
+		void (async () => {
+			// Init IndexedDB
+			await initDB();
+
+			// Load pending sales from DB into store
+			const pendientes = await ventasQueue.getAll();
+			for (const v of pendientes) {
+				offlineStore.agregarVenta(v.payload);
+			}
+		})();
+
 		window.addEventListener("online", onReconnect);
 		window.addEventListener("offline", actualizarOnline);
 		actualizarOnline();

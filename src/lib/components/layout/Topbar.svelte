@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import { usuarioActual } from "../../stores/auth.store";
+	import { suscripcionActual, usuarioActual } from "../../stores/auth.store";
 	import NotificationBell from "./NotificationBell.svelte";
 
 	export let titulo = "FerreControl";
@@ -15,6 +15,16 @@
 			.map((n) => n[0])
 			.join("")
 			.toUpperCase();
+
+	$: mostrarSuscripcion =
+		!!$usuarioActual &&
+		($usuarioActual.rol === "admin" ||
+			$usuarioActual.rol === "superadmin") &&
+		!!$suscripcionActual;
+
+	$: textoSuscripcion = $suscripcionActual
+		? `${$suscripcionActual.planNombre} · ${$suscripcionActual.diasRestantes} día(s)`
+		: "";
 </script>
 
 <header
@@ -36,6 +46,26 @@
 
 	<!-- Acciones adicionales -->
 	<slot name="acciones" />
+
+	{#if mostrarSuscripcion}
+		<span
+			class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
+			class:bg-amber-50={$suscripcionActual?.diasRestantes !==
+				undefined && $suscripcionActual.diasRestantes <= 5}
+			class:border-amber-200={$suscripcionActual?.diasRestantes !==
+				undefined && $suscripcionActual.diasRestantes <= 5}
+			class:text-amber-700={$suscripcionActual?.diasRestantes !==
+				undefined && $suscripcionActual.diasRestantes <= 5}
+			class:bg-blue-50={$suscripcionActual?.diasRestantes !== undefined &&
+				$suscripcionActual.diasRestantes > 5}
+			class:border-blue-200={$suscripcionActual?.diasRestantes !==
+				undefined && $suscripcionActual.diasRestantes > 5}
+			class:text-blue-700={$suscripcionActual?.diasRestantes !==
+				undefined && $suscripcionActual.diasRestantes > 5}
+		>
+			{textoSuscripcion}
+		</span>
+	{/if}
 
 	<!-- Notificaciones -->
 	{#if $usuarioActual}
@@ -107,7 +137,7 @@
 					class="fixed inset-0 z-40"
 					onclick={() => (menuUsuarioAbierto = false)}
 					role="presentation"
-				/>
+				></div>
 			{/if}
 		</div>
 	{/if}

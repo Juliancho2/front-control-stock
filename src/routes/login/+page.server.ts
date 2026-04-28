@@ -50,6 +50,7 @@ export const actions: Actions = {
 		cookies.set('sesion', JSON.stringify({
 			usuario: sesion.usuario,
 			accessToken: sesion.accessToken,
+			suscripcion: sesion.suscripcion ?? null,
 		}), {
 			path: '/',
 			httpOnly: true,
