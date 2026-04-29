@@ -15,6 +15,8 @@ export type EstadoTurno = 'abierto' | 'cerrado';
 export type EstadoOrdenCompra = 'borrador' | 'enviada' | 'parcial' | 'recibida' | 'anulada';
 export type TipoMovimiento = 'entrada' | 'salida' | 'ajuste_positivo' | 'ajuste_negativo' | 'traslado_entrada' | 'traslado_salida' | 'devolucion_compra' | 'devolucion_venta';
 export type EstadoSuscripcion = 'trial' | 'activa' | 'vencida' | 'cancelada' | 'suspendida';
+export type MetodoPagoSuscripcion = 'nequi' | 'transferencia';
+export type EstadoPago = 'pendiente' | 'aprobado' | 'rechazado';
 // ─── Planes ───────────────────────────────────────────────────
 
 export interface Plan {
@@ -41,6 +43,23 @@ export interface Suscripcion {
 	autoRenovar: boolean;
 	diasRestantes: number;
 	estaVigente: boolean;
+}
+
+export interface PagoSuscripcion {
+	id: string;
+	tenantId: string;
+	tenantNombre?: string;
+	planId: string;
+	planNombre: string;
+	metodoPago: MetodoPagoSuscripcion;
+	monto: number;
+	moneda: string;
+	referencia: string;
+	estado: EstadoPago;
+	comprobanteUrl: string | null;
+	fechaPago: string | null;
+	mesesContratados: number;
+	createdAt: string;
 }
 
 // ─── Respuesta base de la API ─────────────────────────────────
@@ -84,6 +103,7 @@ export interface InfoSuscripcion {
 	fechaFinPeriodo: string;
 	diasRestantes: number;
 	planNombre: string;
+	estaVigente: boolean;
 }
 
 export interface SesionActiva {

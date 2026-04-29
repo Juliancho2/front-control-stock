@@ -9,6 +9,7 @@
     import Button from "$components/ui/Button.svelte";
     import { tenantsApi } from "$api/tenants";
     import { planesApi } from "$api/planes";
+    import { suscripcionesApi } from "$api/suscripciones";
     import { toastStore } from "$stores/toast.store";
     import { formatFechaHora } from "$utils/index";
     import type { Tenant, Plan } from "$types/index";
@@ -38,6 +39,11 @@
     // Toggle activo
     let tenantToggle: Tenant | null = null;
     let toggling = false;
+
+    // Renovar suscripción
+    let tenantRenovar: Tenant | null = null;
+    let renovando = false;
+    let mesesRenovar: string | number = 1;
 
     async function cargar() {
         cargando = true;
@@ -81,7 +87,7 @@
         editando = t;
         nombre = t.nombre;
         slug = t.slug;
-        planId = t.planId ?? "";
+        planId = t.suscripciones[0]?.plan.id ?? "";
         errores = {};
         mostrarModal = true;
     }
@@ -170,6 +176,25 @@
         }
     }
 
+    async function renovar() {
+        if (!tenantRenovar) return;
+        renovando = true;
+        try {
+            await suscripcionesApi.renovarPorTenant(
+                tenantRenovar.id,
+                Number(mesesRenovar),
+                accessToken,
+            );
+            toastStore.exito(`Suscripción renovada por ${mesesRenovar} mes(es)`);
+            tenantRenovar = null;
+            cargar();
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al renovar");
+        } finally {
+            renovando = false;
+        }
+    }
+
     function formatPrecio(precio: number, moneda: string): string {
         return new Intl.NumberFormat("es-CO", {
             style: "currency",
@@ -241,7 +266,8 @@
                         >
                         <td
                             ><Badge variant="blue"
-                                >{t.plan?.nombre ?? "Sin plan"}</Badge
+                                >{t.suscripciones[0]?.plan.nombre ??
+                                    "Sin plan"}</Badge
                             ></td
                         >
                         <td
@@ -258,6 +284,14 @@
                                     onclick={() => abrirEditar(t)}
                                     class="text-xs text-primary-600 hover:underline"
                                     >Editar</button
+                                >
+                                <button
+                                    onclick={() => {
+                                        tenantRenovar = t;
+                                        mesesRenovar = 1;
+                                    }}
+                                    class="text-xs text-green-600 hover:underline"
+                                    >Renovar</button
                                 >
                                 <button
                                     onclick={() => (tenantToggle = t)}
@@ -463,6 +497,79 @@
                     onclick={toggleActivo}
                     >{tenantToggle.activo ? "Desactivar" : "Activar"}</Button
                 >
+            </div>
+        </div>
+    </div>
+{/if}
+
+<!-- Modal renovar suscripción -->
+{#if tenantRenovar}
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <div
+        class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+        onclick={() => (tenantRenovar = null)}
+    >
+        <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-modal-in"
+            onclick={(e) => e.stopPropagation()}
+        >
+            <div class="bg-green-50 px-5 py-4 flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center"
+                >
+                    <svg
+                        class="w-5 h-5 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 4v5h.582m15.582 0a8.002 8.002 0 011.582 5.355m-9.582-5.355a8 8 002 0 00-9.582 0m9.582 5.355a8 8 0 01-3.582 3.582m3.582-3.582a8 8 0 013.582-3.582M4.582 15H4m15.582 0H9.5"
+                        />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-base font-semibold text-gray-900">
+                        Renovar Suscripción
+                    </h2>
+                    <p class="text-xs text-gray-500">
+                        {tenantRenovar.nombre}
+                    </p>
+                </div>
+            </div>
+
+            <div class="px-5 py-4 space-y-4">
+                <Select
+                    label="Meses a adicionar"
+                    options={[
+                        { value: "1", label: "1 mes" },
+                        { value: "2", label: "2 meses" },
+                        { value: "3", label: "3 meses" },
+                        { value: "6", label: "6 meses" },
+                        { value: "12", label: "12 meses" },
+                    ]}
+                    bind:value={mesesRenovar}
+                />
+
+                <p class="text-xs text-gray-500">
+                    La suscripción se extenderá por {mesesRenovar} mes(es) desde la fecha actual.
+                </p>
+
+                <div class="flex gap-3 pt-2">
+                    <Button
+                        variant="secondary"
+                        fullWidth
+                        onclick={() => (tenantRenovar = null)}
+                        disabled={renovando}>Cancelar</Button>
+                    <Button
+                        variant="primary"
+                        fullWidth
+                        loading={renovando}
+                        onclick={renovar}>Renovar</Button>
+                </div>
             </div>
         </div>
     </div>

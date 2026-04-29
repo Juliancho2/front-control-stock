@@ -1,10 +1,10 @@
 import { writable, derived, get } from 'svelte/store';
-import type { SesionActiva, RolUsuario } from '$types/index';
+import type { SesionActiva, RolUsuario, InfoSuscripcion } from '$types/index';
 
 interface AuthState {
 	usuario: SesionActiva['usuario'] | null;
 	accessToken: string | null;
-	suscripcion: SesionActiva['suscripcion'] | null;
+	suscripcion: InfoSuscripcion | null;
 	cargando: boolean;
 }
 
@@ -66,3 +66,23 @@ export function tieneRol(...roles: RolUsuario[]): boolean {
 	const rol = get(rolActual);
 	return rol !== null && (rol === 'superadmin' || rol === 'admin' || roles.includes(rol));
 }
+
+export const suscripcionVigente = derived(authStore, $s => {
+	if (!$s.suscripcion) return false;
+	return $s.suscripcion.estaVigente;
+});
+
+export const puedeCrearContenido = derived(authStore, $s => {
+	const rol = $s.usuario?.rol;
+	if (rol === 'superadmin') return true;
+	if ($s.usuario?.rol === 'admin' && $s.suscripcion?.estaVigente) return true;
+	return false;
+});
+
+export const puedeRegistrarVentas = derived(authStore, $s => {
+	const rol = $s.usuario?.rol;
+	if (rol === 'superadmin') return true;
+	if (rol === 'cajero' || rol === 'admin') return true;
+	if (!$s.suscripcion?.estaVigente) return true;
+	return false;
+});
