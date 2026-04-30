@@ -33,8 +33,6 @@
     let confirmarPassword = "";
     let nuevoRolCrear = "cajero";
     let enviarPorEmail = true;
-    let mostrarPassword = false;
-    let mostrarConfirmar = false;
     let erroresCrear: Record<string, string> = {};
 
     // Cambio de rol
@@ -117,8 +115,6 @@
         confirmarPassword = "";
         nuevoRolCrear = "cajero";
         enviarPorEmail = true;
-        mostrarPassword = false;
-        mostrarConfirmar = false;
         erroresCrear = {};
         mostrarCrear = true;
     }
@@ -452,97 +448,23 @@
                             Autogenerar
                         </button>
                     </div>
-                    <div class="relative">
-                        <Input
-                            type={mostrarPassword ? "text" : "password"}
-                            bind:value={nuevoPassword}
-                            placeholder="Mínimo 8 caracteres"
-                            error={erroresCrear.password}
-                            hint="Debe incluir mayúscula, minúscula y número"
-                        />
-                        <button
-                            type="button"
-                            onclick={() => (mostrarPassword = !mostrarPassword)}
-                            class="absolute right-2.5 top-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                            title={mostrarPassword ? "Ocultar" : "Mostrar"}
-                        >
-                            <svg
-                                class="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                {#if mostrarPassword}
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                                    />
-                                {:else}
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                    />
-                                {/if}
-                            </svg>
-                        </button>
-                    </div>
+                    <Input
+                        type="password"
+                        bind:value={nuevoPassword}
+                        placeholder="Mínimo 8 caracteres"
+                        error={erroresCrear.password}
+                        hint="Debe incluir mayúscula, minúscula y número"
+                    />
                 </div>
 
-                <div class="relative">
-                    <Input
-                        label="Confirmar contraseña"
-                        type={mostrarConfirmar ? "text" : "password"}
-                        bind:value={confirmarPassword}
-                        placeholder="Repite la contraseña"
-                        error={erroresCrear.confirmar}
-                        required
-                    />
-                    <button
-                        type="button"
-                        onclick={() => (mostrarConfirmar = !mostrarConfirmar)}
-                        class="absolute right-2.5 top-8 p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                        title={mostrarConfirmar ? "Ocultar" : "Mostrar"}
-                    >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            {#if mostrarConfirmar}
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                                />
-                            {:else}
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                />
-                            {/if}
-                        </svg>
-                    </button>
-                </div>
+                <Input
+                    label="Confirmar contraseña"
+                    type="password"
+                    bind:value={confirmarPassword}
+                    placeholder="Repite la contraseña"
+                    error={erroresCrear.confirmar}
+                    required
+                />
 
                 <!-- Check enviar por email -->
                 <label
