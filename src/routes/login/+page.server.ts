@@ -25,7 +25,7 @@ export const actions: Actions = {
 		// Llamar al backend
 		let respuesta: Response;
 		try {
-			console.log(API_URL);
+
 			respuesta = await fetch(`${API_URL}/api/v1/auth/login`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -51,6 +51,7 @@ export const actions: Actions = {
 			usuario: sesion.usuario,
 			accessToken: sesion.accessToken,
 			suscripcion: sesion.suscripcion ?? null,
+			tenantNombre: sesion.tenantNombre,
 		}), {
 			path: '/',
 			httpOnly: true,

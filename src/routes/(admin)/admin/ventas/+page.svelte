@@ -125,8 +125,9 @@
         } catch {
             /* ignore */
         }
-        cargar();
     });
+
+    $: if (pagina) cargar();
 
     async function anular() {
         if (!ventaAnular || !motivoAnulacion.trim()) return;
@@ -612,7 +613,7 @@
         </table>
     </div>
     <div class="mt-4">
-        <Pagination {total} bind:currentPage={pagina} limit={10} />
+        <Pagination {total} bind:currentPage={pagina} limit={20} />
     </div>
 {/if}
 

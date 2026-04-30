@@ -16,6 +16,8 @@
 
 	export let data: LayoutData & { suscripcion?: InfoSuscripcion | null };
 
+	console.log(data);
+
 	// Inicializar auth store y token en memoria con datos del servidor
 	$: {
 		setAccessToken(data.accessToken ?? null);
@@ -27,6 +29,7 @@
 						refreshToken: "",
 						expiresIn: 0,
 						tenantId: "",
+						tenantNombre: data.tenantNombre ?? undefined,
 						suscripcion: data.suscripcion ?? undefined,
 					}
 				: null,

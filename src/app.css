@@ -154,7 +154,7 @@
 
     @media (min-width: 768px) {
         .pos-panel-left {
-            border-right-width: 1px;
+            /* border-right-width: 1px; */
         }
     }
 
@@ -165,7 +165,8 @@
     @media (min-width: 768px) {
         .pos-panel-right {
             @apply flex-none h-full;
-            width: 24rem; /* w-96 */
+            width: 24rem;
+            /* w-96 */
             border-left-width: 1px;
         }
     }

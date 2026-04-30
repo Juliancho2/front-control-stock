@@ -41,6 +41,7 @@ export const POST: RequestHandler = async ({ cookies }) => {
         usuario: sesion.usuario,
         accessToken: sesion.accessToken,
         suscripcion: sesion.suscripcion ?? null,
+        tenantNombre: sesion.tenantNombre,
     }), {
         path: '/',
         httpOnly: true,

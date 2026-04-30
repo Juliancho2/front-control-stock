@@ -8,6 +8,7 @@
     import Button from "$components/ui/Button.svelte";
     import { ventasApi } from "./../../../lib/api/ventas";
     import { turnoActivo, toastStore } from "../../../lib/index";
+    import TicketVenta from "$components/pos/TicketVenta.svelte";
     import { formatCurrency, formatFechaHora } from "$utils/index";
     import type { Venta } from "$types/index";
 
@@ -18,6 +19,8 @@
     let ventaAnular: Venta | null = null;
     let motivoAnulacion = "";
     let anulando = false;
+    let ventaImprimir: Venta | null = null;
+    let imprimiendo = false;
 
     const estadoColor: Record<string, "green" | "yellow" | "red" | "gray"> = {
         pagada: "green",
@@ -50,7 +53,7 @@
     }
 
     onMount(cargar);
-    // $: page, cargar();
+    $: if (page) cargar();
 
     async function anular() {
         if (!ventaAnular || !motivoAnulacion.trim()) return;
@@ -70,6 +73,22 @@
             toastStore.error(e?.mensajes?.[0] ?? "Error al anular");
         } finally {
             anulando = false;
+        }
+    }
+
+    async function imprimirTicket(id: string) {
+        imprimiendo = true;
+        try {
+            const venta = await ventasApi.obtener(id, accessToken);
+            ventaImprimir = venta;
+            setTimeout(() => {
+                window.print();
+                ventaImprimir = null;
+            }, 500);
+        } catch {
+            toastStore.error("Error al obtener datos de la venta");
+        } finally {
+            imprimiendo = false;
         }
     }
 </script>
@@ -176,14 +195,23 @@
                                     >{formatFechaHora(venta.createdAt)}</td
                                 >
                                 <td>
-                                    {#if venta.estado !== "anulada"}
+                                    <div class="flex items-center gap-3">
                                         <button
-                                            onclick={() =>
-                                                (ventaAnular = venta)}
-                                            class="text-xs text-danger-500 hover:underline"
-                                            >Anular</button
+                                            onclick={() => imprimirTicket(venta.id)}
+                                            class="text-xs text-primary-600 hover:underline font-medium"
+                                            disabled={imprimiendo}
                                         >
-                                    {/if}
+                                            Ticket
+                                        </button>
+                                        {#if venta.estado !== "anulada"}
+                                            <button
+                                                onclick={() =>
+                                                    (ventaAnular = venta)}
+                                                class="text-xs text-danger-500 hover:underline"
+                                                >Anular</button
+                                            >
+                                        {/if}
+                                    </div>
                                 </td>
                             </tr>
                         {/each}
@@ -241,4 +269,8 @@
             </div>
         </div>
     </div>
+{/if}
+
+{#if ventaImprimir}
+    <TicketVenta venta={ventaImprimir} />
 {/if}

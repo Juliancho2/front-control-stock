@@ -61,6 +61,30 @@ function crearNotificacionesStore() {
 			}
 		},
 
+		eliminar: async (id: string) => {
+			try {
+				await notificacionesApi.eliminar(id);
+				update(s => ({
+					...s,
+					items: s.items.filter(n => n.id !== id)
+				}));
+			} catch (e) {
+				console.error('Error al eliminar notificación', e);
+			}
+		},
+
+		eliminarTodas: async () => {
+			try {
+				await notificacionesApi.eliminarTodas();
+				update(s => ({
+					...s,
+					items: []
+				}));
+			} catch (e) {
+				console.error('Error al eliminar todas las notificaciones', e);
+			}
+		},
+
 		iniciarPolling: () => {
 			if (intervalId) return;
 			// Cargar inmediatamente

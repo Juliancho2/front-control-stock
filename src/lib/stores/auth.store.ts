@@ -5,6 +5,7 @@ interface AuthState {
 	usuario: SesionActiva['usuario'] | null;
 	accessToken: string | null;
 	suscripcion: InfoSuscripcion | null;
+	tenantNombre: string | null;
 	cargando: boolean;
 }
 
@@ -12,6 +13,7 @@ const inicial: AuthState = {
 	usuario: null,
 	accessToken: null,
 	suscripcion: null,
+	tenantNombre: null,
 	cargando: true,
 };
 
@@ -26,6 +28,7 @@ function crearAuthStore() {
 				usuario: sesion?.usuario ?? null,
 				accessToken: sesion?.accessToken ?? null,
 				suscripcion: sesion?.suscripcion ?? null,
+				tenantNombre: sesion?.tenantNombre ?? null,
 				cargando: false,
 			});
 		},
@@ -35,6 +38,7 @@ function crearAuthStore() {
 				usuario: sesion.usuario,
 				accessToken: sesion.accessToken,
 				suscripcion: sesion.suscripcion ?? null,
+				tenantNombre: sesion.tenantNombre ?? null,
 				cargando: false,
 			});
 		},
@@ -56,6 +60,7 @@ export const usuarioActual = derived(authStore, $s => $s.usuario);
 export const rolActual = derived(authStore, $s => $s.usuario?.rol ?? null);
 export const suscripcionActual = derived(authStore, $s => $s.suscripcion);
 export const estaAutenticado = derived(authStore, $s => $s.usuario !== null);
+export const nombreNegocioActual = derived(authStore, $s => $s.tenantNombre);
 
 export const esSuperAdmin = derived(authStore, $s => $s.usuario?.rol === 'superadmin');
 export const esAdmin = derived(authStore, $s => $s.usuario?.rol === 'admin' || $s.usuario?.rol === 'superadmin');

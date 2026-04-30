@@ -11,6 +11,7 @@ declare global {
 			} | null;
 			accessToken: string | null;
 			suscripcion: InfoSuscripcion | null;
+			tenantNombre: string | null;
 		}
 
 		interface PageData {

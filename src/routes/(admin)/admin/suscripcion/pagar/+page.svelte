@@ -44,7 +44,7 @@
                 { planId: planSeleccionado, metodoPago, meses },
                 accessToken,
             );
-            toastStore.exito("Pago creado. Realiza el pago y súbelo.");
+            toastStore.exito("Pago creado con éxito. Por favor sigue las instrucciones.");
         } catch (e: any) {
             toastStore.error(e?.mensajes?.[0] ?? "Error al crear pago");
         } finally {
@@ -52,27 +52,12 @@
         }
     }
 
-    async function copiarReferencia() {
-        if (pagoActual?.referencia) {
-            await navigator.clipboard.writeText(pagoActual.referencia);
-            toastStore.exito("Referencia copiada");
-        }
-    }
-
-    async function subirComprobante() {
-        if (!comprobanteUrl || !pagoActual) return;
-        procesando = true;
+    async function copiar(texto: string, mensaje: string = "Copiado al portapapeles") {
         try {
-            await pagosSuscripcionApi.subirComprobante(
-                pagoActual.id,
-                comprobanteUrl,
-                accessToken,
-            );
-            toastStore.exito("Comprobante subido");
-        } catch (e: any) {
-            toastStore.error(e?.mensajes?.[0] ?? "Error al subir comprobante");
-        } finally {
-            procesando = false;
+            await navigator.clipboard.writeText(texto);
+            toastStore.exito(mensaje);
+        } catch(e) {
+            toastStore.error("No se pudo copiar al portapapeles");
         }
     }
 
@@ -80,8 +65,13 @@
         if (!pagoActual) return;
         procesando = true;
         try {
+            // Optional: si subió comprobante, lo enviamos primero
+            if (comprobanteUrl.trim()) {
+                await pagosSuscripcionApi.subirComprobante(pagoActual.id, comprobanteUrl, accessToken);
+            }
+            
             await pagosSuscripcionApi.marcarPagado(pagoActual.id, accessToken);
-            toastStore.exito("Pago enviado. En breve será aprobado.");
+            toastStore.exito("Pago reportado. En breve lo validaremos y activaremos tu plan.");
             goto("/admin/suscripcion");
         } catch (e: any) {
             toastStore.error(e?.mensajes?.[0] ?? "Error al confirmar");
@@ -107,193 +97,288 @@
     onMount(cargar);
 
     $: planActual = planes.find((p) => p.id === planSeleccionado);
-    $: montoTotal = planActual ? Number(planActual.precioMensual) * meses : 0;
+    $: precioBaseMes = planActual ? Number(planActual.precioMensual) : 0;
+    
+    // Opciones de meses con descuentos sugeridos (visual)
+    const opcionesMeses = [
+        { valor: 1, label: "1 mes", descuento: 0 },
+        { valor: 3, label: "3 meses", descuento: 0 },
+        { valor: 6, label: "6 meses", descuento: 5 },
+        { valor: 12, label: "12 meses", descuento: 10 },
+    ];
+
+    $: descuentoAplicado = opcionesMeses.find(o => o.valor === meses)?.descuento || 0;
+    $: subtotal = precioBaseMes * meses;
+    $: valorDescuento = subtotal * (descuentoAplicado / 100);
+    $: montoTotal = subtotal - valorDescuento;
+
 </script>
 
 <svelte:head><title>Renovar plan — FerreControl</title></svelte:head>
 
-<PageHeader titulo="Renovar plan" />
+<PageHeader titulo="Renovar plan o Cambiar de plan" />
 
 {#if cargando}
     <div class="flex items-center justify-center py-20">
         <Spinner size="lg" />
     </div>
 {:else if !pagoActual}
-    <div
-        class="bg-white border border-gray-200 rounded-xl p-4 space-y-4 max-w-xl"
-    >
-        <div>
-            <p class="text-sm font-medium text-gray-700 mb-2">Plan</p>
-            <div class="space-y-2">
-                {#each planes.filter((p) => p.activo) as plan}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Configurador -->
+        <div class="lg:col-span-8 space-y-8">
+            <!-- 1. Planes -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">1</div>
+                    <h2 class="text-lg font-semibold text-gray-900">Selecciona tu Plan</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {#each planes.filter((p) => p.activo) as plan}
+                        <button
+                            type="button"
+                            class="relative p-5 rounded-xl border-2 text-left transition-all duration-200 hover:border-primary-300"
+                            class:border-primary-500={planSeleccionado === plan.id}
+                            class:border-gray-200={planSeleccionado !== plan.id}
+                            class:bg-primary-50={planSeleccionado === plan.id}
+                            class:shadow-md={planSeleccionado === plan.id}
+                            onclick={() => (planSeleccionado = plan.id)}
+                        >
+                            {#if planSeleccionado === plan.id}
+                                <div class="absolute top-4 right-4 text-primary-600">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                </div>
+                            {/if}
+                            <p class="font-bold text-gray-900 text-lg mb-1">{plan.nombre}</p>
+                            <p class="text-sm text-gray-500 mb-3">{plan.descripcion}</p>
+                            <p class="text-xl font-extrabold text-primary-700">
+                                {formatCurrency(Number(plan.precioMensual))}<span class="text-sm font-medium text-gray-500">/mes</span>
+                            </p>
+                        </button>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- 2. Duración -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">2</div>
+                    <h2 class="text-lg font-semibold text-gray-900">Duración del Plan</h2>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {#each opcionesMeses as opcion}
+                        <button
+                            type="button"
+                            class="relative p-4 rounded-xl border-2 text-center transition-colors hover:border-primary-300"
+                            class:border-primary-500={meses === opcion.valor}
+                            class:border-gray-200={meses !== opcion.valor}
+                            class:bg-primary-50={meses === opcion.valor}
+                            onclick={() => (meses = opcion.valor)}
+                        >
+                            <p class="font-bold text-gray-900">{opcion.label}</p>
+                            {#if opcion.descuento > 0}
+                                <span class="absolute -top-2.5 -right-2.5 bg-warning-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                                    -{opcion.descuento}%
+                                </span>
+                            {/if}
+                        </button>
+                    {/each}
+                </div>
+            </div>
+
+            <!-- 3. Método de pago -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">3</div>
+                    <h2 class="text-lg font-semibold text-gray-900">Método de Pago</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <button
                         type="button"
-                        class="w-full p-3 rounded-lg border-2 text-left transition-colors"
-                        class:border-primary-400={planSeleccionado === plan.id}
-                        class:border-gray-200={planSeleccionado !== plan.id}
-                        class:bg-primary-50={planSeleccionado === plan.id}
-                        onclick={() => (planSeleccionado = plan.id)}
+                        class="p-4 rounded-xl border-2 transition-colors flex items-center gap-4 hover:border-primary-300"
+                        class:border-primary-500={metodoPago === "nequi"}
+                        class:border-gray-200={metodoPago !== "nequi"}
+                        class:bg-primary-50={metodoPago === "nequi"}
+                        onclick={() => (metodoPago = "nequi")}
                     >
-                        <p class="font-medium text-gray-900">{plan.nombre}</p>
-                        <p class="text-sm text-gray-500">
-                            {formatCurrency(Number(plan.precioMensual))}/mes
-                        </p>
+                        <div class="bg-gray-100 w-12 h-12 rounded-lg flex items-center justify-center p-2 flex-shrink-0">
+                            <!-- Nequi Logo simplified -->
+                            <svg viewBox="4.86 5.41 559.65 132.36" class="w-full h-full text-primary-600"><path d="m32.44 30.19c.73-.6 1.47-1.19 2.2-1.79.58-.03 1.14-.07 1.06-.89l-.05.06c9.45-3.76 18.12-9.03 26.92-14.04l1.25-.03c12.32 5.87 24.91 11.09 37.68 15.88.56.39 1.13.77 1.69 1.16 6.99 8.99 14.48 17.54 22.09 26l.15.94c-3.9 11.81-6.79 23.9-9.78 35.97-.32.6-.63 1.19-.95 1.79-9.47 10.39-18.95 20.78-28.42 31.17-.6-.24-1.23-.44-1.8-.73-13.33-6.92-26.65-13.85-39.97-20.78-.66-.5-1.31-1-1.97-1.5-.03-.64-.31-1.04-1.01-1.03l.04.04c-.07-1.63-1.34-2.6-2.16-3.8-8.81-12.97-18.64-25.22-26.87-38.59 2.13-3.13 4.34-6.2 6.36-9.4 4.36-6.91 10.16-12.87 13.54-20.43z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-bold text-gray-900">Nequi</p>
+                            <p class="text-xs text-gray-500">Transferencia rápida</p>
+                        </div>
                     </button>
-                {/each}
+                    
+                    <button
+                        type="button"
+                        class="p-4 rounded-xl border-2 transition-colors flex items-center gap-4 hover:border-primary-300"
+                        class:border-primary-500={metodoPago === "transferencia"}
+                        class:border-gray-200={metodoPago !== "transferencia"}
+                        class:bg-primary-50={metodoPago === "transferencia"}
+                        onclick={() => (metodoPago = "transferencia")}
+                    >
+                        <div class="bg-gray-100 w-12 h-12 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-bold text-gray-900">Transferencia Bancaria</p>
+                            <p class="text-xs text-gray-500">Bancolombia, Davivienda...</p>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div>
-            <p class="text-sm font-medium text-gray-700 mb-2">
-                Duración (meses)
-            </p>
-            <select
-                bind:value={meses}
-                class="w-full p-2.5 border border-gray-200 rounded-lg text-sm"
-            >
-                <option value={1}>1 mes</option>
-                <option value={3}>3 meses</option>
-                <option value={6}>6 meses</option>
-                <option value={12}>12 meses</option>
-            </select>
-        </div>
-
-        <div>
-            <p class="text-sm font-medium text-gray-700 mb-2">Método de pago</p>
-            <div class="grid grid-cols-2 gap-2">
-                <button
-                    type="button"
-                    class="p-3 rounded-lg border-2 text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                    class:border-primary-400={metodoPago === "nequi"}
-                    class:border-gray-200={metodoPago !== "nequi"}
-                    class:bg-primary-50={metodoPago === "nequi"}
-                    onclick={() => (metodoPago = "nequi")}
-                >
-                    <svg
-                        height="80"
-                        viewBox="4.86 5.41 559.65 132.36"
-                        width="70"
-                        xmlns="http://www.w3.org/2000/svg"
-                        ><path
-                            d="m32.44 30.19c.73-.6 1.47-1.19 2.2-1.79.58-.03 1.14-.07 1.06-.89l-.05.06c9.45-3.76 18.12-9.03 26.92-14.04l1.25-.03c12.32 5.87 24.91 11.09 37.68 15.88.56.39 1.13.77 1.69 1.16 6.99 8.99 14.48 17.54 22.09 26l.15.94c-3.9 11.81-6.79 23.9-9.78 35.97-.32.6-.63 1.19-.95 1.79-9.47 10.39-18.95 20.78-28.42 31.17-.6-.24-1.23-.44-1.8-.73-13.33-6.92-26.65-13.85-39.97-20.78-.66-.5-1.31-1-1.97-1.5-.03-.64-.31-1.04-1.01-1.03l.04.04c-.07-1.63-1.34-2.6-2.16-3.8-8.81-12.97-18.64-25.22-26.87-38.59 2.13-3.13 4.34-6.2 6.36-9.4 4.36-6.91 10.16-12.87 13.54-20.43z"
-                            fill="#231c46"
-                        /><path
-                            d="m432.54 73.12c.15 9.56-2.87 18.01-9.04 25.22-1.82 2.13-1.68 3.33.31 5.1 2.48 2.2 4.77 4.64 6.94 7.16 1.89 2.2 1.3 3.69-1.72 3.73-5.1.08-10.5.99-13.88-4.41-1.47-2.36-3.14-1.42-5.06-.46-19.26 9.59-40.71 4.05-52.74-13.55-11.29-16.52-8.58-40.9 6.14-55.34 13.9-13.64 35.39-15.46 51.1-3.98 12.28 8.98 17.81 21.5 17.95 36.53zm-26.96 25.16c-4.94-4.44-9.3-8.3-13.59-12.24-1.11-1.02-2.05-2.3-1.24-3.97.77-1.59 2.24-1.6 3.79-1.77 4.65-.51 8.38.67 11.38 4.54 2.02 2.6 4.65 4.73 7.01 7.06 10.33-10.56 10.29-29.61-.07-41.36-9.79-11.1-26.59-12.99-38.38-4.31-12.41 9.13-15.99 29.55-7.51 42.74 8.24 12.8 24 17.13 38.61 9.31zm-172.25-10.37c0-18.85.16-36.17-.11-53.49-.07-4.77 1.88-5.48 5.94-5.36 3.89.11 6.5.08 6.44 5.42-.27 24.81-.11 49.63-.14 74.44 0 1.9.7 4.26-1.76 5.22-2.51.98-3.98-.88-5.44-2.52-15.3-17.14-30.61-34.28-45.92-51.42-1.51-1.69-3.06-3.35-4.69-5.13-1.47 1.87-.84 3.58-.84 5.14-.03 15.99-.12 31.98.14 47.96.07 4.65-1.09 6.46-6.11 6.35-4.63-.11-6.44-1.11-6.39-6.15.24-24.48.09-48.96.14-73.44 0-2.01-.96-4.69 1.91-5.57 2.77-.85 4.99.19 7 2.46 14.53 16.49 29.16 32.89 43.76 49.32 1.72 1.95 3.47 3.87 6.07 6.77z"
-                            fill="#251d48"
-                        /><path
-                            d="m459.81 60.17c0-8.82.24-17.66-.09-26.47-.21-5.59 3.41-4.43 6.6-4.59 3.48-.18 6.06-.05 6.01 4.79-.19 17.14-.28 34.3.13 51.44.32 13.34 13.74 21.01 25.3 14.87 5.03-2.67 8-6.89 8.68-12.59 1.31-10.95.4-21.95.61-32.93.13-6.99.17-13.99-.03-20.97-.1-3.39.88-4.69 4.48-4.67 7.86.05 7.87-.14 7.86 7.89-.01 15.48.11 30.97-.09 46.45-.2 15.72-9.61 27.24-24.4 30.36-16.01 3.37-33.12-8.78-34.42-25.14-.75-9.42-.14-18.96-.14-28.44-.16.01-.33.01-.5 0z"
-                            fill="#2a1f4b"
-                        /><path
-                            d="m278.2 71.78c-.01-12.48.1-24.97-.07-37.45-.05-3.67.68-5.37 4.91-5.26 11.82.28 23.65.31 35.46 0 4.89-.13 4.91 2.47 4.9 5.95-.01 3.58.13 6.61-5.05 6.4-7.98-.32-15.98.05-23.97-.14-2.93-.07-4.16.5-3.96 3.76.3 4.98.26 9.99.01 14.97-.15 2.97.97 3.56 3.69 3.5 7.82-.16 15.66.21 23.47-.14 4.8-.22 6 1.63 5.88 6.09-.11 4.07-.43 6.56-5.62 6.27-7.97-.45-15.98-.02-23.97-.17-2.58-.05-3.51.65-3.44 3.33.17 6.65.22 13.32-.01 19.97-.11 3.1 1.23 3.47 3.82 3.43 8.16-.13 16.32.17 24.47-.13 4.52-.17 4.81 2.24 4.66 5.6-.15 3.28.77 6.8-4.7 6.69-11.98-.24-23.98-.18-35.96-.01-3.58.05-4.59-1.32-4.56-4.69.13-12.67.05-25.32.04-37.97z"
-                            fill="#251d48"
-                        /><path
-                            d="m551.91 71.4c.01-12.49.24-24.98-.1-37.46-.16-5.84 3.49-4.7 6.86-4.88 3.64-.2 5.82.29 5.78 5.01-.22 25.14-.23 50.28.01 75.42.05 4.83-2.3 5-5.85 4.92-3.58-.08-6.95.59-6.81-5.05.32-12.65.11-25.31.11-37.96z"
-                            fill="#231c46"
-                        /><path
-                            d="m12.54 60.02c8.23 13.37 18.07 25.62 26.88 38.58.82 1.21 2.09 2.17 2.16 3.8-10.56-4.22-20.89-9.07-29.89-16.01-6.03-4.65-6.83-14.58-2.95-21.37.98-1.72 2.18-3.31 3.28-4.96.17-.01.34-.02.52-.04z"
-                            fill="#40bacd"
-                        /><path
-                            d="m44.52 104.9c13.32 6.93 26.64 13.86 39.97 20.78.57.3 1.2.49 1.8.73.05.23.08.45.1.68-2.08 2.11-4.07 4.33-6.27 6.32-4.68 4.24-12.23 4.36-16.03-.56-6.96-8.99-13.91-18.03-19.57-27.95z"
-                            fill="#e73b7b"
-                        /><path
-                            d="m86.38 127.1c-.01-.23-.05-.46-.1-.68 9.47-10.39 18.94-20.78 28.42-31.17-1.61 9.43-4.32 18.59-7.18 27.68-2.07 6.58-8.72 9.24-15.3 6.85-2-.74-3.89-1.78-5.84-2.68z"
-                            fill="#40bacd"
-                        /><path
-                            d="m101.51 29.39c-12.78-4.79-25.37-10.01-37.69-15.88 3.37-2.77 7.39-4.39 11.24-6.27 3.74-1.83 7.19-.86 9.85 2.28 5.58 6.58 11.07 13.24 16.6 19.87zm14.14 64.07c2.99-12.06 5.88-24.15 9.78-35.97 2.79 1.9 4.64 4.71 6.57 7.34 2.61 3.57 2.61 7.58-.35 10.99-5.21 5.99-10.65 11.77-16 17.64zm-103.11-33.44c-.17.01-.35.03-.52.04-3.56-11.97-.75-18.83 10.23-24.72 3.35-1.8 6.79-3.44 10.19-5.15-3.38 7.56-9.18 13.52-13.54 20.43-2.02 3.2-4.24 6.27-6.36 9.4z"
-                            fill="#e73b7b"
-                        /><g fill="#40bacd"
-                            ><path
-                                d="m125.29 56.55c-7.61-8.46-15.1-17.01-22.09-26 5.97 2.44 11.99 4.79 17.91 7.35 5.6 2.42 7.47 6.18 6.15 12-.52 2.24-1.31 4.43-1.97 6.65zm-62.72-43.01c-8.8 5.01-17.47 10.28-26.92 14.04 2.64-5.88 6.76-10.79 10.76-15.71 2.04-2.5 5.28-3.24 8.56-1.76 2.54 1.15 5.07 2.29 7.6 3.43z"
-                            /><path
-                                d="m35.7 27.52c.09.82-.48.86-1.06.89.08-.63.41-.94 1.06-.89zm5.84 74.85c.69 0 .98.39 1.01 1.03-.61-.08-1.1-.27-1.01-1.03z"
-                            /></g
-                        ></svg
+        <!-- Resumen -->
+        <div class="lg:col-span-4">
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-lg sticky top-6 overflow-hidden">
+                <div class="bg-gray-50/50 p-5 border-b border-gray-100">
+                    <h3 class="font-bold text-gray-900">Resumen del pedido</h3>
+                </div>
+                
+                <div class="p-5 space-y-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Plan {planActual?.nombre} x {meses} {meses === 1 ? 'mes' : 'meses'}</span>
+                        <span class="font-medium text-gray-900">{formatCurrency(subtotal)}</span>
+                    </div>
+                    
+                    {#if descuentoAplicado > 0}
+                        <div class="flex justify-between text-sm text-primary-600">
+                            <span>Descuento sugerido ({descuentoAplicado}%)</span>
+                            <span>-{formatCurrency(valorDescuento)}</span>
+                        </div>
+                    {/if}
+                    
+                    <hr class="border-gray-100">
+                    
+                    <div class="flex justify-between items-end">
+                        <span class="font-medium text-gray-700">Total a pagar</span>
+                        <span class="text-2xl font-extrabold text-primary-700">{formatCurrency(montoTotal)}</span>
+                    </div>
+                </div>
+                
+                <div class="p-5 bg-gray-50/50 border-t border-gray-100">
+                    <Button
+                        variant="primary"
+                        onclick={crearPago}
+                        loading={procesando}
+                        fullWidth
+                        size="lg"
                     >
+                        Generar Recibo de Pago
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{:else}
+    <!-- INSTRUCCIONES DE PAGO -->
+    <div class="max-w-md mx-auto">
+        <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <!-- Encabezado de pago -->
+            <div class="bg-gray-50 p-6 text-center border-b border-gray-100">
+                <Badge variant="yellow" class="mb-3">Pendiente de pago</Badge>
+                <p class="text-gray-600 text-sm font-medium mb-1">Monto exacto a transferir</p>
+                <p class="text-4xl font-extrabold text-gray-900">{formatCurrency(Number(pagoActual.monto))}</p>
+            </div>
+
+            <!-- Cuerpo del pago -->
+            <div class="p-6 md:p-8 bg-white">
+                <div class="space-y-6">
+                    {#if pagoActual.metodoPago === "nequi"}
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-[#251d48] rounded-2xl mx-auto flex items-center justify-center p-3 mb-4 shadow-sm">
+                                <svg viewBox="4.86 5.41 559.65 132.36" class="w-full h-full"><path d="m32.44 30.19c.73-.6 1.47-1.19 2.2-1.79.58-.03 1.14-.07 1.06-.89l-.05.06c9.45-3.76 18.12-9.03 26.92-14.04l1.25-.03c12.32 5.87 24.91 11.09 37.68 15.88.56.39 1.13.77 1.69 1.16 6.99 8.99 14.48 17.54 22.09 26l.15.94c-3.9 11.81-6.79 23.9-9.78 35.97-.32.6-.63 1.19-.95 1.79-9.47 10.39-18.95 20.78-28.42 31.17-.6-.24-1.23-.44-1.8-.73-13.33-6.92-26.65-13.85-39.97-20.78-.66-.5-1.31-1-1.97-1.5-.03-.64-.31-1.04-1.01-1.03l.04.04c-.07-1.63-1.34-2.6-2.16-3.8-8.81-12.97-18.64-25.22-26.87-38.59 2.13-3.13 4.34-6.2 6.36-9.4 4.36-6.91 10.16-12.87 13.54-20.43z" fill="#40bacd"/></svg>
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-lg mb-1">Envía por Nequi</h3>
+                            <p class="text-sm text-gray-500 mb-4">Abre la app de Nequi y envía el dinero al siguiente número:</p>
+                            
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between group cursor-pointer hover:bg-gray-100 transition-colors" onclick={() => copiar("302260062", "Número copiado")}>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium">Celular Nequi</p>
+                                    <p class="text-xl font-mono font-bold text-gray-900 tracking-wider">302 260 062</p>
+                                </div>
+                                <div class="text-primary-600 group-hover:scale-110 transition-transform">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    {:else}
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-gray-100 rounded-2xl mx-auto flex items-center justify-center text-gray-600 mb-4 shadow-sm">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+                            </div>
+                            <h3 class="font-bold text-gray-900 text-lg mb-1">Transferencia Bancaria</h3>
+                            <p class="text-sm text-gray-500 mb-4">Realiza una transferencia a la siguiente cuenta:</p>
+                            
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left mb-4 space-y-3">
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium">Banco</p>
+                                    <p class="font-semibold text-gray-900">Bancolombia</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium">Tipo de cuenta</p>
+                                    <p class="font-semibold text-gray-900">Ahorros</p>
+                                </div>
+                                <div class="flex justify-between items-end cursor-pointer group" onclick={() => copiar("1234567890", "Cuenta copiada")}>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium">Número de cuenta</p>
+                                        <p class="font-mono font-bold text-gray-900 tracking-wider">123-456-7890</p>
+                                    </div>
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4 flex items-center justify-between cursor-pointer group" onclick={() => copiar(pagoActual?.referencia || "", "Referencia copiada")}>
+                                <div class="text-left">
+                                    <p class="text-xs text-primary-600 font-medium uppercase tracking-wide">Ref de pago (Importante)</p>
+                                    <p class="text-lg font-mono font-bold text-primary-900 mt-0.5">{pagoActual.referencia}</p>
+                                </div>
+                                <svg class="w-5 h-5 text-primary-400 group-hover:text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+
+                <hr class="border-gray-200 border-dashed my-6">
+
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <label for="comprobante" class="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-2">
+                            Comprobante (Opcional)
+                        </label>
+                        <Input
+                            id="comprobante"
+                            bind:value={comprobanteUrl}
+                            placeholder="Enlace a la imagen o captura de pantalla"
+                            class="bg-white"
+                        />
+                        <p class="text-[11px] text-gray-500 mt-2">Puedes adjuntar un enlace a la captura del pago para acelerar la verificación.</p>
+                    </div>
+
+                    <div class="pt-2">
+                        <Button
+                            variant="primary"
+                            onclick={confirmarPago}
+                            loading={procesando}
+                            fullWidth
+                            size="lg"
+                        >
+                            Confirmar que ya pagué
+                        </Button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 text-center border-t border-gray-100">
+                <button type="button" class="text-sm font-medium text-gray-500 hover:text-gray-800 underline" onclick={cambiarPlan}>
+                    ← Cancelar y cambiar de plan
                 </button>
             </div>
         </div>
-
-        <div
-            class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
-        >
-            <span class="text-sm font-medium text-gray-700">Total a pagar</span>
-            <span class="text-lg font-bold text-gray-900"
-                >{formatCurrency(montoTotal)}</span
-            >
-        </div>
-
-        <Button
-            variant="primary"
-            onclick={crearPago}
-            loading={procesando}
-            fullWidth
-        >
-            Continuar
-        </Button>
-    </div>
-{:else}
-    <div
-        class="bg-white border border-gray-200 rounded-xl p-4 space-y-4 max-w-xl"
-    >
-        <div class="text-center">
-            <Badge variant="yellow">Esperando pago</Badge>
-        </div>
-
-        <div class="text-center">
-            <p class="text-sm text-gray-500">Total a pagar</p>
-            <p class="text-2xl font-bold text-gray-900">
-                {formatCurrency(Number(pagoActual.monto))}
-            </p>
-        </div>
-
-        <div class="text-sm text-gray-600 space-y-2">
-            <p class="font-medium">Instrucciones:</p>
-            {#if metodoPago === "nequi"}
-                <ol class="list-decimal list-inside space-y-1 text-gray-500">
-                    <li>Abre Nequi en tu celular</li>
-                    <li>
-                        Envía <span class="font-medium"
-                            >{formatCurrency(Number(pagoActual.monto))}</span
-                        >
-                        al
-                        <span class="font-mono">
-                            <strong>302260062</strong>
-                        </span>
-                    </li>
-                </ol>
-            {:else}
-                <ol class="list-decimal list-inside space-y-1 text-gray-500">
-                    <li>Transfiere a Bancolombia CTA ***4567</li>
-                    <li>
-                        Monto: <span class="font-medium"
-                            >{formatCurrency(Number(pagoActual.monto))}</span
-                        >
-                    </li>
-                    <li>
-                        Referencia: <span class="font-mono"
-                            >{pagoActual.referencia}</span
-                        >
-                    </li>
-                </ol>
-            {/if}
-        </div>
-
-        <Input
-            bind:value={comprobanteUrl}
-            placeholder="URL del comprobante (opcional)"
-        />
-
-        <Button
-            variant="primary"
-            onclick={confirmarPago}
-            loading={procesando}
-            fullWidth
-        >
-            Ya pagué
-        </Button>
-
-        <Button variant="ghost" onclick={cambiarPlan} fullWidth>
-            Cambiar plan
-        </Button>
     </div>
 {/if}

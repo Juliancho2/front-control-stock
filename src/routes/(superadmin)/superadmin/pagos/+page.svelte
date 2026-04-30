@@ -17,7 +17,7 @@
 
     let pagos: PagoSuscripcion[] = [];
     let cargando = true;
-    let procesando: string | null = null;
+    let accionProcesando: { id: string, tipo: 'aprobar' | 'rechazar' } | null = null;
 
     let modalRechazarOpen = false;
     let pagoARechazar: string | null = null;
@@ -35,7 +35,7 @@
     }
 
     async function aprobar(id: string) {
-        procesando = id;
+        accionProcesando = { id, tipo: 'aprobar' };
         try {
             await pagosSuscripcionApi.aprobar(id, accessToken);
             toastStore.exito("Pago aprobado");
@@ -43,7 +43,7 @@
         } catch (e: any) {
             toastStore.error(e?.mensajes?.[0] ?? "Error al aprobar");
         } finally {
-            procesando = null;
+            accionProcesando = null;
         }
     }
 
@@ -58,7 +58,7 @@
             toastStore.error("Ingresa el motivo del rechazo");
             return;
         }
-        procesando = pagoARechazar;
+        accionProcesando = { id: pagoARechazar, tipo: 'rechazar' };
         modalRechazarOpen = false;
         try {
             await pagosSuscripcionApi.rechazar(pagoARechazar, observacionesRechazo, accessToken);
@@ -67,7 +67,7 @@
         } catch (e: any) {
             toastStore.error(e?.mensajes?.[0] ?? "Error al rechazar");
         } finally {
-            procesando = null;
+            accionProcesando = null;
             pagoARechazar = null;
         }
     }
@@ -121,10 +121,10 @@
                         <td class="text-right">
                             {#if p.estado !== "aprobado"}
                                 <div class="flex justify-end gap-2">
-                                    <Button size="sm" onclick={() => aprobar(p.id)} loading={procesando === p.id}>
+                                    <Button size="sm" onclick={() => aprobar(p.id)} loading={accionProcesando?.id === p.id && accionProcesando?.tipo === 'aprobar'}>
                                         Aprobar
                                     </Button>
-                                    <Button size="sm" variant="danger" onclick={() => abrirModalRechazar(p.id)} loading={procesando === p.id}>
+                                    <Button size="sm" variant="danger" onclick={() => abrirModalRechazar(p.id)} loading={accionProcesando?.id === p.id && accionProcesando?.tipo === 'rechazar'}>
                                         Rechazar
                                     </Button>
                                 </div>
@@ -152,7 +152,7 @@
         <Button variant="secondary" onclick={() => (modalRechazarOpen = false)}>
             Cancelar
         </Button>
-        <Button variant="danger" onclick={confirmarRechazo} loading={!!procesando}>
+        <Button variant="danger" onclick={confirmarRechazo} loading={accionProcesando?.tipo === 'rechazar'}>
             Rechazar
         </Button>
     </svelte:fragment>

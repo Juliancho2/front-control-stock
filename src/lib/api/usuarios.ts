@@ -20,4 +20,10 @@ export const usuariosApi = {
 
     toggleActivo: (id: string, activo: boolean, token?: string) =>
         api.patch<Usuario>(`/usuarios/${id}`, { activo }, { token }),
+
+    cambiarPasswordUsuario: (id: string, password: string, token?: string) =>
+        api.patch<Usuario>(`/usuarios/${id}`, { password }, { token }),
+
+    cambiarMiPassword: (passwordActual: string, passwordNuevo: string, token?: string) =>
+        api.patch<void>('/usuarios/me/password', { passwordActual, passwordNuevo }, { token }),
 };

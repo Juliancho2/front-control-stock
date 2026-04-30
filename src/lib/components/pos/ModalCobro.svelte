@@ -10,12 +10,14 @@
     export let open = false;
     export let total = 0;
     export let procesando = false;
+    export let clientes: { id: string, nombre: string, rucCedula?: string }[] = [];
 
     const dispatch = createEventDispatcher<{
         confirmar: {
             tipoComprobante: TipoComprobante;
             formaPago: FormaPago;
             pagos: { metodo: MetodoPago; monto: number; referencia?: string }[];
+            clienteId: string | null;
         };
     }>();
 
@@ -23,6 +25,7 @@
     let formaPago: FormaPago = "efectivo";
     let montoRecibido: number = 0;
     let referencia = "";
+    let clienteId: string | null = null;
 
     // Para pago mixto
     let pagosMixto: {
@@ -66,6 +69,7 @@
         formaPago = "efectivo";
         montoRecibido = total;
         referencia = "";
+        clienteId = null;
         pagosMixto = [];
         errorCobro = "";
     }
@@ -127,7 +131,12 @@
             ];
         }
 
-        dispatch("confirmar", { tipoComprobante, formaPago, pagos });
+        if (formaPago === "credito" && !clienteId) {
+            errorCobro = "Debes seleccionar un cliente para ventas a crédito";
+            return;
+        }
+
+        dispatch("confirmar", { tipoComprobante, formaPago, pagos, clienteId });
     }
 
     $: puedeConfirmar =
@@ -167,6 +176,15 @@
                 bind:value={formaPago}
             />
         </div>
+
+        <Select
+            label="Cliente (Opcional)"
+            options={[
+                { value: "", label: "Consumidor Final" },
+                ...clientes.map(c => ({ value: c.id, label: `${c.nombre} ${c.rucCedula ? `(${c.rucCedula})` : ''}` }))
+            ]}
+            bind:value={clienteId}
+        />
 
         <!-- Pago efectivo -->
         {#if formaPago === "efectivo"}

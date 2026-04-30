@@ -8,5 +8,11 @@ export const notificacionesApi = {
 		api.patch<void>(`/notificaciones/${id}/leida`, {}),
 	
 	marcarTodasLeidas: () => 
-		api.post<void>('/notificaciones/marcar-todas', {})
+		api.post<void>('/notificaciones/marcar-todas', {}),
+	
+	eliminar: (id: string) =>
+		api.patch<void>(`/notificaciones/${id}/eliminar`, {}),
+
+	eliminarTodas: () =>
+		api.delete<void>('/notificaciones/eliminar-todas')
 };

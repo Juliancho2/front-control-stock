@@ -46,6 +46,50 @@
     let usuarioToggle: Usuario | null = null;
     let toggling = false;
 
+    // Cambio de contraseña (otros usuarios)
+    let usuarioCambioPassword: Usuario | null = null;
+    let nuevoPasswordUsuario = "";
+    let confirmarPasswordUsuario = "";
+    let cambiandoPasswordUsuario = false;
+    let errorPasswordUsuario = "";
+
+    function abrirCambioPassword(u: Usuario) {
+        usuarioCambioPassword = u;
+        nuevoPasswordUsuario = "";
+        confirmarPasswordUsuario = "";
+        errorPasswordUsuario = "";
+    }
+
+    async function cambiarPassword() {
+        errorPasswordUsuario = "";
+        if (!usuarioCambioPassword || !nuevoPasswordUsuario) {
+            errorPasswordUsuario = "La nueva contraseña es obligatoria";
+            return;
+        }
+        if (nuevoPasswordUsuario !== confirmarPasswordUsuario) {
+            errorPasswordUsuario = "Las contraseñas no coinciden";
+            return;
+        }
+        if (nuevoPasswordUsuario.length < 8) {
+            errorPasswordUsuario = "Mínimo 8 caracteres";
+            return;
+        }
+        cambiandoPasswordUsuario = true;
+        try {
+            await usuariosApi.cambiarPasswordUsuario(
+                usuarioCambioPassword.id,
+                nuevoPasswordUsuario,
+                accessToken,
+            );
+            toastStore.exito("Contraseña actualizada correctamente");
+            usuarioCambioPassword = null;
+        } catch (e: any) {
+            errorPasswordUsuario = e?.mensajes?.[0] ?? "Error al cambiar contraseña";
+        } finally {
+            cambiandoPasswordUsuario = false;
+        }
+    }
+
     async function cargar() {
         cargando = true;
         try {
@@ -289,6 +333,12 @@
                         >
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
+                                <button
+                                    onclick={() => abrirCambioPassword(u)}
+                                    class="text-xs text-primary-500 hover:underline"
+                                >
+                                    Cambiar contraseña
+                                </button>
                                 <button
                                     onclick={() => abrirCambioRol(u)}
                                     class="text-xs text-primary-500 hover:underline"
@@ -559,6 +609,53 @@
                     fullWidth
                     loading={cambiandoRol}
                     onclick={cambiarRol}>Guardar</Button
+                >
+            </div>
+        </div>
+    </div>
+{/if}
+
+
+<!-- Modal cambio de contraseña -->
+{#if usuarioCambioPassword}
+    <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+    <div
+        class="fixed inset-0 z-40 bg-black/40 flex items-center justify-center p-4"
+        onclick={() => (usuarioCambioPassword = null)}
+    >
+        <div
+            class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-5 space-y-4"
+            onclick={(e) => e.stopPropagation()}
+        >
+            <h2 class="text-base font-semibold text-gray-900">
+                Cambiar contraseña de {usuarioCambioPassword.nombre}
+            </h2>
+            <Input
+                label="Nueva contraseña"
+                type="password"
+                bind:value={nuevoPasswordUsuario}
+                placeholder="Mínimo 8 caracteres"
+            />
+            <Input
+                label="Confirmar contraseña"
+                type="password"
+                bind:value={confirmarPasswordUsuario}
+                placeholder="Repite la contraseña"
+            />
+            {#if errorPasswordUsuario}
+                <p class="text-xs text-danger-500">{errorPasswordUsuario}</p>
+            {/if}
+            <div class="flex gap-3">
+                <Button
+                    variant="secondary"
+                    fullWidth
+                    onclick={() => (usuarioCambioPassword = null)}>Cancelar</Button
+                >
+                <Button
+                    variant="primary"
+                    fullWidth
+                    loading={cambiandoPasswordUsuario}
+                    onclick={cambiarPassword}>Guardar</Button
                 >
             </div>
         </div>

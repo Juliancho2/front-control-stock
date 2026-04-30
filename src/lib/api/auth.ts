@@ -13,4 +13,10 @@ export const authApi = {
 
 	perfil: (token?: string): Promise<Usuario> =>
 		api.get<Usuario>('/auth/perfil', { token }),
+
+	olvidePassword: (email: string): Promise<void> =>
+		api.post<void>('/auth/forgot-password', { email }),
+
+	resetPassword: (token: string, newPassword: string): Promise<void> =>
+		api.post<void>('/auth/reset-password', { token, newPassword }),
 };

@@ -3,6 +3,7 @@
     import BuscadorProducto from "$components/pos/BuscadorProducto.svelte";
     import ItemCarrito from "$components/pos/ItemCarrito.svelte";
     import ModalCobro from "$components/pos/ModalCobro.svelte";
+    import TicketVenta from "$components/pos/TicketVenta.svelte";
     import ConfirmDialog from "$components/ui/ConfirmDialog.svelte";
     import Button from "$components/ui/Button.svelte";
     import EmptyState from "$components/ui/EmptyState.svelte";
@@ -23,8 +24,9 @@
     } from "../../../lib/index";
     import { ventasApi } from "$api/ventas";
     import { cajaApi } from "$api/caja";
+    import { clientesApi } from "$api/clientes";
     import { formatCurrency, formatFechaHora } from "$utils/index";
-    import type { Producto } from "$types/index";
+    import type { Producto, Cliente, Venta } from "$types/index";
     import { goto } from "$app/navigation";
 
     let modalCobroAbierto = false;
@@ -32,6 +34,8 @@
     let procesandoVenta = false;
     let cargandoTurno = true;
     let vistaMovil: "productos" | "carrito" = "productos";
+    let clientes: Cliente[] = [];
+    let ventaImprimir: Venta | null = null;
 
     export let data;
 
@@ -46,6 +50,14 @@
         } finally {
             cargandoTurno = false;
         }
+
+        try {
+            const res = await clientesApi.listar({ limit: 1000 }, accessToken);
+            clientes = res.data.filter(c => c.activo);
+        } catch (e) {
+            console.error("No se pudieron cargar los clientes");
+        }
+
         // Si no hay turno abierto después de cargar, redirigir
         if (!$hayTurnoAbierto) goto("/turno");
     });
@@ -61,6 +73,7 @@
             tipoComprobante: any;
             formaPago: any;
             pagos: any[];
+            clienteId: string | null;
         }>,
     ) {
         if (!turnoStore.turnoId) {
@@ -72,6 +85,7 @@
 
         const payload = {
             turnoId: turnoStore.turnoId,
+            clienteId: e.detail.clienteId || undefined,
             tipoComprobante: e.detail.tipoComprobante,
             formaPago: e.detail.formaPago,
             pagos: e.detail.pagos,
@@ -88,10 +102,16 @@
             if ($estaOnline) {
                 // Online: registrar directamente
                 const venta = await ventasApi.crear(payload, accessToken);
+                ventaImprimir = venta;
                 carritoStore.limpiar();
                 modalCobroAbierto = false;
                 toastStore.exito(`Venta ${venta.numeroFactura} registrada`);
                 turnoStore.sumarVenta($totalCarrito);
+
+                setTimeout(() => {
+                    window.print();
+                    setTimeout(() => ventaImprimir = null, 1000);
+                }, 300);
             } else {
                 // Offline: encolar para sincronizar después
                 offlineStore.agregarVenta(payload);
@@ -386,6 +406,7 @@
         bind:open={modalCobroAbierto}
         total={$totalCarrito}
         procesando={procesandoVenta}
+        {clientes}
         on:confirmar={procesarVenta}
     />
 
@@ -399,4 +420,8 @@
             modalLimpiarAbierto = false;
         }}
     />
+
+    {#if ventaImprimir}
+        <TicketVenta venta={ventaImprimir} />
+    {/if}
 {/if}

@@ -31,6 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     let sesion: {
         usuario: { id: string; nombre: string; email: string; rol: RolUsuario };
         accessToken: string;
+        tenantNombre?: string;
         suscripcion?: InfoSuscripcion;
     } | null = null;
 
@@ -50,6 +51,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.usuario = sesion.usuario;
     event.locals.accessToken = sesion.accessToken;
     event.locals.suscripcion = sesion.suscripcion ?? null;
+    event.locals.tenantNombre = sesion.tenantNombre ?? null;
 
     // ─── Redirigir la raíz al panel correcto según rol ────────────
     if (pathname === '/') {

@@ -36,15 +36,15 @@
         </nav>
     {/if}
 
-    <div class="flex items-start justify-between gap-4">
-        <div>
-            <h1 class="text-xl font-semibold text-gray-900">{titulo}</h1>
+    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="text-xl font-semibold text-gray-900 truncate">{titulo}</h1>
             {#if descripcion}
                 <p class="text-sm text-gray-500 mt-0.5">{descripcion}</p>
             {/if}
         </div>
         {#if $$slots.default}
-            <div class="flex items-center gap-2 flex-shrink-0">
+            <div class="flex items-center gap-2 flex-shrink-0 flex-wrap">
                 <slot />
             </div>
         {/if}

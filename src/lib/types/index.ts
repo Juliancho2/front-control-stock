@@ -112,6 +112,7 @@ export interface SesionActiva {
 	expiresIn: number;
 	usuario: Pick<Usuario, 'id' | 'nombre' | 'email' | 'rol'>;
 	tenantId: string;
+	tenantNombre?: string;
 	suscripcion?: InfoSuscripcion;
 }
 

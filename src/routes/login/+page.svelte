@@ -1,12 +1,37 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import type { ActionData } from "./$types";
+	import { authApi } from "$api/auth";
 
 	export let form: ActionData;
 
 	let cargando = false;
 	let mostrarPassword = false;
 	let errores: Record<string, string> = {};
+
+	// Recuperación de contraseña
+	let mostrarModalOlvide = false;
+	let emailRecuperar = "";
+	let enviandoCorreo = false;
+	let mensajeRecuperacion = "";
+	let errorRecuperacion = "";
+
+	async function solicitarRecuperacion() {
+		errorRecuperacion = "";
+		if (!emailRecuperar || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRecuperar)) {
+			errorRecuperacion = "Ingresa un correo electrónico válido";
+			return;
+		}
+		enviandoCorreo = true;
+		try {
+			await authApi.olvidePassword(emailRecuperar);
+			mensajeRecuperacion = "Si el correo está registrado, recibirás un enlace de recuperación pronto.";
+		} catch (e) {
+			errorRecuperacion = "Hubo un error al intentar enviar el correo.";
+		} finally {
+			enviandoCorreo = false;
+		}
+	}
 
 	function validarLocal(formData: FormData): boolean {
 		errores = {};
@@ -122,12 +147,15 @@
 
 					<!-- Password -->
 					<div>
-						<label
-							for="password"
-							class="block text-sm font-medium text-gray-700 mb-1"
-						>
-							Contraseña
-						</label>
+						<div class="flex items-center justify-between mb-1">
+							<label
+								for="password"
+								class="block text-sm font-medium text-gray-700"
+							>
+								Contraseña
+							</label>
+							
+						</div>
 						<div class="relative">
 							<input
 								id="password"
@@ -181,6 +209,13 @@
 										/>
 									</svg>
 								{/if}
+							</button>
+							<button
+								type="button"
+								class="text-xs text-primary-600 float-right  mt-2 hover:text-primary-800 font-medium"
+								onclick={() => { mostrarModalOlvide = true; mensajeRecuperacion = ""; emailRecuperar = ""; }}
+							>
+								¿Olvidaste tu contraseña?
 							</button>
 						</div>
 						{#if errores.password}<p
@@ -239,3 +274,66 @@
 		<p class="text-center text-xs text-gray-400 mt-3">FerreControl v1.0</p>
 	</div>
 </div>
+
+<!-- Modal Olvidé mi contraseña -->
+{#if mostrarModalOlvide}
+	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+	<div
+		class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+		onclick={() => (mostrarModalOlvide = false)}
+	>
+		<div
+			class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden"
+			onclick={(e) => e.stopPropagation()}
+		>
+			<div class="px-5 py-4 border-b border-gray-100">
+				<h2 class="text-base font-semibold text-gray-900">Recuperar contraseña</h2>
+				<p class="text-xs text-gray-500 mt-1">
+					Ingresa tu correo y te enviaremos las instrucciones.
+				</p>
+			</div>
+
+			<div class="p-5">
+				{#if mensajeRecuperacion}
+					<div class="p-3 bg-green-50 text-green-700 text-sm rounded-lg mb-4">
+						{mensajeRecuperacion}
+					</div>
+				{:else}
+					<div class="mb-4">
+						<input
+							type="email"
+							bind:value={emailRecuperar}
+							placeholder="correo@ejemplo.com"
+							class="input"
+							disabled={enviandoCorreo}
+						/>
+						{#if errorRecuperacion}
+							<p class="text-xs text-danger-500 mt-1">{errorRecuperacion}</p>
+						{/if}
+					</div>
+				{/if}
+
+				<div class="flex gap-3 mt-4">
+					<button
+						type="button"
+						class="btn-secondary flex-1 text-sm py-2"
+						onclick={() => (mostrarModalOlvide = false)}
+						disabled={enviandoCorreo}
+					>
+						Cerrar
+					</button>
+					{#if !mensajeRecuperacion}
+						<button
+							type="button"
+							class="btn-primary flex-1 text-sm py-2"
+							onclick={solicitarRecuperacion}
+							disabled={enviandoCorreo}
+						>
+							{enviandoCorreo ? 'Enviando...' : 'Enviar correo'}
+						</button>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
