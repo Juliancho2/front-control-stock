@@ -15,8 +15,8 @@
     </div>
 
     <div class="ticket-info">
-        <p>Cajero: {venta.usuarioNombre}</p>
-        <p>Cliente: {venta.clienteNombre || "Consumidor Final"}</p>
+        <p>Cajero: {venta.usuario?.nombre}</p>
+        <p>Cliente: {venta.cliente?.nombre || "Consumidor Final"}</p>
         <p>Pago: <span class="capitalize">{venta.formaPago}</span></p>
     </div>
 
