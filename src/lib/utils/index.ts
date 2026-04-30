@@ -1,5 +1,9 @@
 // ─── Moneda ───────────────────────────────────────────────────
 
+export function formatMiles(valor: number): string {
+	return new Intl.NumberFormat("es-CO").format(valor);
+}
+
 export function formatCurrency(
 	valor: number,
 	moneda = 'USD',

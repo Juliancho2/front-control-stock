@@ -20,11 +20,25 @@
 
     let cargando = true;
     let procesando = false;
-    let montoApertura = 50;
+    let montoApertura = 50000;
     let montoCierre = 0;
     let observaciones = "";
     let cuadre: any = null;
     let errores: Record<string, string> = {};
+
+    function formatMiles(value: number): string {
+        return new Intl.NumberFormat("es-CO").format(value);
+    }
+
+    function onInputApertura(e: Event) {
+        const value = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+        montoApertura = Number(value) || 0;
+    }
+
+    function onInputCierre(e: Event) {
+        const value = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+        montoCierre = Number(value) || 0;
+    }
 
     onMount(async () => {
         // El turno ya se inicializa en el layout (+layout.svelte)
@@ -179,13 +193,20 @@
                         </div>
                     </div>
 
-                    <Input
-                        label="Monto contado en caja"
-                        type="number"
-                        bind:value={montoCierre}
-                        error={errores.montoCierre}
-                        hint="Cuenta el efectivo físico en la caja"
-                    />
+                    <div class="flex flex-col gap-1">
+                        <label for="monto-cierre" class="text-sm font-medium text-gray-700">
+                            Monto contado en caja
+                        </label>
+                        <input
+                            id="monto-cierre"
+                            type="text"
+                            value={formatMiles(montoCierre)}
+                            oninput={onInputCierre}
+                            class="input text-lg font-semibold"
+                            placeholder="0"
+                        />
+                        <p class="text-xs text-gray-400">Cuenta el efectivo físico en la caja</p>
+                    </div>
                     <Input
                         label="Observaciones"
                         bind:value={observaciones}
@@ -218,13 +239,20 @@
                         Ingresa el monto con el que inicia la caja (fondo de
                         cambio).
                     </p>
-                    <Input
-                        label="Fondo de apertura (COP)"
-                        type="number"
-                        bind:value={montoApertura}
-                        error={errores.montoApertura}
-                        hint="Dinero en efectivo disponible para dar cambio"
-                    />
+                    <div class="flex flex-col gap-1">
+                        <label for="monto-apertura" class="text-sm font-medium text-gray-700">
+                            Fondo de apertura (COP)
+                        </label>
+                        <input
+                            id="monto-apertura"
+                            type="text"
+                            value={formatMiles(montoApertura)}
+                            oninput={onInputApertura}
+                            class="input text-lg font-semibold"
+                            placeholder="0"
+                        />
+                        <p class="text-xs text-gray-400">Dinero en efectivo disponible para dar cambio</p>
+                    </div>
                     <Input
                         label="Observaciones"
                         bind:value={observaciones}

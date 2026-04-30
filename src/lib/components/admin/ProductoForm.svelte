@@ -4,6 +4,7 @@
     import Input from "$components/ui/Input.svelte";
     import Select from "$components/ui/Select.svelte";
     import type { Producto, Categoria } from "$types/index";
+    import { formatMiles } from "$utils/index";
 
     export let producto: Partial<Producto> = {};
     export let categorias: Categoria[] = [];
@@ -28,6 +29,14 @@
     let iva = producto.iva ?? 0;
 
     let errores: Record<string, string> = {};
+
+    function onInputPrecio(e: Event, field: string) {
+        const value = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+        const numValue = Number(value) || 0;
+        if (field === "precio-compra") precioCompra = numValue;
+        else if (field === "precio-venta") precioVenta = numValue;
+        else if (field === "precio-mayorista") precioMayorista = numValue;
+    }
 
     function generarSKU() {
         const prefix = "PROD";
@@ -170,35 +179,59 @@
         />
     </div>
 
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+            <label for="precio-compra" class="text-sm font-medium text-gray-700">
+                Precio de compra
+            </label>
+            <input
+                id="precio-compra"
+                type="text"
+                value={formatMiles(precioCompra)}
+                oninput={(e) => onInputPrecio(e, "precio-compra")}
+                class="input text-right"
+                placeholder="0"
+            />
+        </div>
+        <div class="flex flex-col gap-1">
+            <label for="precio-venta" class="text-sm font-medium text-gray-700">
+                Precio de venta <span class="text-danger-400">*</span>
+            </label>
+            <input
+                id="precio-venta"
+                type="text"
+                value={formatMiles(precioVenta)}
+                oninput={(e) => onInputPrecio(e, "precio-venta")}
+                class="input text-right font-medium"
+                placeholder="0"
+            />
+            {#if errores.precioVenta}
+                <p class="text-xs text-danger-600">{errores.precioVenta}</p>
+            {/if}
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Input
-            label="Precio de compra"
-            type="number"
-            step="0.01"
-            bind:value={precioCompra}
-            error={errores.precioCompra}
-        />
-        <Input
-            label="Precio de venta"
-            type="number"
-            step="0.01"
-            bind:value={precioVenta}
-            error={errores.precioVenta}
-            required
-        />
         <Select
             label="IVA (%)"
             options={opcionesIVA}
             bind:value={iva}
             placeholder="Sin IVA"
         />
-        <Input
-            label="Precio mayorista"
-            type="number"
-            step="0.01"
-            bind:value={precioMayorista}
-            hint="Opcional"
-        />
+        <div class="flex flex-col gap-1">
+            <label for="precio-mayorista" class="text-sm font-medium text-gray-700">
+                Precio mayorista
+            </label>
+            <input
+                id="precio-mayorista"
+                type="text"
+                value={formatMiles(precioMayorista)}
+                oninput={(e) => onInputPrecio(e, "precio-mayorista")}
+                class="input text-right"
+                placeholder="0"
+            />
+            <p class="text-xs text-gray-400">Opcional</p>
+        </div>
     </div>
 
     {#if modo === "editar"}
