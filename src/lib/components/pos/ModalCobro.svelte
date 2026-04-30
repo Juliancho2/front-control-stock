@@ -56,15 +56,43 @@
         { value: "qr", label: "QR" },
     ];
 
-    $: cambio =
-        formaPago === "efectivo"
-            ? Math.max(0, Number(montoRecibido) - total)
-            : 0;
+    $: cambio = Math.max(0, Number(montoRecibido) - total);
     $: totalMixto = pagosMixto.reduce((s, p) => s + Number(p.monto), 0);
     $: faltanteMixto = Math.max(0, total - totalMixto);
 
-    // Reset al abrir
-    $: if (open) {
+    function addMonto(cantidad: number) {
+        montoRecibido = Number(montoRecibido) + cantidad;
+        setTimeout(() => inputMonto?.focus(), 100);
+    }
+
+    let inputMonto: HTMLInputElement;
+
+    function onInputMonto(e: Event) {
+        const value = (e.target as HTMLInputElement).value.replace(/\D/g, "");
+        montoRecibido = Number(value) || 0;
+    }
+
+    function formatMiles(value: number): string {
+        return new Intl.NumberFormat("es-CO").format(value);
+    }
+
+    function quickAmounts() {
+        const t = Number(total);
+        const amounts = [];
+        if (t > 0) amounts.push(t);
+        if (t > 10000) amounts.push(Math.ceil(t / 10000) * 10000);
+        if (t > 20000) amounts.push(Math.ceil(t / 20000) * 20000);
+        if (t > 50000) amounts.push(Math.ceil(t / 50000) * 50000);
+        if (t <= 10000) amounts.push(15000);
+        if (t <= 20000) amounts.push(20000);
+        if (t <= 50000) amounts.push(50000);
+        if (t <= 100000) amounts.push(100000);
+        return [...new Set(amounts)].sort((a, b) => a - b).slice(0, 5);
+    }
+
+    let wasOpen = false;
+    $: if (open && !wasOpen) {
+        wasOpen = true;
         tipoComprobante = "boleta";
         formaPago = "efectivo";
         montoRecibido = total;
@@ -72,7 +100,9 @@
         clienteId = null;
         pagosMixto = [];
         errorCobro = "";
+        setTimeout(() => inputMonto?.focus(), 300);
     }
+    $: if (!open) wasOpen = false;
 
     function agregarPagoMixto() {
         pagosMixto = [
@@ -136,32 +166,56 @@
             return;
         }
 
+        if (Number(montoRecibido) < total) {
+            errorCobro = "El monto recibido es menor al total";
+            return;
+        }
+
         dispatch("confirmar", { tipoComprobante, formaPago, pagos, clienteId });
     }
 
+    function onKeydown(e: KeyboardEvent) {
+        if (e.key === "Enter" && puedeConfirmar && !procesando) {
+            confirmar();
+        }
+    }
+
     $: puedeConfirmar =
-        formaPago === "mixto"
+        Number(montoRecibido) >= total &&
+        (formaPago === "mixto"
             ? totalMixto >= total
             : formaPago === "efectivo"
               ? Number(montoRecibido) >= total
-              : true;
+              : true);
 </script>
 
-<Modal bind:open title="Cobrar venta" size="lg">
+<Modal bind:open title="Cobrar venta" size="lg" onkeydown={onKeydown}>
     <div class="space-y-5">
         <!-- Total destacado -->
         <div
-            class="text-center bg-primary-50 rounded-xl py-4 px-6 border border-primary-100"
+            class="text-center bg-gray-100 rounded-xl py-4 px-6 border border-gray-200"
         >
             <p
-                class="text-xs text-primary-600 font-medium uppercase tracking-wide"
+                class="text-xs  font-medium uppercase tracking-wide"
             >
                 Total a cobrar
             </p>
-            <p class="text-3xl font-bold text-primary-700 mt-1">
+            <p class="text-2xl font-bold text-primary-700 mt-1">
                 {formatCurrency(total)}
             </p>
         </div>
+
+        <!-- Cambio destacado -->
+        {#if cambio > 0}
+            <div class="text-center bg-primary-50 rounded-xl py-4 px-6 border border-primary-100">
+                <p class="text-sm text-success-700 font-medium uppercase tracking-wide">
+                    Cambio
+                </p>
+                <p class="text-4xl font-bold text-success-700 mt-1">
+                    {formatCurrency(cambio)}
+                </p>
+            </div>
+        {/if}
 
         <!-- Tipo comprobante y forma de pago -->
         <div class="grid grid-cols-2 gap-4">
@@ -189,42 +243,50 @@
         <!-- Pago efectivo -->
         {#if formaPago === "efectivo"}
             <div class="space-y-3">
-                <Input
-                    label="Monto recibido"
-                    type="number"
-                    bind:value={montoRecibido}
-                    min={0}
-                    step="0.01"
-                />
+                <div class="flex flex-col gap-1">
+                    <label for="monto-recibido" class="text-sm font-medium text-gray-700">
+                        Monto recibido
+                    </label>
+                    <input
+                        id="monto-recibido"
+                        type="text"
+                        value={formatMiles(Number(montoRecibido))}
+                        oninput={onInputMonto}
+                        onkeydown={onKeydown}
+                        class="input text-lg font-semibold"
+                        placeholder="0"
+                        bind:this={inputMonto}
+                    />
+                </div>
                 <!-- Botones rápidos -->
                 <div class="flex gap-2 flex-wrap">
-                    {#each [total, Math.ceil(total), Math.ceil(total / 5) * 5, Math.ceil(total / 10) * 10, Math.ceil(total / 20) * 20] as monto}
-                        {#if monto >= total}
-                            <button
-                                type="button"
-                                onclick={() => (montoRecibido = monto)}
-                                class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors
-                                    {montoRecibido === monto
-                                    ? 'bg-primary-50 border-primary-300 text-primary-700'
-                                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'}"
-                            >
-                                {formatCurrency(monto)}
-                            </button>
-                        {/if}
+                    {#each quickAmounts() as monto}
+                        <button
+                            type="button"
+                            onclick={() => (montoRecibido = monto)}
+                            class="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors
+                                {montoRecibido === monto
+                                ? 'bg-primary-50 border-primary-300 text-primary-700'
+                                : 'border-gray-200 text-gray-600 hover:bg-gray-50'}"
+                        >
+                            {formatCurrency(monto)}
+                        </button>
                     {/each}
-                </div>
-                {#if cambio > 0}
-                    <div
-                        class="flex items-center justify-between bg-success-50 rounded-lg px-4 py-2 border border-success-200"
+                    <button
+                        type="button"
+                        onclick={() => addMonto(10000)}
+                        class="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
                     >
-                        <span class="text-sm text-success-700 font-medium"
-                            >Cambio</span
-                        >
-                        <span class="text-lg font-bold text-success-700"
-                            >{formatCurrency(cambio)}</span
-                        >
-                    </div>
-                {/if}
+                        +10K
+                    </button>
+                    <button
+                        type="button"
+                        onclick={() => addMonto(20000)}
+                        class="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50"
+                    >
+                        +20K
+                    </button>
+                </div>
             </div>
         {/if}
 
@@ -344,7 +406,7 @@
                     d="M5 13l4 4L19 7"
                 />
             </svg>
-            Confirmar cobro
+            Cobrar
         </Button>
     </svelte:fragment>
 </Modal>

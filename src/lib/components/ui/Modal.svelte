@@ -6,6 +6,7 @@
     export let title: string | undefined = undefined;
     export let size: "sm" | "md" | "lg" | "xl" = "md";
     export let closable = true;
+    export let onkeydown: ((e: KeyboardEvent) => void) | undefined = undefined;
 
     const dispatch = createEventDispatcher<{ close: void }>();
 
@@ -24,6 +25,7 @@
 
     function onKeydown(e: KeyboardEvent) {
         if (e.key === "Escape") cerrar();
+        onkeydown?.(e);
     }
 </script>
 
