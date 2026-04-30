@@ -1,14 +1,37 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import Topbar from "$components/layout/Topbar.svelte";
 	import {
 		hayTurnoAbierto,
 		turnoActivo,
 		estaOnline,
 		ventasPendientes,
+		turnoStore,
 	} from "../../lib/index";
+	import { cajaApi } from "$api/caja";
 	import type { LayoutData } from "./$types";
 
 	export let data: LayoutData;
+	const { accessToken } = data;
+
+	// Sincronizar el store con los datos del servidor (evita parpadeos)
+	$: {
+		if (data.turnoActivo !== undefined) {
+			turnoStore.inicializar(data.turnoActivo);
+		}
+	}
+
+	onMount(async () => {
+		// Por si acaso los datos no venían del servidor o para asegurar actualización
+		if (!$turnoActivo && accessToken) {
+			try {
+				const t = await cajaApi.turnoActivo(accessToken);
+				turnoStore.inicializar(t);
+			} catch {
+				turnoStore.inicializar(null);
+			}
+		}
+	});
 </script>
 
 <div class="h-screen flex flex-col overflow-hidden bg-gray-100">

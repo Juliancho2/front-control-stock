@@ -53,7 +53,7 @@
     }
 
     onMount(cargar);
-    $: if (page) cargar();
+    $: if (page || $turnoActivo) cargar();
 
     async function anular() {
         if (!ventaAnular || !motivoAnulacion.trim()) return;

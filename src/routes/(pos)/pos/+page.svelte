@@ -42,24 +42,24 @@
     const { accessToken } = data;
 
     onMount(async () => {
-        try {
-            const t = await cajaApi.turnoActivo(accessToken);
-            turnoStore.inicializar(t);
-        } catch {
-            turnoStore.inicializar(null);
-        } finally {
-            cargandoTurno = false;
-        }
-
+        // El turno ya se inicializa en el layout (+layout.svelte)
+        
         try {
             const res = await clientesApi.listar({ limit: 1000 }, accessToken);
             clientes = res.data.filter(c => c.activo);
         } catch (e) {
             console.error("No se pudieron cargar los clientes");
+        } finally {
+            cargandoTurno = false;
         }
 
-        // Si no hay turno abierto después de cargar, redirigir
-        if (!$hayTurnoAbierto) goto("/turno");
+        // Si no hay turno abierto después de cargar (damos un pequeño margen si es necesario), redirigir
+        // Nota: hayTurnoAbierto es derivado de turnoStore que se inicializa en el layout
+        if (!$hayTurnoAbierto && !cargandoTurno) {
+             // Si después de cargar clientes aún no hay turno, redirigimos
+             // Aunque el layout podría seguir cargando, usualmente termina antes o al mismo tiempo
+             goto("/turno");
+        }
     });
 
     function agregarProducto(e: CustomEvent<Producto>) {

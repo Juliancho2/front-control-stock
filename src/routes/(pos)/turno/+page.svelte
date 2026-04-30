@@ -27,14 +27,8 @@
     let errores: Record<string, string> = {};
 
     onMount(async () => {
-        try {
-            const t = await cajaApi.turnoActivo(accessToken);
-            turnoStore.inicializar(t);
-        } catch {
-            turnoStore.inicializar(null);
-        } finally {
-            cargando = false;
-        }
+        // El turno ya se inicializa en el layout (+layout.svelte)
+        cargando = false;
     });
 
     async function abrir() {
