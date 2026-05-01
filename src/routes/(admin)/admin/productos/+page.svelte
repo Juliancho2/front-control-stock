@@ -33,6 +33,9 @@
     let productoEliminar: Producto | null = null;
     let eliminando = false;
 
+    let seleccionados = new Set<string>();
+    let confirmandoMasivo = false;
+
     async function cargar() {
         cargando = true;
         try {
@@ -44,6 +47,8 @@
 
             productos = res.data;
             total = res.total;
+            seleccionados.clear();
+            seleccionados = seleccionados;
         } catch {
             toastStore.error("Error al cargar productos");
         } finally {
@@ -78,6 +83,24 @@
         cargar();
     }
 
+    function toggleSeleccion(id: string) {
+        if (seleccionados.has(id)) {
+            seleccionados.delete(id);
+        } else {
+            seleccionados.add(id);
+        }
+        seleccionados = seleccionados;
+    }
+
+    function toggleTodos() {
+        if (seleccionados.size === productos.length) {
+            seleccionados.clear();
+        } else {
+            productos.forEach((p) => seleccionados.add(p.id));
+        }
+        seleccionados = seleccionados;
+    }
+
     async function eliminar() {
         if (!productoEliminar) return;
         eliminando = true;
@@ -85,6 +108,23 @@
             await productosApi.eliminar(productoEliminar.id, accessToken);
             toastStore.exito("Producto eliminado");
             productoEliminar = null;
+            cargar();
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al eliminar");
+        } finally {
+            eliminando = false;
+        }
+    }
+
+    async function eliminarMasivo() {
+        if (seleccionados.size === 0) return;
+        eliminando = true;
+        try {
+            await productosApi.eliminarMultiple(Array.from(seleccionados), accessToken);
+            toastStore.exito(`${seleccionados.size} productos eliminados`);
+            seleccionados.clear();
+            seleccionados = seleccionados;
+            confirmandoMasivo = false;
             cargar();
         } catch (e: any) {
             toastStore.error(e?.mensajes?.[0] ?? "Error al eliminar");
@@ -157,6 +197,17 @@
     >
         Stock bajo
     </button>
+
+    {#if seleccionados.size > 0}
+        <div class="ml-auto flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
+            <span class="text-sm font-medium text-gray-500">
+                {seleccionados.size} seleccionados
+            </span>
+            <Button variant="danger" size="sm" onclick={() => confirmandoMasivo = true}>
+                Eliminar seleccionados
+            </Button>
+        </div>
+    {/if}
 </div>
 
 {#if cargando}
@@ -178,6 +229,14 @@
         <table class="table w-full text-sm">
             <thead>
                 <tr>
+                    <th class="w-10">
+                        <input
+                            type="checkbox"
+                            class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                            checked={seleccionados.size === productos.length && productos.length > 0}
+                            onchange={toggleTodos}
+                        />
+                    </th>
                     <th>SKU</th>
                     <th>Producto</th>
                     <th>Categoría</th>
@@ -190,7 +249,15 @@
             </thead>
             <tbody>
                 {#each productos as p}
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50 {seleccionados.has(p.id) ? 'bg-primary-50/30' : ''}">
+                        <td class="w-10">
+                            <input
+                                type="checkbox"
+                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                                checked={seleccionados.has(p.id)}
+                                onchange={() => toggleSeleccion(p.id)}
+                            />
+                        </td>
                         <td class="font-mono text-xs">{p.sku}</td>
                         <td>
                             <p class="font-medium text-gray-900">{p.nombre}</p>
@@ -248,4 +315,15 @@
     cargando={eliminando}
     on:confirmar={eliminar}
     on:cancelar={() => (productoEliminar = null)}
+/>
+
+<ConfirmDialog
+    open={confirmandoMasivo}
+    titulo="Eliminar productos seleccionados"
+    mensaje="¿Estás seguro de que deseas eliminar los {seleccionados.size} productos seleccionados? Esta acción los desactivará del sistema."
+    labelConfirmar="Eliminar todos"
+    variant="danger"
+    cargando={eliminando}
+    on:confirmar={eliminarMasivo}
+    on:cancelar={() => (confirmandoMasivo = false)}
 />

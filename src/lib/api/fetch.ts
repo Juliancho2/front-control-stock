@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { goto } from '$app/navigation';
+import { browser } from '$app/environment';
 import type { ApiError, ApiResponse } from '$types/index';
 
 // ─── Configuración ────────────────────────────────────────────
@@ -157,6 +158,6 @@ export const api = {
 	patch: <T>(path: string, body: unknown, opts?: FetchOptions) =>
 		apiFetch<T>(path, 'PATCH', body, opts),
 
-	delete: <T>(path: string, opts?: FetchOptions) =>
-		apiFetch<T>(path, 'DELETE', undefined, opts),
+	delete: <T>(path: string, opts?: FetchOptions & { body?: unknown }) =>
+		apiFetch<T>(path, 'DELETE', opts?.body, opts),
 };

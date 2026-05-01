@@ -40,4 +40,17 @@ export const productosApi = {
 
 	eliminar: (id: string, token?: string): Promise<void> =>
 		api.delete(`/productos/${id}`, { token }),
+
+	eliminarMultiple: (ids: string[], token?: string): Promise<void> =>
+		api.delete('/productos', { token, body: { ids } }),
+
+	importar: (
+		productos: any[],
+		token?: string
+	): Promise<{
+		total: number;
+		exitosas: number;
+		duplicados: number;
+		errores: { fila: number; mensaje: string }[];
+	}> => api.post('/productos/importar', { productos }, { token })
 };
