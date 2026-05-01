@@ -80,7 +80,7 @@
             buscandoProducto = true;
             try {
                 const res = await productosApi.listar(
-                    { q: query, limit: 10 },
+                    { q: query, limit: 10, conStock: true },
                     accessToken,
                 );
                 productosEncontrados = res.data;

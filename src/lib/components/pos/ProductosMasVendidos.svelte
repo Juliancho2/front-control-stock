@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Spinner from "$components/ui/Spinner.svelte";
     import { productosApi } from "$api/productos";
+    import { toastStore } from "$stores/toast.store";
     import type { Producto } from "$types/index";
     import { formatCurrency } from "$utils/index";
 
@@ -16,8 +17,9 @@
             const res = await productosApi.listar(
                 {
                     activo: true,
-                    limit: 8,
-                    orden: "creado_desc", // más recientes primero
+                    limit: 16,
+                    orden: "creado_desc",
+                    conStock: true,
                 },
                 token,
             );
@@ -30,7 +32,37 @@
         }
     });
 
+    function getStockItems(producto: Producto) {
+        const stockItems = producto.stock ?? (producto as any).inventarios;
+        return Array.isArray(stockItems) ? stockItems : [];
+    }
+
+    function getStockDisponible(producto: Producto) {
+        const stockItems = getStockItems(producto);
+        // Si no hay información de stock (no se cargó o array vacío),
+        // pero el producto existe, devolvemos undefined para no bloquear preventivamente
+        // a menos que estemos seguros de que es 0.
+        if (stockItems.length === 0) return undefined;
+
+        return stockItems.reduce(
+            (total, item) =>
+                total +
+                ((item.cantidadDisponible ??
+                    (item.cantidad ?? 0) -
+                        (item.cantidadReservada ?? 0)) as number),
+            0,
+        );
+    }
+
     function agregarProducto(producto: Producto) {
+        const disponible = getStockDisponible(producto);
+        // Solo bloqueamos si sabemos positivamente que el stock es 0
+        if (disponible === 0) {
+            toastStore.advertencia(
+                `El producto ${producto.nombre} no tiene stock disponible`,
+            );
+            return;
+        }
         onAgregar(producto);
     }
 </script>
@@ -64,17 +96,9 @@
     {:else}
         <div class="space-y-3">
             <div class="flex items-center gap-2 px-1">
-                <svg
-                    class="w-4 h-4 text-primary-500"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    />
-                </svg>
-                <span class="text-xs font-medium text-gray-500">
-                    Acceso rápido
+                ⭐
+                <span class="text-xs font-medium text-gray-800">
+                    Acceso rápido - Productos más vendidos ({productos.length})
                 </span>
             </div>
 
@@ -83,16 +107,25 @@
             >
                 {#each productos as producto (producto.id)}
                     <button
+                        type="button"
                         onclick={() => agregarProducto(producto)}
-                        class="flex flex-col p-2 rounded-lg border border-gray-200 bg-white
-           hover:border-primary-300 hover:border-primary-200 active:scale-[0.98]
-           active:bg-primary-50 transition-all group text-left"
+                        disabled={getStockDisponible(producto) === 0}
+                        class="flex flex-col p-2.5 rounded-xl border border-gray-200 bg-white active:scale-[0.97] transition-all duration-150 group text-left gap-2"
+                        class:cursor-not-allowed={getStockDisponible(
+                            producto,
+                        ) === 0}
+                        class:hover:bg-primary-50={getStockDisponible(
+                            producto,
+                        ) > 0}
+                        class:hover:border-primary-200={getStockDisponible(
+                            producto,
+                        ) > 0}
+                        class:opacity-70={getStockDisponible(producto) === 0}
                     >
-                        <!-- Header: imagen pequeña + info -->
-                        <div class="flex items-center gap-2 mb-1">
-                            <!-- Imagen pequeña -->
+                        <!-- Header: icono + info -->
+                        <div class="flex items-center relative gap-2">
                             <div
-                                class="w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden shrink-0"
+                                class="w-9 h-9 rounded-lg flex items-center bg-gray-100 justify-center shrink-0 text-base"
                             >
                                 {#if producto.imagenUrl}
                                     <img
@@ -117,30 +150,54 @@
                                 {/if}
                             </div>
 
-                            <!-- Nombre + SKU -->
                             <div class="min-w-0">
                                 <p
-                                    class="text-sm font-semibold text-gray-900 leading-tight truncate"
+                                    class="text-[12px] font-medium text-gray-900 leading-snug line-clamp-2"
                                 >
                                     {producto.nombre}
                                 </p>
-                                <p class="text-[11px] text-gray-400 truncate">
+                                <p class="text-[10px] text-gray-400 mt-0.5">
                                     {producto.sku}
                                 </p>
+                                {#if getStockDisponible(producto) !== undefined}
+                                    <span
+                                        class="text-[10px] top-0 right-0 absolute px-2 py-1 rounded-full font-semibold"
+                                        class:bg-red-50={getStockDisponible(
+                                            producto,
+                                        ) === 0}
+                                        class:text-red-700={getStockDisponible(
+                                            producto,
+                                        ) === 0}
+                                        class:bg-emerald-50={getStockDisponible(
+                                            producto,
+                                        ) > 0}
+                                        class:text-emerald-700={getStockDisponible(
+                                            producto,
+                                        ) > 0}
+                                    >
+                                        {getStockDisponible(producto) === 0
+                                            ? "Sin stock"
+                                            : `Stock ${getStockDisponible(producto)}`}
+                                    </span>
+                                {/if}
                             </div>
                         </div>
 
-                        <!-- Precio + acción -->
-                        <div class="flex items-center justify-between mt-1">
-                            <p class="text-base font-bold text-primary-600">
+                        <!-- Footer: precio + stock/acción -->
+                        <div
+                            class="flex items-center justify-between border-t border-gray-100 pt-2 mt-auto"
+                        >
+                            <p class="text-[14px] font-bold text-primary-600">
                                 {formatCurrency(producto.precioVenta)}
                             </p>
 
-                            <span
-                                class="text-[10px] text-primary-500 opacity-0 group-hover:opacity-100 transition"
-                            >
-                                + Agregar
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="text-[10px] text-primary-500 opacity-0 group-hover:opacity-100 transition"
+                                >
+                                    + agregar
+                                </span>
+                            </div>
                         </div>
                     </button>
                 {/each}

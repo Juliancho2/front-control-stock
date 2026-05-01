@@ -13,6 +13,7 @@
     let buscando = false;
     let inputEl: HTMLInputElement;
     let mostrarResultados = false;
+    let activeIndex = -1;
 
     export let token: string | undefined = undefined;
 
@@ -47,12 +48,14 @@
                     q,
                     activo: true,
                     limit: 8,
+                    conStock: true,
                 },
                 token,
             );
 
             resultados = res.data;
             mostrarResultados = true;
+            activeIndex = res.data.length > 0 ? 0 : -1;
         } catch {
             toastStore.error("Error al buscar productos");
         } finally {
@@ -60,11 +63,36 @@
         }
     }, 280);
 
+    function getStockItems(producto: Producto) {
+        const stockItems = producto.stock ?? (producto as any).inventarios;
+        return Array.isArray(stockItems) ? stockItems : [];
+    }
+
+    function getStockDisponible(producto: Producto) {
+        const stockItems = getStockItems(producto);
+        if (stockItems.length === 0) return undefined;
+        return stockItems.reduce(
+            (total, item) =>
+                total +
+                ((item.cantidadDisponible ??
+                    (item.cantidad ?? 0) -
+                        (item.cantidadReservada ?? 0)) as number),
+            0,
+        );
+    }
+
     function seleccionar(producto: Producto) {
+        const disponible = getStockDisponible(producto);
+        if (disponible === 0) {
+            toastStore.error("No se puede agregar, producto sin stock");
+            return;
+        }
+
         dispatch("seleccionar", producto);
         query = "";
         resultados = [];
         mostrarResultados = false;
+        activeIndex = -1;
         inputEl?.focus();
     }
 
@@ -73,9 +101,33 @@
             query = "";
             resultados = [];
             mostrarResultados = false;
+            activeIndex = -1;
+            return;
         }
-        if (e.key === "Enter" && resultados.length === 1) {
-            seleccionar(resultados[0]);
+
+        if (!mostrarResultados || resultados.length === 0) return;
+
+        if (e.key === "ArrowDown") {
+            e.preventDefault();
+            activeIndex =
+                activeIndex < resultados.length - 1 ? activeIndex + 1 : 0;
+            return;
+        }
+
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            activeIndex =
+                activeIndex > 0 ? activeIndex - 1 : resultados.length - 1;
+            return;
+        }
+
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (activeIndex >= 0 && activeIndex < resultados.length) {
+                seleccionar(resultados[activeIndex]);
+            } else if (resultados.length === 1) {
+                seleccionar(resultados[0]);
+            }
         }
     }
 
@@ -105,7 +157,7 @@
             onkeydown={onKeydown}
             type="text"
             placeholder="Buscar por nombre o escanear código..."
-            class="w-full pl-10 pr-10 py-3 text-sm border border-gray-200 rounded-xl
+            class="w-full pl-10 pr-10 py-4 text-sm border border-gray-300 rounded-xl
              focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
              bg-white shadow-sm"
             autocomplete="off"
@@ -148,10 +200,17 @@
         <div
             class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-y-auto max-h-[60vh]"
         >
-            {#each resultados as producto}
+            {#each resultados as producto, index}
                 <button
+                    type="button"
                     onclick={() => seleccionar(producto)}
-                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-50 last:border-0"
+                    onmouseenter={() => (activeIndex = index)}
+                    disabled={getStockDisponible(producto) === 0}
+                    class="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left border-b border-gray-50 last:border-0"
+                    class:bg-gray-200={index === activeIndex}
+                    class:cursor-not-allowed={getStockDisponible(producto) ===
+                        0}
+                    aria-selected={index === activeIndex}
                 >
                     <!-- Imagen o placeholder -->
                     <div
@@ -189,10 +248,33 @@
                         </p>
                     </div>
 
-                    <div class="text-right flex-shrink-0">
+                    <div
+                        class="flex flex-col items-end gap-1 text-right flex-shrink-0"
+                    >
                         <p class="text-sm font-semibold text-gray-900">
                             ${Number(producto.precioVenta).toFixed(2)}
                         </p>
+                        {#if getStockDisponible(producto) !== undefined}
+                            <span
+                                class="text-[10px] font-semibold px-2 py-1 rounded-full"
+                                class:bg-red-50={getStockDisponible(
+                                    producto,
+                                ) === 0}
+                                class:text-red-700={getStockDisponible(
+                                    producto,
+                                ) === 0}
+                                class:bg-emerald-50={getStockDisponible(
+                                    producto,
+                                ) > 0}
+                                class:text-emerald-700={getStockDisponible(
+                                    producto,
+                                ) > 0}
+                            >
+                                {getStockDisponible(producto) === 0
+                                    ? "Sin stock"
+                                    : `Stock ${getStockDisponible(producto)}`}
+                            </span>
+                        {/if}
                     </div>
                 </button>
             {/each}

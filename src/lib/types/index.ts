@@ -150,6 +150,7 @@ export interface Producto {
 	categoria?: Pick<Categoria, 'id' | 'nombre' | 'slug'>;
 	proveedorPrincipal?: Pick<Proveedor, 'id' | 'nombre'>;
 	stock?: StockBodega[];
+	inventarios?: StockBodega[];
 	createdAt: string;
 	updatedAt: string;
 	iva: number | null;

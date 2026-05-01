@@ -238,11 +238,21 @@
                                 <p class="text-sm font-semibold">
                                     {p.cantidadVendida ?? p.cantidad ?? 0} uds
                                 </p>
-                                <p class="text-xs text-gray-400">
+                                <p class="text-[10px] text-gray-400">
                                     {formatCurrency(
                                         p.montoTotal ?? p.monto ?? 0,
                                     )}
                                 </p>
+                                {#if p.stockActual !== undefined}
+                                    <p
+                                        class="text-[10px] font-bold mt-1 {p.stockActual <=
+                                        0
+                                            ? 'text-danger-500'
+                                            : 'text-success-600'}"
+                                    >
+                                        Stock: {p.stockActual}
+                                    </p>
+                                {/if}
                             </div>
                             <div
                                 class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden"

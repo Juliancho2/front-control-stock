@@ -12,6 +12,7 @@ export interface FiltroProductos {
 	orden?: string;
 	page?: number;
 	limit?: number;
+	conStock?: boolean;
 }
 
 export const productosApi = {
@@ -24,7 +25,7 @@ export const productosApi = {
 	},
 
 	buscarPorSku: (sku: string, token?: string): Promise<Producto> =>
-		api.get<Producto>(`/productos/sku/${sku}`, { token }),
+		api.get<Producto>(`/productos/sku/${sku}?conStock=true`, { token }),
 
 	obtener: (id: string, conStock = false, token?: string): Promise<Producto> =>
 		api.get<Producto>(`/productos/${id}?conStock=${conStock}`, { token }),

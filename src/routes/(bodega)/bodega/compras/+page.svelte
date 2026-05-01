@@ -108,7 +108,7 @@
         buscandoProducto = true;
         try {
             const res = await productosApi.listar(
-                { q: busquedaProducto, limit: 5 },
+                { q: busquedaProducto, limit: 5, conStock: true },
                 accessToken,
             );
             productosEncontrados = res.data;
