@@ -53,6 +53,13 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.suscripcion = sesion.suscripcion ?? null;
     event.locals.tenantNombre = sesion.tenantNombre ?? null;
 
+
+    // ─── Redirigir la raíz al panel correcto según rol ────────────
+    if (pathname === '/') {
+        console.log('Redirigiendo a inicio según rol:', sesion.usuario.rol);
+        throw redirect(303, INICIO_POR_ROL[sesion.usuario.rol] ?? '/login');
+    }
+
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
 
