@@ -15,6 +15,6 @@
 		<p class="text-gray-500 text-sm mb-6">
 			{$page.error?.message ?? "Ocurrió un error inesperado."}
 		</p>
-		<a href="#" class="btn-primary">Volver al inicio</a>
+		<a href="/" class="btn-primary">Volver al inicio</a>
 	</div>
 </div>

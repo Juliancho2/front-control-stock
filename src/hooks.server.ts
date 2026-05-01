@@ -17,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 
     // ─── Rutas públicas — sin validación ──────────────────────────
-    if (RUTAS_PUBLICAS.some(r => pathname.startsWith(r))) {
+    if (pathname === '/' || RUTAS_PUBLICAS.some(r => pathname !== '/' && pathname.startsWith(r))) {
         return resolve(event);
     }
 
@@ -52,12 +52,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     event.locals.accessToken = sesion.accessToken;
     event.locals.suscripcion = sesion.suscripcion ?? null;
     event.locals.tenantNombre = sesion.tenantNombre ?? null;
-
-    // ─── Redirigir la raíz al panel correcto según rol ────────────
-    if (pathname === '/') {
-        console.log('Redirigiendo a inicio según rol:', sesion.usuario.rol);
-        throw redirect(303, INICIO_POR_ROL[sesion.usuario.rol] ?? '/login');
-    }
 
     // ─── Protección por grupo de rutas ────────────────────────────
     const rol = sesion.usuario.rol;
