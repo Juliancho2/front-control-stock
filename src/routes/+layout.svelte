@@ -16,8 +16,6 @@
 
 	export let data: LayoutData & { suscripcion?: InfoSuscripcion | null };
 
-	console.log(data);
-
 	// Inicializar auth store y token en memoria con datos del servidor
 	$: {
 		setAccessToken(data.accessToken ?? null);
