@@ -2,7 +2,7 @@ import type { InfoSuscripcion, RolUsuario } from '$types/index';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 // Rutas que no necesitan autenticación
-const RUTAS_PUBLICAS = ['/login', '/registro', '/health', '/api/refresh'];
+const RUTAS_PUBLICAS = ['/login', '/registro', '/health', '/api/refresh', '/reset-password'];
 
 // Mapa de rol → ruta de inicio
 const INICIO_POR_ROL: Record<RolUsuario, string> = {
