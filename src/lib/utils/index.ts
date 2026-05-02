@@ -6,7 +6,7 @@ export function formatMiles(valor: number): string {
 
 export function formatCurrency(
 	valor: number,
-	moneda = 'USD',
+	moneda = 'COP',
 	locale = 'es-CO',
 ): string {
 	return new Intl.NumberFormat(locale, {
