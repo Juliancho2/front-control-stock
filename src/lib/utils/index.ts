@@ -41,7 +41,9 @@ export function formatFecha(
 
 export function formatFechaHora(fecha: string | Date): string {
 	let d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	d = new Date(d.getTime() - 5 * 60 * 60 * 1000);
+	// Convertir usando el timezone del browser del usuario
+	const offset = d.getTimezoneOffset();
+	d = new Date(d.getTime() + offset * 60 * 1000);
 	return new Intl.DateTimeFormat('es-CO', {
 		day: '2-digit',
 		month: '2-digit',
@@ -54,7 +56,8 @@ export function formatFechaHora(fecha: string | Date): string {
 
 export function formatHora(fecha: string | Date): string {
 	let d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	d = new Date(d.getTime() - 5 * 60 * 60 * 1000);
+	const offset = d.getTimezoneOffset();
+	d = new Date(d.getTime() + offset * 60 * 1000);
 	return new Intl.DateTimeFormat('es-CO', {
 		hour: '2-digit',
 		minute: '2-digit',
