@@ -96,7 +96,7 @@
 	<div class="flex-1 min-w-0">
 		<slot name="titulo">
 			<Badge dot variant="green"
-				>{$nombreNegocioActual.toLocaleUpperCase() || titulo}</Badge
+				>{$nombreNegocioActual?.toLocaleUpperCase() || titulo}</Badge
 			>
 		</slot>
 	</div>

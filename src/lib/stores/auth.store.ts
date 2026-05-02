@@ -1,5 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import type { SesionActiva, RolUsuario, InfoSuscripcion } from '$types/index';
+import { carritoStore } from './carrito.store';
 
 interface AuthState {
 	usuario: SesionActiva['usuario'] | null;
@@ -24,6 +25,9 @@ function crearAuthStore() {
 		subscribe,
 
 		inicializar: (sesion: SesionActiva | null) => {
+			if (!sesion) {
+				carritoStore.limpiar();
+			}
 			set({
 				usuario: sesion?.usuario ?? null,
 				accessToken: sesion?.accessToken ?? null,
@@ -44,7 +48,8 @@ function crearAuthStore() {
 		},
 
 		logout: () => {
-			set({ usuario: null, accessToken: null, suscripcion: null, cargando: false });
+			carritoStore.limpiar();
+			set({ usuario: null, accessToken: null, suscripcion: null, tenantNombre: null, cargando: false });
 		},
 
 		get token(): string | null {

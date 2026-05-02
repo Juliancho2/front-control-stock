@@ -63,6 +63,7 @@ export const actions: Actions = {
             usuario: sesion.usuario,
             accessToken: sesion.accessToken,
             suscripcion: sesion.suscripcion ?? null,
+            tenantNombre: sesion.tenantNombre,
         }), {
             path: '/',
             httpOnly: true,
