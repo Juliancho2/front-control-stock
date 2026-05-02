@@ -40,8 +40,10 @@ export function formatFecha(
 }
 
 export function formatFechaHora(fecha: string | Date): string {
-	const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	// Ajustar timezone Colombia (UTC-5) ya que el backend guarda en hora local Colombia
+	let d = typeof fecha === 'string' ? new Date(fecha) : fecha;
+	// Ajustar restando el offset del timezone del browser
+	const offset = d.getTimezoneOffset();
+	d = new Date(d.getTime() + offset * 60 * 1000);
 	return new Intl.DateTimeFormat('es-CO', {
 		day: '2-digit',
 		month: '2-digit',
@@ -53,7 +55,9 @@ export function formatFechaHora(fecha: string | Date): string {
 }
 
 export function formatHora(fecha: string | Date): string {
-	const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
+	let d = typeof fecha === 'string' ? new Date(fecha) : fecha;
+	const offset = d.getTimezoneOffset();
+	d = new Date(d.getTime() + offset * 60 * 1000);
 	return new Intl.DateTimeFormat('es-CO', {
 		hour: '2-digit',
 		minute: '2-digit',
