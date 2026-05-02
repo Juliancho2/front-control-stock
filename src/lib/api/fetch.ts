@@ -160,4 +160,30 @@ export const api = {
 
 	delete: <T>(path: string, opts?: FetchOptions & { body?: unknown }) =>
 		apiFetch<T>(path, 'DELETE', opts?.body, opts),
+
+	download: async (path: string, filename: string, opts?: FetchOptions) => {
+		const token = opts?.token ?? getToken();
+		const headers: Record<string, string> = {};
+		if (token) headers['Authorization'] = `Bearer ${token}`;
+
+		const res = await fetch(`${API_BASE}/api/v1${path}`, {
+			headers,
+			signal: opts?.signal
+		});
+
+		if (!res.ok) {
+			const json = await res.json().catch(() => ({}));
+			throw new ApiException(res.status, json.message ?? 'Error al descargar archivo', json.error ?? 'Error');
+		}
+
+		const blob = await res.blob();
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(url);
+		document.body.removeChild(a);
+	}
 };

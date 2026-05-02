@@ -39,4 +39,7 @@ export const reportesApi = {
 
 	compras: (filtros: { desde: string; hasta: string }, token?: string) =>
 		api.get(`/reportes/compras?desde=${filtros.desde}&hasta=${filtros.hasta}`, { token }),
+
+	exportarVentas: (filtros: { desde: string; hasta: string }, token?: string) =>
+		api.download(`/reportes/exportar/ventas?desde=${filtros.desde}&hasta=${filtros.hasta}`, `ventas_${filtros.desde}_${filtros.hasta}.xlsx`, { token }),
 };

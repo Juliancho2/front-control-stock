@@ -53,5 +53,7 @@ export const productosApi = {
 		exitosas: number;
 		duplicados: number;
 		errores: { fila: number; mensaje: string }[];
-	}> => api.post('/productos/importar', { productos }, { token })
+	}> => api.post('/productos/importar', { productos }, { token }),
+
+	exportar: (token?: string) => api.download('/reportes/exportar/productos', 'productos.xlsx', { token })
 };
