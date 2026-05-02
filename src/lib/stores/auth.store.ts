@@ -92,7 +92,25 @@ export const puedeCrearContenido = derived(authStore, $s => {
 export const puedeRegistrarVentas = derived(authStore, $s => {
 	const rol = $s.usuario?.rol;
 	if (rol === 'superadmin') return true;
+	if (!$s.suscripcion?.estaVigente) return false;
 	if (rol === 'cajero' || rol === 'admin') return true;
-	if (!$s.suscripcion?.estaVigente) return true;
 	return false;
+});
+
+export function tieneAcceso(modulo: string): boolean {
+	const state = get(authStore);
+	if (state.usuario?.rol === 'superadmin') return true;
+	if (!state.suscripcion) return false;
+	if (!state.suscripcion.estaVigente) return false;
+	return !state.suscripcion.modulosBloqueados?.includes(modulo);
+}
+
+export const permiteExcel = derived(authStore, $s => {
+	if ($s.usuario?.rol === 'superadmin') return true;
+	return $s.suscripcion?.permiteExcel ?? true;
+});
+
+export const permiteAlertas = derived(authStore, $s => {
+	if ($s.usuario?.rol === 'superadmin') return true;
+	return $s.suscripcion?.permiteAlertas ?? true;
 });

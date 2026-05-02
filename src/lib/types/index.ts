@@ -103,6 +103,10 @@ export interface InfoSuscripcion {
 	fechaFinPeriodo: string;
 	diasRestantes: number;
 	planNombre: string;
+	planCodigo?: string;
+	permiteExcel?: boolean;
+	permiteAlertas?: boolean;
+	modulosBloqueados?: string[];
 	estaVigente: boolean;
 }
 

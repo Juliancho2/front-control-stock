@@ -14,6 +14,7 @@
     import { productosApi, type FiltroProductos } from "$api/productos";
     import { categoriasApi } from "$api/categorias";
     import { toastStore } from "$stores/toast.store";
+    import { permiteExcel } from "$stores/auth.store";
     import { formatCurrency } from "$utils/index";
     import type { Producto, Categoria } from "$types/index";
 
@@ -157,12 +158,14 @@
 
 <PageHeader titulo="Productos">
     <div class="flex gap-2">
-        <Button variant="secondary" onclick={exportar} loading={exportando} title="Exportar Excel">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            Exportar
-        </Button>
+        {#if $permiteExcel}
+            <Button variant="secondary" onclick={exportar} loading={exportando} title="Exportar Excel">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Exportar
+            </Button>
+        {/if}
         <Button variant="secondary" href="/admin/productos/importar" title="Importar CSV">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>

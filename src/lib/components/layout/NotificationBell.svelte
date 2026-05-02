@@ -5,13 +5,14 @@
 		misNotificaciones,
 		cantidadNoLeidas,
 	} from "$lib/stores/notificaciones.store";
-	import { estaAutenticado, rolActual } from "$lib/stores/auth.store";
+	import { estaAutenticado, rolActual, permiteAlertas } from "$lib/stores/auth.store";
 	import { fade, slide } from "svelte/transition";
 	import { goto } from "$app/navigation";
 
 	let abierto = false;
 
 	function toggle() {
+		if (!$permiteAlertas) return;
 		abierto = !abierto;
 		if (abierto) {
 			notificacionesStore.cargar();
@@ -27,7 +28,7 @@
 	}
 
 	onMount(() => {
-		if ($estaAutenticado) {
+		if ($estaAutenticado && $permiteAlertas) {
 			notificacionesStore.iniciarPolling();
 		}
 	});
@@ -67,6 +68,7 @@
 	}
 </script>
 
+{#if $permiteAlertas}
 <div class="relative">
 	<button
 		onclick={toggle}
@@ -135,7 +137,7 @@
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
-									d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+									d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707.293l-2.414-2.414A1 1 0 006.586 13H4"
 								/>
 							</svg>
 						</div>
@@ -230,3 +232,4 @@
 		/>
 	{/if}
 </div>
+{/if}
