@@ -32,6 +32,7 @@
 		"precioVenta",
 		"precioMayorista",
 		"stockMinimo",
+		"stockInicial",
 		"iva",
 		"activo",
 	];
@@ -235,6 +236,14 @@
 							"stock_minimo",
 							"minimo",
 							"stockmin",
+						]),
+					),
+					stockInicial: parseNumeric(
+						get([
+							"stockinicial",
+							"stock_inicial",
+							"inicial",
+							"stockini",
 						]),
 					),
 					iva: parseNumeric(get(["iva", "impuesto", "tax"])),

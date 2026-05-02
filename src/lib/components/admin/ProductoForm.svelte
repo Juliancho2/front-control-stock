@@ -24,6 +24,7 @@
     let precioVenta = producto.precioVenta ?? 0;
     let precioMayorista = producto.precioMayorista ?? 0;
     let stockMinimo = producto.stockMinimo ?? 5;
+    let stockInicial = 0;
     let categoriaId = producto.categoriaId ?? "";
     let activo = producto.activo ?? true;
     let iva = producto.iva ?? 0;
@@ -72,6 +73,7 @@
             precioMayorista: precioMayorista || null,
             iva,
             stockMinimo,
+            stockInicial: modo === "crear" ? stockInicial : undefined,
             categoriaId: categoriaId || null,
             activo,
         });
@@ -177,6 +179,15 @@
             bind:value={stockMinimo}
             hint="Alerta cuando quede por debajo"
         />
+        {#if modo === "crear"}
+            <Input
+                label="Stock inicial"
+                type="number"
+                bind:value={stockInicial}
+                hint="Cantidad física actual"
+                placeholder="0"
+            />
+        {/if}
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

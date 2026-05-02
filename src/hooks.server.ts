@@ -66,10 +66,6 @@ export const handle: Handle = async ({ event, resolve }) => {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 
-    if (pathname.startsWith('/seleccionar-panel') && rol !== 'admin' && rol !== 'superadmin') {
-        throw redirect(303, INICIO_POR_ROL[rol]);
-    }
-
     if (pathname.startsWith('/admin') && rol !== 'admin' && rol !== 'superadmin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }

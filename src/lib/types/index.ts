@@ -143,6 +143,7 @@ export interface Producto {
 	precioVenta: number;
 	precioMayorista: number | null;
 	stockMinimo: number;
+	stockInicial?: number;
 	imagenUrl: string | null;
 	activo: boolean;
 	categoriaId: string | null;
