@@ -41,7 +41,6 @@ export function formatFecha(
 
 export function formatFechaHora(fecha: string | Date): string {
 	let d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	// El backend guarda en UTC, convertir a Colombia restando 5 horas
 	d = new Date(d.getTime() - 5 * 60 * 60 * 1000);
 	return new Intl.DateTimeFormat('es-CO', {
 		day: '2-digit',
