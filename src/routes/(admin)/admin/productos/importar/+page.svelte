@@ -12,7 +12,31 @@
 	const { accessToken } = data;
 
 	let archivos: FileList | null = null;
+	let dragging = false;
 	let procesando = false;
+
+	function manejarDrop(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		dragging = false;
+
+		if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
+			const file = e.dataTransfer.files[0];
+			// Algunos navegadores o SO no detectan bien el mime type de CSV
+			const esCsv =
+				file.type === "text/csv" ||
+				file.type === "application/vnd.ms-excel" ||
+				file.name.toLowerCase().endsWith(".csv");
+
+			if (esCsv) {
+				archivos = e.dataTransfer.files;
+				leerCsv(file);
+			} else {
+				toastStore.error("Por favor, sube un archivo CSV válido");
+			}
+		}
+	}
+
 	let previsualizacion: any[] = [];
 	let encabezados: string[] = [];
 	let resultado: {
@@ -317,13 +341,23 @@
 		</div>
 
 		<div
-			class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-400 transition-colors cursor-pointer bg-gray-50"
+			class="border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer"
+			class:border-primary-400={dragging}
+			class:bg-primary-50={dragging}
+			class:border-gray-300={!dragging}
+			class:bg-gray-50={!dragging}
 			role="button"
 			tabindex="0"
 			onclick={() => document.getElementById("csv-input")?.click()}
 			onkeydown={(e) =>
 				e.key === "Enter" &&
 				document.getElementById("csv-input")?.click()}
+			ondragover={(e) => {
+				e.preventDefault();
+				dragging = true;
+			}}
+			ondragleave={() => (dragging = false)}
+			ondrop={manejarDrop}
 		>
 			<input
 				id="csv-input"
