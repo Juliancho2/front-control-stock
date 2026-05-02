@@ -69,6 +69,15 @@
 		}
 	}
 
+	function limpiarArchivo() {
+		archivos = null;
+		previsualizacion = [];
+		encabezados = [];
+		resultado = null;
+		const input = document.getElementById("csv-input") as HTMLInputElement;
+		if (input) input.value = "";
+	}
+
 	function leerCsv(file: File) {
 		const reader = new FileReader();
 
@@ -389,6 +398,17 @@
 				nombre, etc.)
 			</p>
 		</div>
+		{#if archivos}
+			<div class="flex justify-end mt-2">
+				<Button
+					variant="danger"
+					onclick={limpiarArchivo}
+					disabled={!archivos && previsualizacion.length === 0}
+				>
+					Limpiar selección
+				</Button>
+			</div>
+		{/if}
 	</section>
 
 	{#if previsualizacion.length > 0}
