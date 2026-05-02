@@ -11,6 +11,7 @@
 		fechaISO,
 		inicioMes,
 	} from "$utils/index";
+	import { suscripcionActual, usuarioActual } from "$stores/auth.store";
 	import type { Dashboard, Producto } from "$types/index";
 
 	export let data: { accessToken: string };
@@ -64,6 +65,13 @@
 			return "";
 		}
 	}
+
+	$: mostrarBotonUpgrade =
+		!!$usuarioActual &&
+		$usuarioActual.rol === "admin" &&
+		!!$suscripcionActual &&
+		($suscripcionActual.planCodigo === "trial" ||
+			$suscripcionActual.planCodigo === "basic");
 </script>
 
 <svelte:head><title>Dashboard — FerreControl</title></svelte:head>
@@ -74,9 +82,32 @@
 	</div>
 {:else if dashboard}
 	<!-- Greeting header -->
-	<div class="mb-8">
-		<h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-		<p class="text-sm text-gray-400 mt-1">Resumen general de tu negocio</p>
+	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+		<div>
+			<h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+			<p class="text-sm text-gray-400 mt-1">Resumen general de tu negocio</p>
+		</div>
+		{#if mostrarBotonUpgrade}
+			<a
+				href="/admin/suscripcion/pagar"
+				class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm font-semibold hover:bg-amber-100 transition-colors shadow-sm w-fit"
+			>
+				<svg
+					class="w-4 h-4"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 10V3L4 14h7v7l9-11h-7z"
+					/>
+				</svg>
+				Mejorar mi Plan
+			</a>
+		{/if}
 	</div>
 
 	<!-- ─── KPI Hero: Ventas hoy destacado ───────────────────────── -->

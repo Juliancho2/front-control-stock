@@ -82,6 +82,13 @@
 	$: textoSuscripcion = $suscripcionActual
 		? `${$suscripcionActual.planNombre} · ${$suscripcionActual.diasRestantes} día(s)`
 		: "";
+
+	$: mostrarBotonUpgrade =
+		!!$usuarioActual &&
+		$usuarioActual.rol === "admin" &&
+		!!$suscripcionActual &&
+		($suscripcionActual.planCodigo === "trial" ||
+			$suscripcionActual.planCodigo === "basic");
 </script>
 
 <header
@@ -105,23 +112,48 @@
 	<slot name="acciones" />
 
 	{#if mostrarSuscripcion}
-		<span
-			class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
-			class:bg-amber-50={$suscripcionActual?.diasRestantes !==
-				undefined && $suscripcionActual.diasRestantes <= 5}
-			class:border-amber-200={$suscripcionActual?.diasRestantes !==
-				undefined && $suscripcionActual.diasRestantes <= 5}
-			class:text-amber-700={$suscripcionActual?.diasRestantes !==
-				undefined && $suscripcionActual.diasRestantes <= 5}
-			class:bg-blue-50={$suscripcionActual?.diasRestantes !== undefined &&
-				$suscripcionActual.diasRestantes > 5}
-			class:border-blue-200={$suscripcionActual?.diasRestantes !==
-				undefined && $suscripcionActual.diasRestantes > 5}
-			class:text-blue-700={$suscripcionActual?.diasRestantes !==
-				undefined && $suscripcionActual.diasRestantes > 5}
-		>
-			{textoSuscripcion}
-		</span>
+		<div class="flex items-center gap-2">
+			{#if mostrarBotonUpgrade}
+				<Button
+					variant="secondary"
+					size="sm"
+					href="/admin/suscripcion/pagar"
+					class="hidden md:flex items-center gap-1.5 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+				>
+					<svg
+						class="w-3.5 h-3.5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 10V3L4 14h7v7l9-11h-7z"
+						/>
+					</svg>
+					Mejorar plan
+				</Button>
+			{/if}
+			<span
+				class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
+				class:bg-amber-50={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes <= 5}
+				class:border-amber-200={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes <= 5}
+				class:text-amber-700={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes <= 5}
+				class:bg-blue-50={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes > 5}
+				class:border-blue-200={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes > 5}
+				class:text-blue-700={$suscripcionActual?.diasRestantes !==
+					undefined && $suscripcionActual.diasRestantes > 5}
+			>
+				{textoSuscripcion}
+			</span>
+		</div>
 	{/if}
 
 	<!-- Notificaciones -->

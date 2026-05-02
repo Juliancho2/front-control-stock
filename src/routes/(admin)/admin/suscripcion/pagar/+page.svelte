@@ -134,7 +134,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {#each planes.filter((p) => p.activo) as plan}
+                    {#each planes.filter((p) => p.activo && p.codigo !== "trial") as plan}
                         <button
                             type="button"
                             class="relative p-5 rounded-xl border-2 text-left transition-all duration-200 hover:border-primary-300"
