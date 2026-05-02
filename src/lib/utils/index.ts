@@ -7,7 +7,7 @@ export function formatMiles(valor: number): string {
 export function formatCurrency(
 	valor: number,
 	moneda = 'USD',
-	locale = 'es-EC',
+	locale = 'es-CO',
 ): string {
 	return new Intl.NumberFormat(locale, {
 		style: 'currency',
@@ -18,7 +18,7 @@ export function formatCurrency(
 }
 
 export function formatNumero(valor: number, decimales = 2): string {
-	return new Intl.NumberFormat('es-EC', {
+	return new Intl.NumberFormat('es-CO', {
 		minimumFractionDigits: decimales,
 		maximumFractionDigits: decimales,
 	}).format(valor);
@@ -31,7 +31,7 @@ export function formatFecha(
 	opciones?: Intl.DateTimeFormatOptions,
 ): string {
 	const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	return new Intl.DateTimeFormat('es-EC', {
+	return new Intl.DateTimeFormat('es-CO', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
@@ -40,20 +40,24 @@ export function formatFecha(
 }
 
 export function formatFechaHora(fecha: string | Date): string {
-	return formatFecha(fecha, {
+	const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
+	// Ajustar timezone Colombia (UTC-5) ya que el backend guarda en hora local Colombia
+	return new Intl.DateTimeFormat('es-CO', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-	});
+		hour12: false,
+	}).format(d);
 }
 
 export function formatHora(fecha: string | Date): string {
 	const d = typeof fecha === 'string' ? new Date(fecha) : fecha;
-	return new Intl.DateTimeFormat('es-EC', {
+	return new Intl.DateTimeFormat('es-CO', {
 		hour: '2-digit',
 		minute: '2-digit',
+		hour12: false,
 	}).format(d);
 }
 
