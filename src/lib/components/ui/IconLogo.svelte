@@ -1,6 +1,12 @@
-  <svg
-        width="120"
-        height="120"
+<script lang="ts">
+    export let className: string = "";
+    export let size: number = 120;
+</script>
+
+<div class="inline-flex items-center justify-center {className}">
+    <svg
+        width={size}
+        height={size}
         viewBox="0 0 512 512"
         xmlns="http://www.w3.org/2000/svg"
     >
@@ -51,3 +57,4 @@
             <rect x="3" y="-46" width="11" height="18" rx="4" fill="#1D9E75" />
         </g>
     </svg>
+</div>

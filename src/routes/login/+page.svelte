@@ -3,6 +3,7 @@
 	import type { ActionData } from "./$types";
 	import { authApi } from "$api/auth";
 	import Input from "$components/ui/Input.svelte";
+	import IconLogo from "$components/ui/IconLogo.svelte";
 
 	export let form: ActionData;
 
@@ -18,14 +19,18 @@
 
 	async function solicitarRecuperacion() {
 		errorRecuperacion = "";
-		if (!emailRecuperar || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRecuperar)) {
+		if (
+			!emailRecuperar ||
+			!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRecuperar)
+		) {
 			errorRecuperacion = "Ingresa un correo electrónico válido";
 			return;
 		}
 		enviandoCorreo = true;
 		try {
 			await authApi.olvidePassword(emailRecuperar);
-			mensajeRecuperacion = "Si el correo está registrado, recibirás un enlace de recuperación pronto.";
+			mensajeRecuperacion =
+				"Si el correo está registrado, recibirás un enlace de recuperación pronto.";
 		} catch (e) {
 			errorRecuperacion = "Hubo un error al intentar enviar el correo.";
 		} finally {
@@ -57,26 +62,17 @@
 	<div class="w-full max-w-sm">
 		<!-- Logo / título -->
 		<div class="text-center mb-8">
-			<div
-				class="inline-flex items-center justify-center w-14 h-14 bg-primary-400 rounded-2xl mb-4"
-			>
-				<svg
-					class="w-8 h-8 text-white"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-					/>
-				</svg>
+			<div class="flex items-center justify-center mb-4">
+				<IconLogo className="w-[75px] h-[75px]" />
+				<h1 class="text-3xl font-bold text-gray-900 self-center ml-3">
+					FerreControl
+				</h1>
 			</div>
-			<h1 class="text-2xl font-semibold text-gray-900">FerreControl</h1>
-			<p class="text-sm text-gray-500 mt-1">
-				Ingresa tus credenciales para continuar
+			<p class="text-2xl font-semibold text-slate-800 my-1">
+				Ingresa a tu cuenta
+			</p>
+			<p class="text-base text-gray-500">
+				El punto de venta que tu ferretería necesita.
 			</p>
 		</div>
 
@@ -134,11 +130,19 @@
 					<!-- Password -->
 					<div class="space-y-1">
 						<div class="flex items-center justify-between">
-							<label for="password" class="text-sm font-medium text-gray-700">Contraseña</label>
+							<label
+								for="password"
+								class="text-sm font-medium text-gray-700"
+								>Contraseña</label
+							>
 							<button
 								type="button"
 								class="text-xs text-primary-600 hover:text-primary-800 font-medium"
-								onclick={() => { mostrarModalOlvide = true; mensajeRecuperacion = ""; emailRecuperar = ""; }}
+								onclick={() => {
+									mostrarModalOlvide = true;
+									mensajeRecuperacion = "";
+									emailRecuperar = "";
+								}}
 							>
 								¿Olvidaste tu contraseña?
 							</button>
@@ -217,7 +221,9 @@
 			onclick={(e) => e.stopPropagation()}
 		>
 			<div class="px-5 py-4 border-b border-gray-100">
-				<h2 class="text-base font-semibold text-gray-900">Recuperar contraseña</h2>
+				<h2 class="text-base font-semibold text-gray-900">
+					Recuperar contraseña
+				</h2>
 				<p class="text-xs text-gray-500 mt-1">
 					Ingresa tu correo y te enviaremos las instrucciones.
 				</p>
@@ -225,7 +231,9 @@
 
 			<div class="p-5">
 				{#if mensajeRecuperacion}
-					<div class="p-3 bg-green-50 text-green-700 text-sm rounded-lg mb-4">
+					<div
+						class="p-3 bg-green-50 text-green-700 text-sm rounded-lg mb-4"
+					>
 						{mensajeRecuperacion}
 					</div>
 				{:else}
@@ -238,7 +246,9 @@
 							disabled={enviandoCorreo}
 						/>
 						{#if errorRecuperacion}
-							<p class="text-xs text-danger-500 mt-1">{errorRecuperacion}</p>
+							<p class="text-xs text-danger-500 mt-1">
+								{errorRecuperacion}
+							</p>
 						{/if}
 					</div>
 				{/if}
@@ -259,7 +269,7 @@
 							onclick={solicitarRecuperacion}
 							disabled={enviandoCorreo}
 						>
-							{enviandoCorreo ? 'Enviando...' : 'Enviar correo'}
+							{enviandoCorreo ? "Enviando..." : "Enviar correo"}
 						</button>
 					{/if}
 				</div>
@@ -267,3 +277,7 @@
 		</div>
 	</div>
 {/if}
+
+<p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-gray-500">
+	Copyright © {new Date().getFullYear()} FerreControl. Todos los derechos reservados.
+</p>

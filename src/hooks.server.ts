@@ -8,7 +8,7 @@ const RUTAS_PUBLICAS = ['/login', '/registro', '/health', '/api/refresh', '/rese
 const INICIO_POR_ROL: Record<RolUsuario, string> = {
     superadmin: '/superadmin/dashboard',
     cajero: '/pos',
-    admin: '/seleccionar-panel',
+    admin: '/admin/dashboard',
     bodeguero: '/bodega/inventario'
 };
 
@@ -17,7 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 
     // ─── Rutas públicas — sin validación ──────────────────────────
-    if (pathname === '/' || RUTAS_PUBLICAS.some(r => pathname !== '/' && pathname.startsWith(r))) {
+    if (RUTAS_PUBLICAS.some(r => pathname.startsWith(r))) {
         return resolve(event);
     }
 
@@ -56,7 +56,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     // ─── Redirigir la raíz al panel correcto según rol ────────────
     if (pathname === '/') {
-        console.log('Redirigiendo a inicio según rol:', sesion.usuario.rol);
         throw redirect(303, INICIO_POR_ROL[sesion.usuario.rol] ?? '/login');
     }
 

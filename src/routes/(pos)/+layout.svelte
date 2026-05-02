@@ -10,6 +10,7 @@
 	} from "../../lib/index";
 	import { cajaApi } from "$api/caja";
 	import type { LayoutData } from "./$types";
+	import IconLogo from "$components/ui/IconLogo.svelte";
 
 	export let data: LayoutData;
 	const { accessToken } = data;
@@ -39,23 +40,7 @@
 	<Topbar titulo="Punto de Venta">
 		<svelte:fragment slot="titulo">
 			<div class="flex items-center gap-2">
-				<div
-					class="inline-flex items-center justify-center w-7 h-7 bg-primary-400 rounded-lg"
-				>
-					<svg
-						class="w-4 h-4 text-white"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-						/>
-					</svg>
-				</div>
+				<IconLogo className="w-10 h-10" />
 				<span class="text-sm font-medium text-gray-900"
 					>Punto de Venta</span
 				>

@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import { suscripcionActual, usuarioActual } from "../../stores/auth.store";
+	import {
+		nombreNegocioActual,
+		suscripcionActual,
+		usuarioActual,
+	} from "../../stores/auth.store";
 	import NotificationBell from "./NotificationBell.svelte";
 	import Button from "$components/ui/Button.svelte";
 	import Spinner from "$components/ui/Spinner.svelte";
 	import Input from "$components/ui/Input.svelte";
 	import { usuariosApi } from "$api/usuarios";
 	import { toastStore } from "$stores/toast.store";
+	import Badge from "$components/ui/Badge.svelte";
 
 	export let titulo = "FerreControl";
 	export let mostrarMenuLateral = true;
@@ -40,16 +45,21 @@
 			return;
 		}
 		if (nuevoPasswordPerfil.length < 8) {
-			errorPassword = "La nueva contraseña debe tener al menos 8 caracteres";
+			errorPassword =
+				"La nueva contraseña debe tener al menos 8 caracteres";
 			return;
 		}
 		cambiandoPassword = true;
 		try {
-			await usuariosApi.cambiarMiPassword(passwordActual, nuevoPasswordPerfil);
+			await usuariosApi.cambiarMiPassword(
+				passwordActual,
+				nuevoPasswordPerfil,
+			);
 			toastStore.exito("Contraseña actualizada correctamente");
 			mostrarModalPassword = false;
 		} catch (e: any) {
-			errorPassword = e?.mensajes?.[0] ?? "Error al cambiar la contraseña";
+			errorPassword =
+				e?.mensajes?.[0] ?? "Error al cambiar la contraseña";
 		} finally {
 			cambiandoPassword = false;
 		}
@@ -85,8 +95,8 @@
 	<!-- Título / breadcrumb -->
 	<div class="flex-1 min-w-0">
 		<slot name="titulo">
-			<span class="text-sm font-medium text-gray-900 truncate"
-				>{titulo}</span
+			<Badge dot variant="green"
+				>{$nombreNegocioActual.toLocaleUpperCase() || titulo}</Badge
 			>
 		</slot>
 	</div>
@@ -175,9 +185,9 @@
 					>
 						Cambiar contraseña
 					</button>
-					<form 
-						method="POST" 
-						action="/logout" 
+					<form
+						method="POST"
+						action="/logout"
 						use:enhance={() => {
 							cerrandoSesion = true;
 							return async ({ update }) => {
@@ -192,7 +202,11 @@
 							role="menuitem"
 							disabled={cerrandoSesion}
 						>
-							<span>{cerrandoSesion ? 'Cerrando sesión...' : 'Cerrar sesión'}</span>
+							<span
+								>{cerrandoSesion
+									? "Cerrando sesión..."
+									: "Cerrar sesión"}</span
+							>
 							{#if cerrandoSesion}
 								<Spinner size="sm" />
 							{/if}
@@ -223,7 +237,9 @@
 			onclick={(e) => e.stopPropagation()}
 		>
 			<div class="px-5 py-4 border-b border-gray-100">
-				<h2 class="text-base font-semibold text-gray-900">Cambiar mi contraseña</h2>
+				<h2 class="text-base font-semibold text-gray-900">
+					Cambiar mi contraseña
+				</h2>
 			</div>
 
 			<div class="px-5 py-4 space-y-4">
