@@ -112,13 +112,10 @@
 	<slot name="acciones" />
 
 	{#if mostrarSuscripcion}
-		<div class="flex items-center gap-2">
-			{#if mostrarBotonUpgrade}
-				<Button
-					variant="secondary"
-					size="sm"
-					href="/admin/suscripcion/pagar"
-					class="hidden md:flex items-center gap-1.5 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+		{#if mostrarBotonUpgrade}
+			<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
+				<span
+					class="inline-flex items-center gap-2 px-4 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-semibold hover:bg-amber-100 transition-colors text-xs shadow-sm w-fit"
 				>
 					<svg
 						class="w-3.5 h-3.5"
@@ -134,8 +131,10 @@
 						/>
 					</svg>
 					Mejorar plan
-				</Button>
-			{/if}
+				</span>
+			</a>
+		{/if}
+		<div class="flex items-center gap-2">
 			<span
 				class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
 				class:bg-amber-50={$suscripcionActual?.diasRestantes !==

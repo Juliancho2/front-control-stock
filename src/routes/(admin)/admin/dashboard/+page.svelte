@@ -82,32 +82,15 @@
 	</div>
 {:else if dashboard}
 	<!-- Greeting header -->
-	<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+	<div
+		class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+	>
 		<div>
 			<h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-			<p class="text-sm text-gray-400 mt-1">Resumen general de tu negocio</p>
+			<p class="text-sm text-gray-400 mt-1">
+				Resumen general de tu negocio
+			</p>
 		</div>
-		{#if mostrarBotonUpgrade}
-			<a
-				href="/admin/suscripcion/pagar"
-				class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm font-semibold hover:bg-amber-100 transition-colors shadow-sm w-fit"
-			>
-				<svg
-					class="w-4 h-4"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M13 10V3L4 14h7v7l9-11h-7z"
-					/>
-				</svg>
-				Mejorar mi Plan
-			</a>
-		{/if}
 	</div>
 
 	<!-- ─── KPI Hero: Ventas hoy destacado ───────────────────────── -->
@@ -216,79 +199,144 @@
 			</div>
 
 			<!-- Stock bajo -->
-			<div
-				class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between"
-			>
-				<div class="flex items-center justify-between mb-3">
+			<div class="relative h-full">
+				{#if $suscripcionActual.planCodigo !== "pro"}
 					<div
-						class="w-9 h-9 rounded-xl bg-warning-50 flex items-center justify-center"
+						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
 						<svg
-							class="w-4.5 h-4.5 text-warning-500"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="w-5 h-5"
 						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-							/>
+							<rect
+								x="3"
+								y="11"
+								width="18"
+								height="11"
+								rx="2"
+								ry="2"
+							></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 						</svg>
+						<Badge variant="yellow">Disponible en Pro</Badge>
 					</div>
-					{#if dashboard.productosSinStock > 0}
-						<span
-							class="text-xs font-semibold px-2 py-0.5 rounded-full bg-danger-50 text-danger-600"
+				{/if}
+				<div
+					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 h-full flex flex-col justify-between"
+					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+				>
+					<div class="flex items-center justify-between mb-3">
+						<div
+							class="w-9 h-9 rounded-xl bg-warning-50 flex items-center justify-center"
 						>
-							{dashboard.productosSinStock} sin stock
-						</span>
-					{/if}
-				</div>
-				<div>
-					<p class="text-xs text-gray-400 font-medium">Stock bajo</p>
-					<p class="text-xl font-bold text-gray-900 mt-0.5">
-						{dashboard.productosConStockBajo}
-						<span class="text-sm font-normal text-gray-400"
-							>productos</span
-						>
-					</p>
+							<svg
+								class="w-4.5 h-4.5 text-warning-500"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+								/>
+							</svg>
+						</div>
+						{#if dashboard.productosSinStock > 0}
+							<span
+								class="text-xs font-semibold px-2 py-0.5 rounded-full bg-danger-50 text-danger-600"
+							>
+								{dashboard.productosSinStock} sin stock
+							</span>
+						{/if}
+					</div>
+					<div>
+						<p class="text-xs text-gray-400 font-medium">
+							Stock bajo
+						</p>
+						<p class="text-xl font-bold text-gray-900 mt-0.5">
+							{dashboard.productosConStockBajo}
+							<span class="text-sm font-normal text-gray-400"
+								>productos</span
+							>
+						</p>
+					</div>
 				</div>
 			</div>
 
 			<!-- Cuentas por cobrar -->
-			<div
-				class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between"
-			>
-				<div class="flex items-center justify-between mb-3">
+			<div class="relative h-full">
+				{#if $suscripcionActual.planCodigo !== "pro"}
 					<div
-						class="w-9 h-9 rounded-xl bg-danger-50 flex items-center justify-center"
+						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
 						<svg
-							class="w-4.5 h-4.5 text-danger-500"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="w-5 h-5"
 						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
-							/>
+							<rect
+								x="3"
+								y="11"
+								width="18"
+								height="11"
+								rx="2"
+								ry="2"
+							></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 						</svg>
+						<Badge variant="yellow">Disponible en Pro</Badge>
 					</div>
-					{#if dashboard.clientesConDeuda > 0}
-						<span class="text-xs font-medium text-gray-400"
-							>{dashboard.clientesConDeuda} clientes</span
+				{/if}
+
+				<div
+					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between"
+				>
+					<div class="flex items-center justify-between mb-3">
+						<div
+							class="w-9 h-9 rounded-xl bg-danger-50 flex items-center justify-center"
 						>
-					{/if}
-				</div>
-				<div>
-					<p class="text-xs text-gray-400 font-medium">Por cobrar</p>
-					<p class="text-xl font-bold text-gray-900 mt-0.5">
-						{formatCurrency(dashboard.deudaTotalPendiente)}
-					</p>
+							<svg
+								class="w-4.5 h-4.5 text-danger-500"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+								/>
+							</svg>
+						</div>
+						{#if dashboard.clientesConDeuda > 0}
+							<span class="text-xs font-medium text-gray-400"
+								>{dashboard.clientesConDeuda} clientes</span
+							>
+						{/if}
+					</div>
+					<div>
+						<p class="text-xs text-gray-400 font-medium">
+							Por cobrar
+						</p>
+						<p class="text-xl font-bold text-gray-900 mt-0.5">
+							{formatCurrency(dashboard.deudaTotalPendiente)}
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -300,222 +348,286 @@
 		<div
 			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
 		>
-			<div
-				class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
-			>
-				<div>
-					<h2 class="text-sm font-semibold text-gray-900">
-						Tendencia de ventas
-					</h2>
-					<p class="text-xs text-gray-400 mt-0.5">
-						Ventas diarias del mes actual
-					</p>
-				</div>
-				{#if tendencia.length > 0}
-					<div class="text-right">
-						<p class="text-lg font-bold text-gray-900">
-							{formatCurrency(totalMesDiario)}
-						</p>
-						<p class="text-xs text-gray-400">acumulado</p>
-					</div>
-				{/if}
-			</div>
-			<div class="p-6">
-				{#if tendencia.length === 0}
+			<div class="relative">
+				{#if $suscripcionActual.planCodigo !== "pro"}
 					<div
-						class="flex flex-col items-center justify-center py-12 text-gray-300"
+						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
 						<svg
-							class="w-10 h-10 mb-3"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="w-5 h-5"
 						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="1.5"
-								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-							/>
+							<rect
+								x="3"
+								y="11"
+								width="18"
+								height="11"
+								rx="2"
+								ry="2"
+							></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 						</svg>
-						<p class="text-sm">Sin datos de tendencia</p>
+						<Badge variant="yellow">Disponible en Pro</Badge>
 					</div>
-				{:else}
-					<!-- Y axis labels -->
-					<div class="flex gap-3 h-52">
-						<div
-							class="flex flex-col justify-between text-xs text-gray-300 py-1 w-14 text-right shrink-0"
-						>
-							<span>{formatCurrency(maxVenta)}</span>
-							<span>{formatCurrency(maxVenta / 2)}</span>
-							<span>$0</span>
+				{/if}
+				<div
+					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
+				>
+					<div>
+						<h2 class="text-sm font-semibold text-gray-900">
+							Tendencia de ventas
+						</h2>
+						<p class="text-xs text-gray-400 mt-0.5">
+							Ventas diarias del mes actual
+						</p>
+					</div>
+					{#if tendencia.length > 0}
+						<div class="text-right">
+							<p class="text-lg font-bold text-gray-900">
+								{formatCurrency(totalMesDiario)}
+							</p>
+							<p class="text-xs text-gray-400">acumulado</p>
 						</div>
-						<!-- Bars -->
-						<div class="flex-1 relative">
-							<!-- Grid lines -->
-							<div
-								class="absolute inset-0 flex flex-col justify-between pointer-events-none"
+					{/if}
+				</div>
+
+				<div
+					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class="p-6"
+				>
+					{#if tendencia.length === 0}
+						<div
+							class="flex flex-col items-center justify-center py-12 text-gray-300"
+						>
+							<svg
+								class="w-10 h-10 mb-3"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
 							>
-								<div
-									class="border-b border-dashed border-gray-100"
-								></div>
-								<div
-									class="border-b border-dashed border-gray-100"
-								></div>
-								<div class="border-b border-gray-100"></div>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.5"
+									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								/>
+							</svg>
+							<p class="text-sm">Sin datos de tendencia</p>
+						</div>
+					{:else}
+						<!-- Y axis labels -->
+						<div class="flex gap-3 h-52">
+							<div
+								class="flex flex-col justify-between text-xs text-gray-300 py-1 w-14 text-right shrink-0"
+							>
+								<span>{formatCurrency(maxVenta)}</span>
+								<span>{formatCurrency(maxVenta / 2)}</span>
+								<span>$0</span>
 							</div>
-							<div
-								class="relative flex items-end gap-[3px] h-full"
-							>
+							<!-- Bars -->
+							<div class="flex-1 relative">
+								<!-- Grid lines -->
+								<div
+									class="absolute inset-0 flex flex-col justify-between pointer-events-none"
+								>
+									<div
+										class="border-b border-dashed border-gray-100"
+									></div>
+									<div
+										class="border-b border-dashed border-gray-100"
+									></div>
+									<div class="border-b border-gray-100"></div>
+								</div>
+								<div
+									class="relative flex items-end gap-[3px] h-full"
+								>
+									{#each tendencia as dia, i}
+										<div
+											class="flex-1 flex flex-col items-center justify-end h-full group relative"
+											role="img"
+											aria-label="{formatFecha(
+												dia.fecha,
+											)}: {formatCurrency(
+												dia.monto ?? 0,
+											)}"
+											onmouseenter={() =>
+												(hoveredBar = i)}
+											onmouseleave={() =>
+												(hoveredBar = null)}
+										>
+											<!-- Tooltip -->
+											{#if hoveredBar === i}
+												<div
+													class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap z-10 shadow-lg"
+												>
+													<p class="font-semibold">
+														{formatCurrency(
+															dia.monto ?? 0,
+														)}
+													</p>
+													<p
+														class="text-gray-400 text-[10px]"
+													>
+														{formatFecha(dia.fecha)}
+													</p>
+												</div>
+											{/if}
+											<div
+												class="w-full rounded-t-md transition-all duration-200 min-h-[3px] {hoveredBar ===
+												i
+													? 'bg-primary-500'
+													: 'bg-primary-300 hover:bg-primary-400'}"
+												style="height: {Math.max(
+													((dia.monto ?? 0) /
+														maxVenta) *
+														100,
+													1.5,
+												)}%"
+											></div>
+										</div>
+									{/each}
+								</div>
+							</div>
+						</div>
+						<!-- X axis labels -->
+						<div class="flex gap-3 mt-2">
+							<div class="w-14 shrink-0"></div>
+							<div class="flex-1 flex">
 								{#each tendencia as dia, i}
 									<div
-										class="flex-1 flex flex-col items-center justify-end h-full group relative"
-										role="img"
-										aria-label="{formatFecha(
-											dia.fecha,
-										)}: {formatCurrency(dia.monto ?? 0)}"
-										onmouseenter={() => (hoveredBar = i)}
-										onmouseleave={() => (hoveredBar = null)}
+										class="flex-1 text-center text-[10px] text-gray-300 font-medium"
 									>
-										<!-- Tooltip -->
-										{#if hoveredBar === i}
-											<div
-												class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap z-10 shadow-lg"
-											>
-												<p class="font-semibold">
-													{formatCurrency(
-														dia.monto ?? 0,
-													)}
-												</p>
-												<p
-													class="text-gray-400 text-[10px]"
-												>
-													{formatFecha(dia.fecha)}
-												</p>
-											</div>
+										{#if tendencia.length <= 15 || i % Math.ceil(tendencia.length / 10) === 0}
+											{diaCorto(dia.fecha)}
 										{/if}
-										<div
-											class="w-full rounded-t-md transition-all duration-200 min-h-[3px] {hoveredBar ===
-											i
-												? 'bg-primary-500'
-												: 'bg-primary-300 hover:bg-primary-400'}"
-											style="height: {Math.max(
-												((dia.monto ?? 0) / maxVenta) *
-													100,
-												1.5,
-											)}%"
-										></div>
 									</div>
 								{/each}
 							</div>
 						</div>
-					</div>
-					<!-- X axis labels -->
-					<div class="flex gap-3 mt-2">
-						<div class="w-14 shrink-0"></div>
-						<div class="flex-1 flex">
-							{#each tendencia as dia, i}
-								<div
-									class="flex-1 text-center text-[10px] text-gray-300 font-medium"
-								>
-									{#if tendencia.length <= 15 || i % Math.ceil(tendencia.length / 10) === 0}
-										{diaCorto(dia.fecha)}
-									{/if}
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/if}
+					{/if}
+				</div>
 			</div>
 		</div>
 
 		<!-- Alertas de stock bajo -->
-		<div
-			class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col"
-		>
-			<div
-				class="px-5 py-4 border-b border-gray-50 flex items-center justify-between"
-			>
-				<div class="flex items-center gap-2">
-					<div
-						class="w-7 h-7 rounded-lg bg-warning-50 flex items-center justify-center"
-					>
-						<svg
-							class="w-3.5 h-3.5 text-warning-500"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-							/>
-						</svg>
-					</div>
-					<h2 class="text-sm font-semibold text-gray-900">
-						Alertas de stock
-					</h2>
-				</div>
-				<a
-					href="/admin/productos?stockBajo=true"
-					class="text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
+		<div class="relative">
+			{#if $suscripcionActual.planCodigo !== "pro"}
+				<div
+					class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 				>
-					Ver todos &rarr;
-				</a>
-			</div>
-			<div class="flex-1 overflow-y-auto">
-				{#if stockBajo.length === 0}
-					<div
-						class="flex flex-col items-center justify-center py-12 text-gray-300"
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="w-5 h-5"
 					>
-						<svg
-							class="w-8 h-8 mb-2"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
+						></rect>
+						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+					</svg>
+					<Badge variant="yellow">Disponible en Pro</Badge>
+				</div>
+			{/if}
+
+			<div
+				class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+				class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col"
+			>
+				<div
+					class="px-5 py-4 border-b border-gray-50 flex items-center justify-between"
+				>
+					<div class="flex items-center gap-2">
+						<div
+							class="w-7 h-7 rounded-lg bg-warning-50 flex items-center justify-center"
 						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="1.5"
-								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-						<p class="text-sm">Todo en orden</p>
-					</div>
-				{:else}
-					<ul>
-						{#each stockBajo as p, i}
-							<li
-								class="px-5 py-3 flex items-center gap-3 hover:bg-gray-50/50 transition-colors {i !==
-								stockBajo.length - 1
-									? 'border-b border-gray-50'
-									: ''}"
+							<svg
+								class="w-3.5 h-3.5 text-warning-500"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
 							>
-								<div
-									class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0"
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+								/>
+							</svg>
+						</div>
+						<h2 class="text-sm font-semibold text-gray-900">
+							Alertas de stock
+						</h2>
+					</div>
+					<a
+						href="/admin/productos?stockBajo=true"
+						class="text-xs font-medium text-primary-500 hover:text-primary-600 transition-colors"
+					>
+						Ver todos &rarr;
+					</a>
+				</div>
+				<div class="flex-1 overflow-y-auto">
+					{#if stockBajo.length === 0}
+						<div
+							class="flex flex-col items-center justify-center py-12 text-gray-300"
+						>
+							<svg
+								class="w-8 h-8 mb-2"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.5"
+									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+							<p class="text-sm">Todo en orden</p>
+						</div>
+					{:else}
+						<ul>
+							{#each stockBajo as p, i}
+								<li
+									class="px-5 py-3 flex items-center gap-3 hover:bg-gray-50/50 transition-colors {i !==
+									stockBajo.length - 1
+										? 'border-b border-gray-50'
+										: ''}"
 								>
-									{p.nombre.charAt(0).toUpperCase()}
-								</div>
-								<div class="min-w-0 flex-1">
-									<p
-										class="text-sm font-medium text-gray-800 truncate"
+									<div
+										class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0"
 									>
-										{p.nombre}
-									</p>
-									<p
-										class="text-[11px] text-gray-400 font-mono"
-									>
-										{p.sku}
-									</p>
-								</div>
-								<Badge variant="red">Bajo</Badge>
-							</li>
-						{/each}
-					</ul>
-				{/if}
+										{p.nombre.charAt(0).toUpperCase()}
+									</div>
+									<div class="min-w-0 flex-1">
+										<p
+											class="text-sm font-medium text-gray-800 truncate"
+										>
+											{p.nombre}
+										</p>
+										<p
+											class="text-[11px] text-gray-400 font-mono"
+										>
+											{p.sku}
+										</p>
+									</div>
+									<Badge variant="red">Bajo</Badge>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -570,33 +682,58 @@
 				</svg>
 			</a>
 		</div>
-		<div
-			class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
-		>
-			<div
-				class="w-12 h-12 rounded-2xl bg-gray-50 group-hover:bg-primary-50 flex items-center justify-center transition-colors"
-			>
-				<svg
-					class="w-5 h-5 text-gray-400 group-hover:text-primary-500 transition-colors"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
+		<div class="relative w-full">
+			{#if $suscripcionActual.planCodigo !== "pro"}
+				<div
+					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-50 items-center justify-center"
 				>
-					<path
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						stroke-width="2"
-						d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-					/>
-				</svg>
-			</div>
-			<div class="flex-1 min-w-0">
-				<p class="text-xs text-gray-400 font-medium">
-					Órdenes de compra activas
-				</p>
-				<p class="text-xl font-bold text-gray-900 mt-0.5">
-					{dashboard.ordenesCompraActivas}
-				</p>
+						class="w-5 h-5"
+					>
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
+						></rect>
+						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+					</svg>
+					<Badge variant="yellow">Disponible en Pro</Badge>
+				</div>
+			{/if}
+			<div
+				class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+				class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
+			>
+				<div
+					class="w-12 h-12 rounded-2xl bg-gray-50 group-hover:bg-primary-50 flex items-center justify-center transition-colors"
+				>
+					<svg
+						class="w-5 h-5 text-gray-400 group-hover:text-primary-500 transition-colors"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+						/>
+					</svg>
+				</div>
+
+				<div class="flex-1 min-w-0">
+					<p class="text-xs text-gray-400 font-medium">
+						Órdenes de compra activas
+					</p>
+					<p class="text-xl font-bold text-gray-900 mt-0.5">
+						{dashboard.ordenesCompraActivas}
+					</p>
+				</div>
 			</div>
 			<a
 				href="/bodega/compras"
