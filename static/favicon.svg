@@ -1,53 +1,180 @@
-  <svg
+<svg
         width="120"
         height="120"
-        viewBox="0 0 512 512"
+        viewBox="0 0 300 300"
         xmlns="http://www.w3.org/2000/svg"
     >
         <title>FerreControl POS</title>
 
-        <circle cx="256" cy="256" r="256" fill="#1D9E75" />
+        <circle cx="150" cy="150" r="150" fill="#111" />
 
-        <!-- Cuerpo caja registradora -->
-        <rect x="114" y="148" width="284" height="216" rx="20" fill="#ffffff" />
+        <!-- Arco cinta métrica -->
+        <circle
+            cx="150"
+            cy="150"
+            r="108"
+            fill="none"
+            stroke="#1D9E75"
+            stroke-width="28"
+            stroke-dasharray="508 678"
+            stroke-dashoffset="84"
+            stroke-linecap="round"
+        />
+        <circle
+            cx="150"
+            cy="150"
+            r="108"
+            fill="none"
+            stroke="#222"
+            stroke-width="28"
+            stroke-dasharray="170 678"
+            stroke-dashoffset="-424"
+            stroke-linecap="round"
+        />
 
-        <!-- Pantalla -->
-        <rect x="138" y="168" width="236" height="64" rx="10" fill="#085041" />
-        <rect x="152" y="192" width="130" height="9" rx="4" fill="#5DCAA5" />
-        <rect x="152" y="208" width="80" height="9" rx="4" fill="#0F6E56" />
-
-        <!-- Botones fila 1 -->
-        <rect x="138" y="250" width="40" height="28" rx="6" fill="#9FE1CB" />
-        <rect x="188" y="250" width="40" height="28" rx="6" fill="#9FE1CB" />
-        <rect x="238" y="250" width="40" height="28" rx="6" fill="#9FE1CB" />
-        <!-- Botones fila 2 -->
-        <rect x="138" y="290" width="40" height="28" rx="6" fill="#5DCAA5" />
-        <rect x="188" y="290" width="40" height="28" rx="6" fill="#5DCAA5" />
-        <rect x="238" y="290" width="96" height="28" rx="6" fill="#085041" />
-
-        <!-- Cajón -->
-        <rect x="114" y="354" width="284" height="28" rx="10" fill="#0F6E56" />
-        <rect x="208" y="358" width="96" height="16" rx="5" fill="#5DCAA5" />
-
-        <!-- Llave pequeña acento -->
-        <g transform="translate(158,120) rotate(-40)">
-            <rect x="-8" y="4" width="16" height="64" rx="8" fill="#ffffff" />
-            <rect
-                x="-22"
-                y="-40"
-                width="44"
-                height="46"
-                rx="8"
-                fill="#ffffff"
+        <!-- Marcas medición -->
+        <g
+            stroke="white"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            opacity="0.4"
+        >
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(20 150 150)"
             />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(40 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(60 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(80 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(100 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(120 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(140 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(160 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(180 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(200 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(220 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="44"
+                transform="rotate(240 150 150)"
+            />
+            <line
+                x1="150"
+                y1="34"
+                x2="150"
+                y2="50"
+                transform="rotate(260 150 150)"
+            />
+        </g>
+
+        <!-- Caja registradora -->
+        <g transform="translate(150,150)">
+            <rect x="-38" y="-36" width="76" height="56" rx="8" fill="white" />
             <rect
-                x="-14"
-                y="-52"
-                width="12"
-                height="22"
+                x="-28"
+                y="-28"
+                width="38"
+                height="18"
                 rx="4"
                 fill="#1D9E75"
             />
-            <rect x="3" y="-46" width="11" height="18" rx="4" fill="#1D9E75" />
+            <rect x="16" y="-28" width="18" height="18" rx="4" fill="#1D9E75" />
+            <rect x="-28" y="-4" width="13" height="10" rx="3" fill="#333" />
+            <rect x="-12" y="-4" width="13" height="10" rx="3" fill="#333" />
+            <rect x="4" y="-4" width="13" height="10" rx="3" fill="#333" />
+            <rect x="-38" y="24" width="76" height="14" rx="5" fill="#1D9E75" />
+            <rect x="-10" y="27" width="20" height="8" rx="4" fill="white" />
+            <rect
+                x="-10"
+                y="-52"
+                width="20"
+                height="18"
+                rx="3"
+                fill="white"
+                opacity="0.7"
+            />
+            <line
+                x1="-5"
+                y1="-46"
+                x2="5"
+                y2="-46"
+                stroke="#1D9E75"
+                stroke-width="2"
+                stroke-linecap="round"
+            />
+            <line
+                x1="-5"
+                y1="-41"
+                x2="3"
+                y2="-41"
+                stroke="#1D9E75"
+                stroke-width="2"
+                stroke-linecap="round"
+            />
         </g>
     </svg>

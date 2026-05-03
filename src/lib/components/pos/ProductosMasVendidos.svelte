@@ -98,7 +98,7 @@
             <div class="flex items-center gap-2 px-1">
                 ⭐
                 <span class="text-xs font-medium text-gray-800">
-                    Acceso rápido - Productos más vendidos ({productos.length})
+                    Acceso rápido ({productos.length})
                 </span>
             </div>
 

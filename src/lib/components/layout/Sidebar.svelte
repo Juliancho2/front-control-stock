@@ -8,6 +8,7 @@
 		icon: string;
 		badge?: number;
 		isLocked?: boolean;
+		target?: string;
 	}[] = [];
 
 	export let colapsado = false;
@@ -40,11 +41,11 @@
          {colapsado ? 'md:w-sidebar-collapsed' : 'md:w-sidebar'}"
 >
 	<!-- Logo -->
-	<div class="flex items-center gap-3 px-4 py-4 border-b border-gray-700/50">
+	<div class="flex items-center gap-3 px-2 py-4 border-b border-gray-700/50">
 		<div class="flex items-center justify-center">
-			<IconLogo size={50} className="w-[60px] h-[60px]" />
+			<IconLogo size={50} />
 			{#if !colapsado}
-				<span class="text-sm font-semibold text-white truncate"
+				<span class="text-sm font-semibold text-white truncate ml-2"
 					>FerreControl</span
 				>
 			{/if}
@@ -86,6 +87,10 @@
 			{:else}
 				<a
 					href={item.href}
+					target={item.target}
+					rel={item.target === "_blank"
+						? "noopener noreferrer"
+						: undefined}
 					class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
 				   {activo
 						? 'bg-primary-400/20 text-primary-300'

@@ -117,7 +117,7 @@
 	{#if mostrarBotonUpgrade}
 		<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
 			<span
-				class="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-semibold hover:bg-amber-100 transition-colors text-xs shadow-sm"
+				class="inline-flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-700 border border-blue-200 rounded-lg font-semibold hover:bg-violet-100 transition-colors text-xs shadow-sm"
 			>
 				<svg
 					class="w-3.5 h-3.5"
@@ -140,6 +140,9 @@
 		<div class="flex items-center gap-2">
 			<span
 				class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
+				class:bg-red-50={$suscripcionActual?.diasRestantes === 0}
+				class:border-red-200={$suscripcionActual?.diasRestantes === 0}
+				class:text-red-700={$suscripcionActual?.diasRestantes === 0}
 				class:bg-amber-50={$suscripcionActual?.diasRestantes !==
 					undefined && $suscripcionActual.diasRestantes <= 5}
 				class:border-amber-200={$suscripcionActual?.diasRestantes !==

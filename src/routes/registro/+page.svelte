@@ -73,10 +73,13 @@
         <!-- Logo / título -->
         <div class="text-center mb-8">
             <div class="flex items-center justify-center mb-4">
-                <IconLogo className="w-[75px] h-[75px]" />
-                <h1 class="text-3xl font-bold text-gray-900 self-center ml-3">
-                    FerreControl
-                </h1>
+                <IconLogo size={60} />
+                <div class="flex items-start ml-3">
+                    <h1 class="text-3xl font-bold text-gray-900 self-center">
+                        Ferre<span class="text-primary-600">Control</span>
+                    </h1>
+                    <span class="text-gray-400 text-xs">POS</span>
+                </div>
             </div>
             <p class="text-2xl font-semibold text-slate-800 my-1">
                 Registra tu negocio
@@ -87,7 +90,7 @@
         </div>
 
         <!-- Card del formulario -->
-        <div class="card">
+        <div class="card shadow-md">
             <div class="card-body">
                 <form
                     method="POST"
