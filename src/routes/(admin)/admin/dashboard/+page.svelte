@@ -11,7 +11,11 @@
 		fechaISO,
 		inicioMes,
 	} from "$utils/index";
-	import { suscripcionActual, usuarioActual } from "$stores/auth.store";
+	import {
+		suscripcionActual,
+		usuarioActual,
+		esPro as esProStore,
+	} from "$stores/auth.store";
 	import type { Dashboard, Producto } from "$types/index";
 
 	export let data: { accessToken: string };
@@ -31,9 +35,7 @@
 			toastStore.error(e?.mensajes?.[0] ?? "Error al cargar dashboard");
 		}
 
-		const esPro = $suscripcionActual?.planCodigo === "pro";
-
-		if (esPro) {
+		if ($esProStore) {
 			try {
 				const trend = await reportesApi.ventas(
 					{
@@ -78,7 +80,7 @@
 		}
 	}
 
-	$: esPro = $suscripcionActual?.planCodigo === "pro";
+	$: esPro = $esProStore;
 </script>
 
 <svelte:head><title>Dashboard — FerreControl</title></svelte:head>
@@ -209,34 +211,38 @@
 			<div class="relative h-full">
 				{#if !esPro}
 					<div
-						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
+						class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px] transition-all duration-300"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="w-5 h-5"
+						<div
+							class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-gray-400"
 						>
-							<rect
-								x="3"
-								y="11"
-								width="18"
-								height="11"
-								rx="2"
-								ry="2"
-							></rect>
-							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-						</svg>
-						<Badge variant="yellow">Disponible en Pro</Badge>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="w-6 h-6"
+							>
+								<rect
+									x="3"
+									y="11"
+									width="18"
+									height="11"
+									rx="2"
+									ry="2"
+								></rect>
+								<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+							</svg>
+						</div>
+						<Badge variant="yellow">Función Pro</Badge>
 					</div>
 				{/if}
 				<div
 					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 h-full flex flex-col justify-between"
-					class:blur-sm={!esPro}
+					class:blur-[1px]={!esPro}
 				>
 					<div class="flex items-center justify-between mb-3">
 						<div
@@ -282,34 +288,38 @@
 			<div class="relative h-full">
 				{#if !esPro}
 					<div
-						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
+						class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px] transition-all duration-300"
 					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="w-5 h-5"
+						<div
+							class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-gray-400"
 						>
-							<rect
-								x="3"
-								y="11"
-								width="18"
-								height="11"
-								rx="2"
-								ry="2"
-							></rect>
-							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-						</svg>
-						<Badge variant="yellow">Disponible en Pro</Badge>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								class="w-6 h-6"
+							>
+								<rect
+									x="3"
+									y="11"
+									width="18"
+									height="11"
+									rx="2"
+									ry="2"
+								></rect>
+								<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+							</svg>
+						</div>
+						<Badge variant="yellow">Función Pro</Badge>
 					</div>
 				{/if}
 
 				<div
-					class:blur-sm={!esPro}
+					class:blur-[1px]={!esPro}
 					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between h-full"
 				>
 					<div class="flex items-center justify-between mb-3">
@@ -353,12 +363,14 @@
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 		<!-- Gráfico de ventas -->
 		<div
-			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
+			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden relative"
 		>
-			<div class="relative">
-				{#if !esPro}
+			{#if !esPro}
+				<div
+					class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px] transition-all duration-300"
+				>
 					<div
-						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
+						class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-gray-400"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -368,155 +380,149 @@
 							stroke-width="2"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-							class="w-5 h-5"
+							class="w-6 h-6"
 						>
-							<rect
-								x="3"
-								y="11"
-								width="18"
-								height="11"
-								rx="2"
-								ry="2"
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
 							></rect>
 							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 						</svg>
-						<Badge variant="yellow">Disponible en Pro</Badge>
+					</div>
+					<Badge variant="yellow">Función Pro</Badge>
+				</div>
+			{/if}
+			<div
+				class:blur-[1px]={!esPro}
+				class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
+			>
+				<div>
+					<h2 class="text-sm font-semibold text-gray-900">
+						Tendencia de ventas
+					</h2>
+					<p class="text-xs text-gray-400 mt-0.5">
+						Ventas diarias del mes actual
+					</p>
+				</div>
+				{#if tendencia.length > 0}
+					<div class="text-right">
+						<p class="text-lg font-bold text-gray-900">
+							{formatCurrency(totalMesDiario)}
+						</p>
+						<p class="text-xs text-gray-400">acumulado</p>
 					</div>
 				{/if}
-				<div
-					class:blur-sm={!esPro}
-					class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
-				>
-					<div>
-						<h2 class="text-sm font-semibold text-gray-900">
-							Tendencia de ventas
-						</h2>
-						<p class="text-xs text-gray-400 mt-0.5">
-							Ventas diarias del mes actual
-						</p>
-					</div>
-					{#if tendencia.length > 0}
-						<div class="text-right">
-							<p class="text-lg font-bold text-gray-900">
-								{formatCurrency(totalMesDiario)}
-							</p>
-							<p class="text-xs text-gray-400">acumulado</p>
-						</div>
-					{/if}
-				</div>
+			</div>
 
-				<div class:blur-sm={!esPro} class="p-6">
-					{#if tendencia.length === 0}
-						<div
-							class="flex flex-col items-center justify-center py-12 text-gray-300"
+			<div class:blur-[1px]={!esPro} class="p-6">
+				{#if tendencia.length === 0}
+					<div
+						class="flex flex-col items-center justify-center py-12 text-gray-300"
+					>
+						<svg
+							class="w-10 h-10 mb-3"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
 						>
-							<svg
-								class="w-10 h-10 mb-3"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="1.5"
-									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-								/>
-							</svg>
-							<p class="text-sm">Sin datos de tendencia</p>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="1.5"
+								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+							/>
+						</svg>
+						<p class="text-sm">Sin datos de tendencia</p>
+					</div>
+				{:else}
+					<!-- Y axis labels -->
+					<div class="flex gap-3 h-52">
+						<div
+							class="flex flex-col justify-between text-xs text-gray-300 py-1 w-14 text-right shrink-0"
+						>
+							<span>{formatCurrency(maxVenta)}</span>
+							<span>{formatCurrency(maxVenta / 2)}</span>
+							<span>$0</span>
 						</div>
-					{:else}
-						<!-- Y axis labels -->
-						<div class="flex gap-3 h-52">
+						<!-- Bars -->
+						<div class="flex-1 relative">
+							<!-- Grid lines -->
 							<div
-								class="flex flex-col justify-between text-xs text-gray-300 py-1 w-14 text-right shrink-0"
+								class="absolute inset-0 flex flex-col justify-between pointer-events-none"
 							>
-								<span>{formatCurrency(maxVenta)}</span>
-								<span>{formatCurrency(maxVenta / 2)}</span>
-								<span>$0</span>
-							</div>
-							<!-- Bars -->
-							<div class="flex-1 relative">
-								<!-- Grid lines -->
 								<div
-									class="absolute inset-0 flex flex-col justify-between pointer-events-none"
-								>
-									<div
-										class="border-b border-dashed border-gray-100"
-									></div>
-									<div
-										class="border-b border-dashed border-gray-100"
-									></div>
-									<div class="border-b border-gray-100"></div>
-								</div>
+									class="border-b border-dashed border-gray-100"
+								></div>
 								<div
-									class="relative flex items-end gap-[3px] h-full"
-								>
-									{#each tendencia as dia, i}
-										<div
-											class="flex-1 flex flex-col items-center justify-end h-full group relative"
-											role="img"
-											aria-label="{formatFecha(
-												dia.fecha,
-											)}: {formatCurrency(
-												dia.monto ?? 0,
-											)}"
-											onmouseenter={() =>
-												(hoveredBar = i)}
-											onmouseleave={() =>
-												(hoveredBar = null)}
-										>
-											<!-- Tooltip -->
-											{#if hoveredBar === i}
-												<div
-													class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap z-10 shadow-lg"
-												>
-													<p class="font-semibold">
-														{formatCurrency(
-															dia.monto ?? 0,
-														)}
-													</p>
-													<p
-														class="text-gray-400 text-[10px]"
-													>
-														{formatFecha(dia.fecha)}
-													</p>
-												</div>
-											{/if}
-											<div
-												class="w-full rounded-t-md transition-all duration-200 min-h-[3px] {hoveredBar ===
-												i
-													? 'bg-primary-500'
-													: 'bg-primary-300 hover:bg-primary-400'}"
-												style="height: {Math.max(
-													((dia.monto ?? 0) /
-														maxVenta) *
-														100,
-													1.5,
-												)}%"
-											></div>
-										</div>
-									{/each}
-								</div>
+									class="border-b border-dashed border-gray-100"
+								></div>
+								<div class="border-b border-gray-100"></div>
 							</div>
-						</div>
-						<!-- X axis labels -->
-						<div class="flex gap-3 mt-2">
-							<div class="w-14 shrink-0"></div>
-							<div class="flex-1 flex">
+							<div
+								class="relative flex items-end gap-[3px] h-full"
+							>
 								{#each tendencia as dia, i}
 									<div
-										class="flex-1 text-center text-[10px] text-gray-300 font-medium"
+										class="flex-1 flex flex-col items-center justify-end h-full group relative"
+										role="img"
+										aria-label="{formatFecha(
+											dia.fecha,
+										)}: {formatCurrency(
+											dia.monto ?? 0,
+										)}"
+										onmouseenter={() =>
+											(hoveredBar = i)}
+										onmouseleave={() =>
+											(hoveredBar = null)}
 									>
-										{#if tendencia.length <= 15 || i % Math.ceil(tendencia.length / 10) === 0}
-											{diaCorto(dia.fecha)}
+										<!-- Tooltip -->
+										{#if hoveredBar === i}
+											<div
+												class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap z-10 shadow-lg"
+											>
+												<p class="font-semibold">
+													{formatCurrency(
+														dia.monto ?? 0,
+													)}
+												</p>
+												<p
+													class="text-gray-400 text-[10px]"
+												>
+													{formatFecha(dia.fecha)}
+												</p>
+											</div>
 										{/if}
+										<div
+											class="w-full rounded-t-md transition-all duration-200 min-h-[3px] {hoveredBar ===
+											i
+												? 'bg-primary-500'
+												: 'bg-primary-300 hover:bg-primary-400'}"
+											style="height: {Math.max(
+												((dia.monto ?? 0) /
+													maxVenta) *
+													100,
+												1.5,
+											)}%"
+										></div>
 									</div>
 								{/each}
 							</div>
 						</div>
-					{/if}
-				</div>
+					</div>
+					<!-- X axis labels -->
+					<div class="flex gap-3 mt-2">
+						<div class="w-14 shrink-0"></div>
+						<div class="flex-1 flex">
+							{#each tendencia as dia, i}
+								<div
+									class="flex-1 text-center text-[10px] text-gray-300 font-medium"
+								>
+									{#if tendencia.length <= 15 || i % Math.ceil(tendencia.length / 10) === 0}
+										{diaCorto(dia.fecha)}
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 
@@ -524,28 +530,32 @@
 		<div class="relative h-full">
 			{#if !esPro}
 				<div
-					class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
+					class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px] transition-all duration-300"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="w-5 h-5"
+					<div
+						class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-gray-400"
 					>
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
-						></rect>
-						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-					</svg>
-					<Badge variant="yellow">Disponible en Pro</Badge>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="w-6 h-6"
+						>
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
+							></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+					</div>
+					<Badge variant="yellow">Función Pro</Badge>
 				</div>
 			{/if}
 
 			<div
-				class:blur-sm={!esPro}
+				class:blur-[1px]={!esPro}
 				class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col h-full"
 			>
 				<div
@@ -689,27 +699,31 @@
 		<div class="relative w-full">
 			{#if !esPro}
 				<div
-					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center"
+					class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/40 backdrop-blur-[2px] transition-all duration-300"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="w-5 h-5"
+					<div
+						class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-gray-400"
 					>
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
-						></rect>
-						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-					</svg>
-					<Badge variant="yellow">Disponible en Pro</Badge>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="w-6 h-6"
+						>
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2"
+							></rect>
+							<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+						</svg>
+					</div>
+					<Badge variant="yellow">Función Pro</Badge>
 				</div>
 			{/if}
 			<div
-				class:blur-sm={!esPro}
+				class:blur-[1px]={!esPro}
 				class="rounded-2xl bg-white h-full ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
 			>
 				<div
@@ -739,25 +753,6 @@
 					</p>
 				</div>
 			</div>
-			<a
-				href="/bodega/compras"
-				class="p-2 rounded-xl text-gray-300 hover:text-primary-500 hover:bg-primary-50 transition-colors"
-				title="Ir a compras"
-			>
-				<svg
-					class="w-4 h-4"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M9 5l7 7-7 7"
-					/>
-				</svg>
-			</a>
 		</div>
 	</div>
 {/if}

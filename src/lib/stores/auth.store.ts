@@ -72,6 +72,13 @@ export const esAdmin = derived(authStore, $s => $s.usuario?.rol === 'admin' || $
 export const esCajero = derived(authStore, $s => ['cajero', 'admin'].includes($s.usuario?.rol ?? ''));
 export const esBodeguero = derived(authStore, $s => ['bodeguero', 'admin'].includes($s.usuario?.rol ?? ''));
 
+export const esPro = derived(authStore, $s => {
+	if ($s.usuario?.rol === 'superadmin') return true;
+	if (!$s.suscripcion) return false;
+	const vigente = $s.suscripcion.estaVigente ?? $s.suscripcion.diasRestantes > 0;
+	return $s.suscripcion.planCodigo === 'pro' || ($s.suscripcion.planCodigo === 'trial' && vigente);
+});
+
 export function tieneRol(...roles: RolUsuario[]): boolean {
 	const rol = get(rolActual);
 	return rol !== null && (rol === 'superadmin' || rol === 'admin' || roles.includes(rol));
@@ -79,20 +86,22 @@ export function tieneRol(...roles: RolUsuario[]): boolean {
 
 export const suscripcionVigente = derived(authStore, $s => {
 	if (!$s.suscripcion) return false;
-	return $s.suscripcion.estaVigente;
+	return $s.suscripcion.estaVigente ?? $s.suscripcion.diasRestantes > 0;
 });
 
 export const puedeCrearContenido = derived(authStore, $s => {
 	const rol = $s.usuario?.rol;
 	if (rol === 'superadmin') return true;
-	if ($s.usuario?.rol === 'admin' && $s.suscripcion?.estaVigente) return true;
+	const vigente = $s.suscripcion?.estaVigente ?? ($s.suscripcion?.diasRestantes ?? 0) > 0;
+	if ($s.usuario?.rol === 'admin' && vigente) return true;
 	return false;
 });
 
 export const puedeRegistrarVentas = derived(authStore, $s => {
 	const rol = $s.usuario?.rol;
 	if (rol === 'superadmin') return true;
-	if (!$s.suscripcion?.estaVigente) return false;
+	const vigente = $s.suscripcion?.estaVigente ?? ($s.suscripcion?.diasRestantes ?? 0) > 0;
+	if (!vigente) return false;
 	if (rol === 'cajero' || rol === 'admin') return true;
 	return false;
 });
@@ -100,6 +109,8 @@ export const puedeRegistrarVentas = derived(authStore, $s => {
 export function tieneAcceso(modulo: string, state: AuthState): boolean {
 	if (state.usuario?.rol === 'superadmin') return true;
 	if (!state.suscripcion) return false;
+	const vigente = state.suscripcion.estaVigente ?? state.suscripcion.diasRestantes > 0;
+	if (state.suscripcion.estado === 'trial' && vigente) return true;
 	return !state.suscripcion.modulosBloqueados?.includes(modulo);
 }
 
