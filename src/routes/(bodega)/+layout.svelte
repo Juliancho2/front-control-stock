@@ -45,7 +45,10 @@
 		},
 	];
 
-	$: nav = allNav.filter((item) => tieneAcceso(item.id, $authStore));
+	$: nav = allNav.map((item) => ({
+		...item,
+		isLocked: !tieneAcceso(item.id, $authStore),
+	}));
 </script>
 
 <div class="h-screen flex overflow-hidden bg-gray-50">

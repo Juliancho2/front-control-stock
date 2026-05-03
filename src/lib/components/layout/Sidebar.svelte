@@ -7,6 +7,7 @@
 		href: string;
 		icon: string;
 		badge?: number;
+		isLocked?: boolean;
 	}[] = [];
 
 	export let colapsado = false;
@@ -54,39 +55,69 @@
 	<nav class="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
 		{#each items as item (item.href)}
 			{@const activo = esActivo(rutaActual, item.href)}
-			<a
-				href={item.href}
-				class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-               {activo
-					? 'bg-primary-400/20 text-primary-300'
-					: 'text-gray-400 hover:bg-gray-800 hover:text-white'}"
-				title={colapsado ? item.label : undefined}
-			>
-				<svg
-					class="w-5 h-5 flex-shrink-0"
-					fill="none"
-					stroke="currentColor"
-					viewBox="0 0 24 24"
+			{#if item.isLocked}
+				<div
+					class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-gray-600 cursor-not-allowed"
+					title={colapsado ? item.label : undefined}
 				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="1.75"
-						d={item.icon}
-					/>
-				</svg>
+					<svg
+						class="w-5 h-5 flex-shrink-0"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="1.75"
+							d={item.icon}
+						/>
+					</svg>
 
-				{#if !colapsado}
-					<span class="flex-1 truncate">{item.label}</span>
-					{#if item.badge}
+					{#if !colapsado}
+						<span class="flex-1 truncate">{item.label}</span>
 						<span
-							class="ml-auto flex-shrink-0 w-5 h-5 bg-danger-400 text-white text-xs rounded-full flex items-center justify-center font-medium"
+							class="ml-auto flex-shrink-0 px-1.5 py-0.5 bg-yellow-500/10 text-yellow-500 text-[10px] uppercase font-bold rounded"
 						>
-							{item.badge > 9 ? "9+" : item.badge}
+							Pro
 						</span>
 					{/if}
-				{/if}
-			</a>
+				</div>
+			{:else}
+				<a
+					href={item.href}
+					class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+				   {activo
+						? 'bg-primary-400/20 text-primary-300'
+						: 'text-gray-400 hover:bg-gray-800 hover:text-white'}"
+					title={colapsado ? item.label : undefined}
+				>
+					<svg
+						class="w-5 h-5 flex-shrink-0"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="1.75"
+							d={item.icon}
+						/>
+					</svg>
+
+					{#if !colapsado}
+						<span class="flex-1 truncate">{item.label}</span>
+						{#if item.badge}
+							<span
+								class="ml-auto flex-shrink-0 w-5 h-5 bg-danger-400 text-white text-xs rounded-full flex items-center justify-center font-medium"
+							>
+								{item.badge > 9 ? "9+" : item.badge}
+							</span>
+						{/if}
+					{/if}
+				</a>
+			{/if}
 		{/each}
 	</nav>
 
