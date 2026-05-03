@@ -36,7 +36,12 @@
     async function cargar() {
         cargando = true;
         try {
-            bodegas = await bodegasApi.listar({}, accessToken);
+            bodegas = await bodegasApi.listar(
+                {
+                    soloActivas: "true",
+                },
+                accessToken,
+            );
         } catch {
             toastStore.error("Error al cargar bodegas");
         } finally {
@@ -95,9 +100,16 @@
 
     async function eliminar() {
         if (!bodegaEliminar) return;
+
+        const id = bodegaEliminar.id;
+
+        // 🔑 Cerrar inmediatamente
+        bodegaEliminar = null;
+
         eliminando = true;
         try {
-            await bodegasApi.eliminar(bodegaEliminar.id, accessToken);
+            await bodegasApi.eliminar(id, accessToken);
+
             toastStore.exito("Bodega eliminada");
             bodegaEliminar = null;
             cargar();
@@ -230,9 +242,11 @@
 <ConfirmDialog
     open={!!bodegaEliminar}
     titulo="Eliminar bodega"
+    cargando={eliminando}
     mensaje="¿Estás seguro de eliminar la bodega «{bodegaEliminar?.nombre}»? Esta acción no se puede deshacer."
     variant="danger"
-    loading={eliminando}
-    on:confirm={eliminar}
+    on:confirmar={() => {
+        eliminar();
+    }}
     on:cancel={() => (bodegaEliminar = null)}
 />
