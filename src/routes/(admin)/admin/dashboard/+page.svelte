@@ -269,7 +269,7 @@
 							Stock bajo
 						</p>
 						<p class="text-xl font-bold text-gray-900 mt-0.5">
-							{esPro ? dashboard.productosConStockBajo : '-'}
+							{esPro ? dashboard.productosConStockBajo : "-"}
 							<span class="text-sm font-normal text-gray-400"
 								>productos</span
 							>
@@ -405,10 +405,7 @@
 					{/if}
 				</div>
 
-				<div
-					class:blur-sm={!esPro}
-					class="p-6"
-				>
+				<div class:blur-sm={!esPro} class="p-6">
 					{#if tendencia.length === 0}
 						<div
 							class="flex flex-col items-center justify-center py-12 text-gray-300"
@@ -692,7 +689,7 @@
 		<div class="relative w-full">
 			{#if !esPro}
 				<div
-					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-50 items-center justify-center"
+					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

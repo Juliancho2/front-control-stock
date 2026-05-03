@@ -102,38 +102,41 @@
 	<!-- Título / breadcrumb -->
 	<div class="flex-1 min-w-0">
 		<slot name="titulo">
-			<Badge dot variant="green"
-				>{$nombreNegocioActual?.toLocaleUpperCase() || titulo}</Badge
-			>
+			<div class="hidden sm:block">
+				<Badge dot variant="green"
+					>{$nombreNegocioActual?.toLocaleUpperCase() ||
+						titulo}</Badge
+				>
+			</div>
 		</slot>
 	</div>
 
 	<!-- Acciones adicionales -->
 	<slot name="acciones" />
 
-	{#if mostrarSuscripcion}
-		{#if mostrarBotonUpgrade}
-			<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
-				<span
-					class="inline-flex items-center gap-2 px-4 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-semibold hover:bg-amber-100 transition-colors text-xs shadow-sm w-fit"
+	{#if mostrarBotonUpgrade}
+		<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
+			<span
+				class="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-semibold hover:bg-amber-100 transition-colors text-xs shadow-sm"
+			>
+				<svg
+					class="w-3.5 h-3.5"
+					fill="none"
+					stroke="currentColor"
+					viewBox="0 0 24 24"
 				>
-					<svg
-						class="w-3.5 h-3.5"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M13 10V3L4 14h7v7l9-11h-7z"
-						/>
-					</svg>
-					Mejorar plan
-				</span>
-			</a>
-		{/if}
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M13 10V3L4 14h7v7l9-11h-7z"
+					/>
+				</svg>
+				Mejorar plan
+			</span>
+		</a>
+	{/if}
+	{#if mostrarSuscripcion}
 		<div class="flex items-center gap-2">
 			<span
 				class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"
