@@ -200,7 +200,7 @@
 
 			<!-- Stock bajo -->
 			<div class="relative h-full">
-				{#if $suscripcionActual.planCodigo !== "pro"}
+				{#if $suscripcionActual.planCodigo === "basic"}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -229,7 +229,7 @@
 				{/if}
 				<div
 					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 h-full flex flex-col justify-between"
-					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
 				>
 					<div class="flex items-center justify-between mb-3">
 						<div
@@ -273,7 +273,7 @@
 
 			<!-- Cuentas por cobrar -->
 			<div class="relative h-full">
-				{#if $suscripcionActual.planCodigo !== "pro"}
+				{#if $suscripcionActual.planCodigo === "basic"}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -302,8 +302,8 @@
 				{/if}
 
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
-					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between"
+					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between h-full"
 				>
 					<div class="flex items-center justify-between mb-3">
 						<div
@@ -349,7 +349,7 @@
 			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
 		>
 			<div class="relative">
-				{#if $suscripcionActual.planCodigo !== "pro"}
+				{#if $suscripcionActual.planCodigo === "basic"}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -377,7 +377,7 @@
 					</div>
 				{/if}
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
 					class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
 				>
 					<div>
@@ -399,7 +399,7 @@
 				</div>
 
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
+					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
 					class="p-6"
 				>
 					{#if tendencia.length === 0}
@@ -517,8 +517,8 @@
 		</div>
 
 		<!-- Alertas de stock bajo -->
-		<div class="relative">
-			{#if $suscripcionActual.planCodigo !== "pro"}
+		<div class="relative h-full">
+			{#if $suscripcionActual.planCodigo === "basic"}
 				<div
 					class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 				>
@@ -541,8 +541,8 @@
 			{/if}
 
 			<div
-				class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
-				class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col"
+				class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+				class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col h-full"
 			>
 				<div
 					class="px-5 py-4 border-b border-gray-50 flex items-center justify-between"
@@ -683,7 +683,7 @@
 			</a>
 		</div>
 		<div class="relative w-full">
-			{#if $suscripcionActual.planCodigo !== "pro"}
+			{#if $suscripcionActual.planCodigo === "basic"}
 				<div
 					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-50 items-center justify-center"
 				>
@@ -705,8 +705,8 @@
 				</div>
 			{/if}
 			<div
-				class:blur-sm={$suscripcionActual.planCodigo !== "pro"}
-				class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
+				class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+				class="rounded-2xl bg-white h-full ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
 			>
 				<div
 					class="w-12 h-12 rounded-2xl bg-gray-50 group-hover:bg-primary-50 flex items-center justify-center transition-colors"

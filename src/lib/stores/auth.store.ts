@@ -97,11 +97,9 @@ export const puedeRegistrarVentas = derived(authStore, $s => {
 	return false;
 });
 
-export function tieneAcceso(modulo: string): boolean {
-	const state = get(authStore);
+export function tieneAcceso(modulo: string, state: AuthState): boolean {
 	if (state.usuario?.rol === 'superadmin') return true;
 	if (!state.suscripcion) return false;
-	if (!state.suscripcion.estaVigente) return false;
 	return !state.suscripcion.modulosBloqueados?.includes(modulo);
 }
 

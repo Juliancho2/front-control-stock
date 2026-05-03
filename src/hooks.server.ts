@@ -12,6 +12,32 @@ const INICIO_POR_ROL: Record<RolUsuario, string> = {
     bodeguero: '/bodega/inventario'
 };
 
+const MODULO_POR_RUTA: Record<string, string> = {
+    '/admin/dashboard': 'dashboard',
+    '/admin/productos': 'productos',
+    '/admin/categorias': 'categorias',
+    '/admin/clientes': 'clientes',
+    '/admin/ventas': 'ventas',
+    '/admin/usuarios': 'usuarios',
+    '/admin/suscripcion': 'suscripcion',
+    '/admin/reportes': 'reportes',
+    '/admin/notificaciones': 'notificaciones',
+    '/bodega/inventario': 'inventario',
+    '/bodega/compras': 'compras',
+    '/bodega/proveedores': 'proveedores',
+    '/bodega/traslados': 'traslados',
+    '/bodega/recepciones': 'recepciones',
+    '/bodega/notificaciones': 'notificaciones',
+    '/pos/notificaciones': 'notificaciones'
+};
+
+function obtenerModulo(pathname: string): string | null {
+    const match = Object.keys(MODULO_POR_RUTA).find((ruta) =>
+        pathname.startsWith(ruta)
+    );
+    return match ? MODULO_POR_RUTA[match] : null;
+}
+
 export const handle: Handle = async ({ event, resolve }) => {
     const { pathname } = event.url;
 
@@ -74,6 +100,62 @@ export const handle: Handle = async ({ event, resolve }) => {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 
+    // Solo aplica a rutas admin (puedes expandirlo luego)
+    if (pathname.startsWith('/admin')) {
+        const modulo = obtenerModulo(pathname);
+
+        if (modulo) {
+            // superadmin siempre pasa
+            if (rol !== 'superadmin') {
+                // sin suscripción o vencida → bloquear
+                if (!sesion.suscripcion || ['cancelada', 'suspendida'].includes(sesion.suscripcion.estado)) {
+                    throw redirect(303, '/admin/suscripcion');
+                }
+
+                // módulo bloqueado → bloquear
+                if (sesion.suscripcion.modulosBloqueados?.includes(modulo)) {
+                    throw redirect(303, '/admin/suscripcion');
+                }
+            }
+        }
+    }
+
+    if (pathname.startsWith('/bodega')) {
+        const modulo = obtenerModulo(pathname);
+
+        if (modulo) {
+            // superadmin siempre pasa
+            if (rol !== 'superadmin') {
+                // sin suscripción o vencida → bloquear
+                if (!sesion.suscripcion || ['cancelada', 'suspendida'].includes(sesion.suscripcion.estado)) {
+                    throw redirect(303, '/bodega/inventario');
+                }
+
+                // módulo bloqueado → bloquear
+                if (sesion.suscripcion.modulosBloqueados?.includes(modulo)) {
+                    throw redirect(303, '/bodega/inventario');
+                }
+            }
+        }
+    }
+
+    if (pathname.startsWith('/pos')) {
+        const modulo = obtenerModulo(pathname);
+        if (modulo) {
+            // superadmin siempre pasa
+            if (rol !== 'superadmin') {
+                // sin suscripción o vencida → bloquear
+                if (!sesion.suscripcion || ['cancelada', 'suspendida'].includes(sesion.suscripcion.estado)) {
+                    throw redirect(303, '/pos');
+                }
+
+                // módulo bloqueado → bloquear
+                if (sesion.suscripcion.modulosBloqueados?.includes(modulo)) {
+                    throw redirect(303, '/pos');
+                }
+            }
+        }
+    }
     // Rutas del cajero (grupo POS): /pos, /turno, /ventas
     const esPOS = ['/pos', '/turno', '/ventas'].some(r => pathname.startsWith(r));
     if (esPOS && rol !== 'cajero') {
