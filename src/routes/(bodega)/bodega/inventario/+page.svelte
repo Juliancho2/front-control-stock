@@ -14,6 +14,7 @@
     import { bodegasApi } from "$api/bodegas";
     import { productosApi } from "$api/productos";
     import { toastStore } from "$stores/toast.store";
+    import { suscripcionActual } from "$lib";
     import { formatCurrency, formatFechaHora } from "$utils/index";
     import type {
         StockItem,
@@ -37,6 +38,8 @@
     let soloStockBajo = false;
     let pagina = 1;
     let resumen: ResumenStock | null = null;
+
+    $: esPro = $suscripcionActual?.planCodigo === "pro";
 
     // Movimientos
     let movimientos: MovimientoInventario[] = [];
@@ -259,22 +262,24 @@
                 <p class="text-xl font-bold">{resumen.totalProductos}</p>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body py-3 text-center">
-                <p class="text-xs text-gray-500">Stock bajo</p>
-                <p class="text-xl font-bold text-warning-600">
-                    {resumen.productosConStockBajo}
-                </p>
+        {#if esPro}
+            <div class="card">
+                <div class="card-body py-3 text-center">
+                    <p class="text-xs text-gray-500">Stock bajo</p>
+                    <p class="text-xl font-bold text-warning-600">
+                        {resumen.productosConStockBajo}
+                    </p>
+                </div>
             </div>
-        </div>
-        <div class="card">
-            <div class="card-body py-3 text-center">
-                <p class="text-xs text-gray-500">Sin stock</p>
-                <p class="text-xl font-bold text-danger-600">
-                    {resumen.productosSinStock}
-                </p>
+            <div class="card">
+                <div class="card-body py-3 text-center">
+                    <p class="text-xs text-gray-500">Sin stock</p>
+                    <p class="text-xl font-bold text-danger-600">
+                        {resumen.productosSinStock}
+                    </p>
+                </div>
             </div>
-        </div>
+        {/if}
         <div class="card">
             <div class="card-body py-3 text-center">
                 <p class="text-xs text-gray-500">Valor inventario</p>
