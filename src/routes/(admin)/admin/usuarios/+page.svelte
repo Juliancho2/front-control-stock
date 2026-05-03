@@ -82,7 +82,8 @@
             toastStore.exito("Contraseña actualizada correctamente");
             usuarioCambioPassword = null;
         } catch (e: any) {
-            errorPasswordUsuario = e?.mensajes?.[0] ?? "Error al cambiar contraseña";
+            errorPasswordUsuario =
+                e?.mensajes?.[0] ?? "Error al cambiar contraseña";
         } finally {
             cambiandoPasswordUsuario = false;
         }
@@ -217,17 +218,17 @@
 
     async function toggleActivo() {
         if (!usuarioToggle) return;
+        const usuario = usuarioToggle;
+        usuarioToggle = null;
         toggling = true;
         try {
             await usuariosApi.toggleActivo(
-                usuarioToggle.id,
-                !usuarioToggle.activo,
+                usuario.id,
+                !usuario.activo,
                 accessToken,
             );
             toastStore.exito(
-                usuarioToggle.activo
-                    ? "Usuario desactivado"
-                    : "Usuario activado",
+                usuario.activo ? "Usuario desactivado" : "Usuario activado",
             );
             usuarioToggle = null;
             cargar();
@@ -537,7 +538,6 @@
     </div>
 {/if}
 
-
 <!-- Modal cambio de contraseña -->
 {#if usuarioCambioPassword}
     <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
@@ -571,7 +571,8 @@
                 <Button
                     variant="secondary"
                     fullWidth
-                    onclick={() => (usuarioCambioPassword = null)}>Cancelar</Button
+                    onclick={() => (usuarioCambioPassword = null)}
+                    >Cancelar</Button
                 >
                 <Button
                     variant="primary"

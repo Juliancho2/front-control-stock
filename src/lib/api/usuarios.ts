@@ -19,7 +19,9 @@ export const usuariosApi = {
         api.patch<Usuario>(`/usuarios/${id}`, { rol }, { token }),
 
     toggleActivo: (id: string, activo: boolean, token?: string) =>
-        api.patch<Usuario>(`/usuarios/${id}`, { activo }, { token }),
+        activo 
+            ? api.patch<Usuario>(`/usuarios/${id}/activar`, {}, { token })
+            : api.patch<Usuario>(`/usuarios/${id}/desactivar`, {}, { token }),
 
     cambiarPasswordUsuario: (id: string, password: string, token?: string) =>
         api.patch<Usuario>(`/usuarios/${id}`, { password }, { token }),
