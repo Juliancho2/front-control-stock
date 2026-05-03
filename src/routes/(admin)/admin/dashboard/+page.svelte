@@ -25,26 +25,38 @@
 
 	onMount(async () => {
 		try {
-			const [dash, productos, trend] = await Promise.all([
-				reportesApi.dashboard(accessToken),
-				productosApi.stockBajo(accessToken),
-				reportesApi.ventas(
+			const dash = await reportesApi.dashboard(accessToken);
+			dashboard = dash;
+		} catch (e: any) {
+			toastStore.error(e?.mensajes?.[0] ?? "Error al cargar dashboard");
+		}
+
+		const esPro = $suscripcionActual?.planCodigo === "pro";
+
+		if (esPro) {
+			try {
+				const trend = await reportesApi.ventas(
 					{
 						desde: inicioMes(),
 						hasta: fechaISO(),
 						agrupacion: "dia",
 					},
 					accessToken,
-				),
-			]);
-			dashboard = dash;
-			stockBajo = productos.slice(0, 8);
-			tendencia = Array.isArray(trend) ? trend : [];
-		} catch (e: any) {
-			toastStore.error(e?.mensajes?.[0] ?? "Error al cargar dashboard");
-		} finally {
-			cargando = false;
+				);
+				tendencia = Array.isArray(trend) ? trend : [];
+			} catch {
+				tendencia = [];
+			}
+
+			try {
+				const productos = await productosApi.stockBajo(accessToken);
+				stockBajo = productos.slice(0, 8);
+			} catch {
+				stockBajo = [];
+			}
 		}
+
+		cargando = false;
 	});
 
 	$: maxVenta =
@@ -66,12 +78,7 @@
 		}
 	}
 
-	$: mostrarBotonUpgrade =
-		!!$usuarioActual &&
-		$usuarioActual.rol === "admin" &&
-		!!$suscripcionActual &&
-		($suscripcionActual.planCodigo === "trial" ||
-			$suscripcionActual.planCodigo === "basic");
+	$: esPro = $suscripcionActual?.planCodigo === "pro";
 </script>
 
 <svelte:head><title>Dashboard — FerreControl</title></svelte:head>
@@ -200,7 +207,7 @@
 
 			<!-- Stock bajo -->
 			<div class="relative h-full">
-				{#if $suscripcionActual.planCodigo === "basic"}
+				{#if !esPro}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -229,7 +236,7 @@
 				{/if}
 				<div
 					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 h-full flex flex-col justify-between"
-					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+					class:blur-sm={!esPro}
 				>
 					<div class="flex items-center justify-between mb-3">
 						<div
@@ -249,7 +256,7 @@
 								/>
 							</svg>
 						</div>
-						{#if dashboard.productosSinStock > 0}
+						{#if esPro && dashboard.productosSinStock > 0}
 							<span
 								class="text-xs font-semibold px-2 py-0.5 rounded-full bg-danger-50 text-danger-600"
 							>
@@ -262,7 +269,7 @@
 							Stock bajo
 						</p>
 						<p class="text-xl font-bold text-gray-900 mt-0.5">
-							{dashboard.productosConStockBajo}
+							{esPro ? dashboard.productosConStockBajo : '-'}
 							<span class="text-sm font-normal text-gray-400"
 								>productos</span
 							>
@@ -273,7 +280,7 @@
 
 			<!-- Cuentas por cobrar -->
 			<div class="relative h-full">
-				{#if $suscripcionActual.planCodigo === "basic"}
+				{#if !esPro}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -302,7 +309,7 @@
 				{/if}
 
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+					class:blur-sm={!esPro}
 					class="rounded-2xl bg-white ring-1 ring-gray-100 p-5 flex flex-col justify-between h-full"
 				>
 					<div class="flex items-center justify-between mb-3">
@@ -349,7 +356,7 @@
 			class="md:col-span-2 rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden"
 		>
 			<div class="relative">
-				{#if $suscripcionActual.planCodigo === "basic"}
+				{#if !esPro}
 					<div
 						class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 					>
@@ -377,7 +384,7 @@
 					</div>
 				{/if}
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+					class:blur-sm={!esPro}
 					class="px-6 py-4 border-b border-gray-50 flex items-center justify-between"
 				>
 					<div>
@@ -399,7 +406,7 @@
 				</div>
 
 				<div
-					class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+					class:blur-sm={!esPro}
 					class="p-6"
 				>
 					{#if tendencia.length === 0}
@@ -518,7 +525,7 @@
 
 		<!-- Alertas de stock bajo -->
 		<div class="relative h-full">
-			{#if $suscripcionActual.planCodigo === "basic"}
+			{#if !esPro}
 				<div
 					class="absolute flex flex-col gap-2 inset-0 bg-white/70 z-20 items-center justify-center h-full"
 				>
@@ -541,7 +548,7 @@
 			{/if}
 
 			<div
-				class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+				class:blur-sm={!esPro}
 				class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-hidden flex flex-col h-full"
 			>
 				<div
@@ -683,7 +690,7 @@
 			</a>
 		</div>
 		<div class="relative w-full">
-			{#if $suscripcionActual.planCodigo === "basic"}
+			{#if !esPro}
 				<div
 					class="absolute w-full flex flex-col gap-2 inset-0 bg-white/70 z-50 items-center justify-center"
 				>
@@ -705,7 +712,7 @@
 				</div>
 			{/if}
 			<div
-				class:blur-sm={$suscripcionActual.planCodigo === "basic"}
+				class:blur-sm={!esPro}
 				class="rounded-2xl bg-white h-full ring-1 ring-gray-100 p-5 flex items-center gap-4 group hover:ring-gray-200 transition-all"
 			>
 				<div
