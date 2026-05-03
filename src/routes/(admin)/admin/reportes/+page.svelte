@@ -41,8 +41,8 @@
         try {
             await reportesApi.exportarVentas({ desde, hasta }, accessToken);
             toastStore.exito("Archivo generado correctamente");
-        } catch {
-            toastStore.error("Error al exportar reporte");
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al exportar reporte");
         } finally {
             exportando = false;
         }

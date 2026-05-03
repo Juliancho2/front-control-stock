@@ -43,8 +43,8 @@
         try {
             await productosApi.exportar(accessToken);
             toastStore.exito("Archivo generado correctamente");
-        } catch {
-            toastStore.error("Error al exportar productos");
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al exportar productos");
         } finally {
             exportando = false;
         }
