@@ -25,6 +25,12 @@
     let codigo = "";
     let precioMensual = "";
     let moneda = "COP";
+    let activo = true;
+    let limiteUsuarios = "2";
+    let limiteBodegas = "1";
+    let permiteExcel = true;
+    let permiteAlertas = true;
+    let modulosBloqueados = "";
     let errores: Record<string, string> = {};
 
     async function cargar() {
@@ -46,6 +52,12 @@
         codigo = "";
         precioMensual = "";
         moneda = "COP";
+        activo = true;
+        limiteUsuarios = "2";
+        limiteBodegas = "1";
+        permiteExcel = true;
+        permiteAlertas = true;
+        modulosBloqueados = "";
         errores = {};
         mostrarModal = true;
     }
@@ -56,6 +68,12 @@
         codigo = p.codigo;
         precioMensual = String(p.precioMensual);
         moneda = p.moneda;
+        activo = p.activo;
+        limiteUsuarios = String(p.limiteUsuarios);
+        limiteBodegas = String(p.limiteBodegas);
+        permiteExcel = p.permiteExcel;
+        permiteAlertas = p.permiteAlertas;
+        modulosBloqueados = p.modulosBloqueados || "";
         errores = {};
         mostrarModal = true;
     }
@@ -82,25 +100,26 @@
         if (!validar()) return;
         guardando = true;
         try {
+            const payload = {
+                nombre: nombre.trim(),
+                precioMensual: Number(precioMensual),
+                moneda: moneda.trim(),
+                activo,
+                limiteUsuarios: Number(limiteUsuarios),
+                limiteBodegas: Number(limiteBodegas),
+                permiteExcel,
+                permiteAlertas,
+                modulosBloqueados: modulosBloqueados.trim() || null,
+            };
             if (editando) {
-                await api.patch(
-                    `/planes/${editando.id}`,
-                    {
-                        nombre: nombre.trim(),
-                        precioMensual: Number(precioMensual),
-                    },
-                    { token: accessToken },
-                );
+                await api.patch(`/planes/${editando.id}`, payload, {
+                    token: accessToken,
+                });
                 toastStore.exito("Plan actualizado");
             } else {
                 await api.post(
                     "/planes",
-                    {
-                        nombre: nombre.trim(),
-                        codigo: codigo.trim(),
-                        precioMensual: Number(precioMensual),
-                        moneda: moneda.trim(),
-                    },
+                    { ...payload, codigo: codigo.trim() },
                     { token: accessToken },
                 );
                 toastStore.exito("Plan creado");
@@ -192,11 +211,17 @@
                         {plan.activo ? "Activo" : "Inactivo"}
                     </Badge>
                 </div>
-                <div class="mb-4">
+                <div class="mb-3">
                     <span class="text-2xl font-bold text-primary-600"
                         >{formatPrecio(plan.precioMensual, plan.moneda)}</span
                     >
                     <span class="text-sm text-gray-500">/mes</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-4 space-y-1">
+                    <p>👤 {plan.limiteUsuarios} usuario{plan.limiteUsuarios !== 1 ? 's' : ''}</p>
+                    <p>🏭 {plan.limiteBodegas} bodega{plan.limiteBodegas !== 1 ? 's' : ''}</p>
+                    <p>📊 {plan.permiteExcel ? '✓' : '✗'} Excel</p>
+                    <p>🔔 {plan.permiteAlertas ? '✓' : '✗'} Alertas</p>
                 </div>
                 <div class="mt-auto flex gap-2">
                     <Button
@@ -310,6 +335,58 @@
                         placeholder="COP"
                         hint="Código ISO de moneda"
                     />
+                {/if}
+
+                <div class="grid grid-cols-2 gap-4">
+                    <Input
+                        label="Límite usuarios"
+                        type="number"
+                        bind:value={limiteUsuarios}
+                        min="1"
+                    />
+                    <Input
+                        label="Límite bodegas"
+                        type="number"
+                        bind:value={limiteBodegas}
+                        min="1"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            bind:checked={permiteExcel}
+                            class="w-4 h-4 rounded border-gray-300 text-primary-600"
+                        />
+                        <span class="text-sm text-gray-700">Permite Excel</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            bind:checked={permiteAlertas}
+                            class="w-4 h-4 rounded border-gray-300 text-primary-600"
+                        />
+                        <span class="text-sm text-gray-700">Permite alertas</span>
+                    </label>
+                </div>
+
+                <Input
+                    label="Módulos bloqueados"
+                    bind:value={modulosBloqueados}
+                    placeholder="clientes,reportes,notificaciones"
+                    hint="Separados por coma"
+                />
+
+                {#if editando}
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            bind:checked={activo}
+                            class="w-4 h-4 rounded border-gray-300 text-primary-600"
+                        />
+                        <span class="text-sm text-gray-700">Plan activo</span>
+                    </label>
                 {/if}
             </div>
 

@@ -26,6 +26,11 @@ export interface Plan {
 	precioMensual: number;
 	moneda: string;
 	activo: boolean;
+	limiteUsuarios: number;
+	limiteBodegas: number;
+	permiteExcel: boolean;
+	permiteAlertas: boolean;
+	modulosBloqueados: string | null;
 	createdAt: string;
 	updatedAt: string;
 }
