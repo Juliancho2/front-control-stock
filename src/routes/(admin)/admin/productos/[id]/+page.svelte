@@ -89,12 +89,13 @@
                     <tbody>
                         {#each producto.stock as s}
                             <tr>
-                                <td>{s.bodegaNombre}</td>
-                                <td class="text-right">{s.cantidad}</td>
-                                <td class="text-right">{s.cantidadReservada}</td
+                                <td>{s?.bodega?.nombre}</td>
+                                <td class="text-right">{s?.cantidad}</td>
+                                <td class="text-right"
+                                    >{s?.cantidadReservada}</td
                                 >
                                 <td class="text-right font-semibold"
-                                    >{s.cantidadDisponible}</td
+                                    >{s?.cantidadDisponible}</td
                                 >
                             </tr>
                         {/each}

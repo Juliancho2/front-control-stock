@@ -64,8 +64,8 @@
             const res = await clientesApi.listar(filtros, accessToken);
             clientes = res.data;
             total = res.total;
-        } catch {
-            toastStore.error("Error al cargar clientes");
+        } catch (e: any) {
+            toastStore.error(e?.mensajes?.[0] ?? "Error al cargar clientes");
         } finally {
             cargando = false;
         }
