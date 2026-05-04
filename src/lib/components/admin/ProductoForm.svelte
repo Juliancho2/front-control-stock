@@ -82,13 +82,48 @@
     $: opcionesCat = categorias.map((c) => ({ value: c.id, label: c.nombre }));
     $: unidades = [
         { value: "unidad", label: "Unidad" },
+        { value: "pieza", label: "Pieza" },
+        { value: "item", label: "Ítem" },
+
         { value: "kg", label: "Kilogramo" },
+        { value: "g", label: "Gramo" },
+        { value: "lb", label: "Libra" },
+        { value: "ton", label: "Tonelada" },
+
         { value: "metro", label: "Metro" },
+        { value: "cm", label: "Centímetro" },
+        { value: "mm", label: "Milímetro" },
+        { value: "pulgada", label: "Pulgada" },
+        { value: "pie", label: "Pie" },
+
         { value: "litro", label: "Litro" },
-        { value: "caja", label: "Caja" },
-        { value: "rollo", label: "Rollo" },
-        { value: "par", label: "Par" },
+        { value: "ml", label: "Mililitro" },
         { value: "galón", label: "Galón" },
+
+        { value: "m2", label: "Metro cuadrado" },
+        { value: "m3", label: "Metro cúbico" },
+
+        { value: "caja", label: "Caja" },
+        { value: "paquete", label: "Paquete" },
+        { value: "bolsa", label: "Bolsa" },
+        { value: "bulto", label: "Bulto" },
+        { value: "saco", label: "Saco" },
+        { value: "costal", label: "Costal" },
+        { value: "blister", label: "Blíster" },
+        { value: "kit", label: "Kit" },
+
+        { value: "rollo", label: "Rollo" },
+        { value: "bobina", label: "Bobina" },
+
+        { value: "par", label: "Par" },
+        { value: "docena", label: "Docena" },
+
+        { value: "tira", label: "Tira" },
+        { value: "barra", label: "Barra" },
+        { value: "varilla", label: "Varilla" },
+        { value: "lamina", label: "Lámina" },
+
+        { value: "otro", label: "Otra (personalizada)" },
     ];
     $: opcionesIVA = [
         { value: 0, label: "Sin IVA" },
@@ -192,7 +227,10 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1">
-            <label for="precio-compra" class="text-sm font-medium text-gray-700">
+            <label
+                for="precio-compra"
+                class="text-sm font-medium text-gray-700"
+            >
                 Precio de compra
             </label>
             <input
@@ -230,7 +268,10 @@
             placeholder="Sin IVA"
         />
         <div class="flex flex-col gap-1">
-            <label for="precio-mayorista" class="text-sm font-medium text-gray-700">
+            <label
+                for="precio-mayorista"
+                class="text-sm font-medium text-gray-700"
+            >
                 Precio mayorista
             </label>
             <input

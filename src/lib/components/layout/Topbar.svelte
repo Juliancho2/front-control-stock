@@ -12,6 +12,11 @@
 	import { usuariosApi } from "$api/usuarios";
 	import { toastStore } from "$stores/toast.store";
 	import Badge from "$components/ui/Badge.svelte";
+	import { page } from "$app/stores";
+
+	const rutasOcultas = ["/pos", "/turno", "/ventas"];
+
+	$: mostrarBoton = !rutasOcultas.includes($page.url.pathname);
 
 	export let titulo = "FerreControl";
 	export let mostrarMenuLateral = true;
@@ -110,14 +115,22 @@
 			</div>
 		</slot>
 	</div>
+	{#if !mostrarBoton && ($usuarioActual?.rol === "admin" || $usuarioActual?.rol === "superadmin")}
+		<Button size="sm" variant="primary" href="/admin/dashboard"
+			>Ir al Dashboard</Button
+		>
+	{/if}
 
 	<!-- Acciones adicionales -->
 	<slot name="acciones" />
 
-	{#if mostrarBotonUpgrade}
+	{#if mostrarBoton}
+		<Button size="sm" variant="primary" href="/pos">Ir al POS</Button>
+	{/if}
+	{#if mostrarBotonUpgrade && mostrarBoton}
 		<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
 			<span
-				class="inline-flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-700 border border-blue-200 rounded-lg font-semibold hover:bg-violet-100 transition-colors text-xs shadow-sm"
+				class="flex items-center gap-1 px-2 py-1 bg-violet-50 text-violet-700 border border-blue-200 rounded-lg font-semibold hover:bg-violet-100 transition-colors text-xs shadow-sm"
 			>
 				<svg
 					class="w-3.5 h-3.5"
@@ -132,11 +145,11 @@
 						d="M13 10V3L4 14h7v7l9-11h-7z"
 					/>
 				</svg>
-				Mejorar plan
+				<p class="hidden sm:inline">Upgrade</p>
 			</span>
 		</a>
 	{/if}
-	{#if mostrarSuscripcion}
+	{#if mostrarSuscripcion && mostrarBoton}
 		<div class="flex items-center gap-2">
 			<span
 				class="hidden lg:inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border"

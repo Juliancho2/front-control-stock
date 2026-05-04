@@ -158,7 +158,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
     // Rutas del cajero (grupo POS): /pos, /turno, /ventas
     const esPOS = ['/pos', '/turno', '/ventas'].some(r => pathname.startsWith(r));
-    if (esPOS && rol !== 'cajero') {
+    if (esPOS && rol !== 'cajero' && rol !== 'admin') {
         throw redirect(303, INICIO_POR_ROL[rol]);
     }
 

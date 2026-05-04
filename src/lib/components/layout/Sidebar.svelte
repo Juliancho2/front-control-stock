@@ -128,10 +128,11 @@
 
 	<!-- Toggle colapsado (desktop only) -->
 	<div class="px-2 py-3 border-t border-gray-700/50 space-y-1">
+		<slot name="upgrade" />
 		<slot name="footer" />
 		<button
 			onclick={() => (colapsado = !colapsado)}
-			class="hidden md:flex w-full items-center justify-center gap-2 px-3 py-2 rounded-lg text-gray-400 hover:bg-gray-800 hover:text-white transition-colors text-sm"
+			class="hidden md:flex w-full items-center justify-start gap-3 px-3 py-2 rounded-lg text-gray-400 font-semibold hover:bg-gray-800 hover:text-white transition-colors text-sm"
 			title={colapsado ? "Expandir menú" : "Colapsar menú"}
 		>
 			<svg

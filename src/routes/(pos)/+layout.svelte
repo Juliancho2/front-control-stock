@@ -41,7 +41,7 @@
 		<svelte:fragment slot="titulo">
 			<div class="flex items-center gap-2">
 				<IconLogo size={42} />
-				<span class="text-sm font-medium text-gray-900"
+				<span class="hidden sm:inline text-sm font-medium text-gray-900"
 					>Punto de Venta</span
 				>
 			</div>

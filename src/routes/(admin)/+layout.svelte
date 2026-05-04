@@ -2,6 +2,7 @@
 	import Sidebar from "$components/layout/Sidebar.svelte";
 	import Topbar from "$components/layout/Topbar.svelte";
 	import { authStore, esAdmin, tieneAcceso } from "$stores/auth.store";
+	import { suscripcionActual, usuarioActual } from "$stores/auth.store";
 
 	let colapsado = false;
 	let sidebarAbierto = false;
@@ -68,6 +69,13 @@
 		...item,
 		isLocked: !tieneAcceso(item.id, $authStore),
 	}));
+
+	$: mostrarBotonUpgrade =
+		!!$usuarioActual &&
+		$usuarioActual.rol === "admin" &&
+		!!$suscripcionActual &&
+		($suscripcionActual.planCodigo === "trial" ||
+			$suscripcionActual.planCodigo === "basic");
 </script>
 
 <div class="h-screen flex overflow-hidden bg-gray-50">
