@@ -1,12 +1,19 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { INICIO_POR_ROL } from '../../lib/config/auth';
 
 const API_URL = process.env.PUBLIC_API_URL ?? 'http://localhost:3000';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Si ya está autenticado, redirigir
 	if (locals.usuario) {
-		const destino = url.searchParams.get('redirectTo') ?? '/';
+		const redirectTo = url.searchParams.get('redirectTo');
+
+		const destino =
+			redirectTo && redirectTo.trim() !== ''
+				? redirectTo
+				: INICIO_POR_ROL[locals.usuario.rol];
+
 		throw redirect(303, destino);
 	}
 	return {};
@@ -69,7 +76,12 @@ export const actions: Actions = {
 			maxAge: 60 * 60 * 24 * 30, // 30 días
 		});
 
-		const destino = url.searchParams.get('redirectTo') ?? '/';
+		const redirectTo = url.searchParams.get('redirectTo');
+
+		const destino = redirectTo && redirectTo.trim() !== ''
+			? redirectTo
+			: INICIO_POR_ROL[sesion.usuario.rol];
+
 		throw redirect(303, destino);
 	},
 };

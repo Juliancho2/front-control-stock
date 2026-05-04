@@ -1,16 +1,11 @@
 import type { InfoSuscripcion, RolUsuario } from '$types/index';
 import { redirect, type Handle } from '@sveltejs/kit';
+import { INICIO_POR_ROL } from './lib/config/auth';
 
 // Rutas que no necesitan autenticación
-const RUTAS_PUBLICAS = ['/login', '/registro', '/health', '/api/refresh', '/reset-password'];
+const RUTAS_PUBLICAS = ['/', '/login', '/registro', '/health', '/api/refresh', '/reset-password'];
 
-// Mapa de rol → ruta de inicio
-const INICIO_POR_ROL: Record<RolUsuario, string> = {
-    superadmin: '/superadmin/dashboard',
-    cajero: '/pos',
-    admin: '/admin/dashboard',
-    bodeguero: '/bodega/inventario'
-};
+
 
 const MODULO_POR_RUTA: Record<string, string> = {
     '/admin/dashboard': 'dashboard',
@@ -41,9 +36,12 @@ function obtenerModulo(pathname: string): string | null {
 export const handle: Handle = async ({ event, resolve }) => {
     const { pathname } = event.url;
 
-
     // ─── Rutas públicas — sin validación ──────────────────────────
-    if (RUTAS_PUBLICAS.some(r => pathname.startsWith(r))) {
+    const esPublica = RUTAS_PUBLICAS.some(
+        r => pathname === r || pathname.startsWith(r + '/')
+    );
+
+    if (esPublica) {
         return resolve(event);
     }
 
