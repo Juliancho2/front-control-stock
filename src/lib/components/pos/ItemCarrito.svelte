@@ -11,6 +11,9 @@
     let editandoCantidad = false;
     let cantidadInput = item.cantidad;
 
+    let editandoPrecio = false;
+    let precioInput = item.precioUnitario;
+
     function confirmarCantidad() {
         const n = parseInt(String(cantidadInput));
         if (!isNaN(n) && n > 0) {
@@ -28,6 +31,22 @@
             cantidadInput = item.cantidad;
         }
     }
+
+    function confirmarPrecio() {
+        const p = parseFloat(String(precioInput));
+        if (!isNaN(p) && p >= 0) {
+            carritoStore.actualizarPrecio(item.productoId, p);
+        }
+        editandoPrecio = false;
+    }
+
+    function onKeydownPrecio(e: KeyboardEvent) {
+        if (e.key === "Enter") confirmarPrecio();
+        if (e.key === "Escape") {
+            editandoPrecio = false;
+            precioInput = item.precioUnitario;
+        }
+    }
 </script>
 
 <div
@@ -36,10 +55,38 @@
     <!-- Info Producto -->
     <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 truncate">{item.nombre}</p>
-        <p class="text-xs text-gray-500 my-0.5 font-semibold">
-            ${Number(item.precioUnitario).toFixed(2)}
-            {item.unidadMedida}
-        </p>
+
+        <div class="flex items-center gap-1 my-0.5">
+            {#if editandoPrecio}
+                <div
+                    class="flex items-center gap-1 bg-primary-50 px-2 py-0.5 rounded border border-primary-200"
+                >
+                    <span class="text-xs font-semibold text-primary-700">$</span
+                    >
+                    <input
+                        type="number"
+                        step="0.01"
+                        bind:value={precioInput}
+                        onblur={confirmarPrecio}
+                        onkeydown={onKeydownPrecio}
+                        class="w-20 h-5 text-xs font-semibold bg-transparent focus:outline-none"
+                        autofocus
+                    />
+                </div>
+            {:else}
+                <button
+                    onclick={() => {
+                        editandoPrecio = true;
+                        precioInput = item.precioUnitario;
+                    }}
+                    class="text-xs text-start text-gray-500 font-semibold hover:text-primary-600 hover:bg-primary-50 px-1 rounded transition-colors"
+                >
+                    ${Number(item.precioUnitario).toFixed(2)}
+                    {item.unidadMedida}
+                </button>
+            {/if}
+        </div>
+
         <Badge variant="gray">IVA: {item.iva ?? 12}%</Badge>
     </div>
 

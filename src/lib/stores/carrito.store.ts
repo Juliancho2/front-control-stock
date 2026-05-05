@@ -67,6 +67,16 @@ function crearCarritoStore() {
 			});
 		},
 
+		actualizarPrecio: (productoId: string, precioUnitario: number) => {
+			update(items =>
+				items.map(i =>
+					i.productoId === productoId
+						? { ...i, precioUnitario, subtotal: i.cantidad * precioUnitario - i.descuento }
+						: i
+				)
+			);
+		},
+
 		aplicarDescuento: (productoId: string, descuento: number) => {
 			update(items =>
 				items.map(i =>

@@ -354,7 +354,7 @@
                                 <Button
                                     size="sm"
                                     variant="secondary"
-                                    href={`/admin/productos/${p.id}/editar`}
+                                    href={`/admin/productos/${p.id}`}
                                     >Editar</Button
                                 >
                                 <Button
