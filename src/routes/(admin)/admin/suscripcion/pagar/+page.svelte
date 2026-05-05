@@ -464,7 +464,7 @@
                                         <p
                                             class="text-xl font-black text-gray-900 tracking-tight"
                                         >
-                                            312 345 6789
+                                            302 260 0652
                                         </p>
                                     </div>
                                     <Button
@@ -570,10 +570,10 @@
 
             <div class="mt-8 text-center">
                 <p class="text-sm text-gray-500">
-                    ¿Tienes dudas? 
-                    <a 
-                        href="https://api.whatsapp.com/send/?phone=573164305964" 
-                        target="_blank" 
+                    ¿Tienes dudas?
+                    <a
+                        href="https://api.whatsapp.com/send/?phone=573164305964"
+                        target="_blank"
                         rel="noopener noreferrer"
                         class="font-bold text-primary-600 hover:text-primary-700 underline underline-offset-4 decoration-primary-500/30"
                     >

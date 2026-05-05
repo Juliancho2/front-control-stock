@@ -6,7 +6,6 @@
     import Badge from "$components/ui/Badge.svelte";
 
     export let item: ItemCarrito;
-
     const dispatch = createEventDispatcher<{ quitar: string }>();
 
     let editandoCantidad = false;
@@ -32,7 +31,7 @@
 </script>
 
 <div
-    class="flex items-start gap-3 mt-1 py-3 border bg-white p-4 rounded-lg border-gray-200  group"
+    class="flex items-start gap-3 mt-1 py-3 border bg-white p-4 rounded-lg border-gray-200 group"
 >
     <!-- Info Producto -->
     <div class="flex-1 min-w-0">
@@ -130,11 +129,11 @@
     <!-- Quitar -->
     <button
         onclick={() => dispatch("quitar", item.productoId)}
-        class="opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded-md text-gray-300 hover:text-danger-500 hover:bg-danger-50 transition-all flex-shrink-0"
+        class=" group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded-md text-gray-500 hover:text-danger-500 hover:bg-danger-50 transition-all flex-shrink-0"
         aria-label="Quitar del carrito"
     >
         <svg
-            class="w-4 h-4"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

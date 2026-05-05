@@ -43,10 +43,10 @@
 
     onMount(async () => {
         // El turno ya se inicializa en el layout (+layout.svelte)
-        
+
         try {
             const res = await clientesApi.listar({ limit: 1000 }, accessToken);
-            clientes = res.data.filter(c => c.activo);
+            clientes = res.data.filter((c) => c.activo);
         } catch (e) {
             console.error("No se pudieron cargar los clientes");
         } finally {
@@ -56,9 +56,9 @@
         // Si no hay turno abierto después de cargar (damos un pequeño margen si es necesario), redirigir
         // Nota: hayTurnoAbierto es derivado de turnoStore que se inicializa en el layout
         if (!$hayTurnoAbierto && !cargandoTurno) {
-             // Si después de cargar clientes aún no hay turno, redirigimos
-             // Aunque el layout podría seguir cargando, usualmente termina antes o al mismo tiempo
-             goto("/turno");
+            // Si después de cargar clientes aún no hay turno, redirigimos
+            // Aunque el layout podría seguir cargando, usualmente termina antes o al mismo tiempo
+            goto("/turno");
         }
     });
 
@@ -110,7 +110,7 @@
 
                 setTimeout(() => {
                     window.print();
-                    setTimeout(() => ventaImprimir = null, 1000);
+                    setTimeout(() => (ventaImprimir = null), 1000);
                 }, 300);
             } else {
                 // Offline: encolar para sincronizar después
@@ -300,7 +300,7 @@
                         <span>{formatCurrency($impuestoCarrito)}</span>
                     </div>
                     <div
-                        class="flex justify-between text-2xl font-bold text-gray-900 pt-3 border-t border-gray-100"
+                        class="flex justify-between text-3xl font-bold text-gray-900 pt-3 border-t border-gray-100"
                     >
                         <span>Total</span>
                         <span>{formatCurrency($totalCarrito)}</span>

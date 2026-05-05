@@ -115,17 +115,12 @@
 			</div>
 		</slot>
 	</div>
-	{#if !mostrarBoton && ($usuarioActual?.rol === "admin" || $usuarioActual?.rol === "superadmin")}
-		<Button size="sm" variant="primary" href="/admin/dashboard"
-			>Ir al Dashboard</Button
-		>
-	{/if}
 
 	<!-- Acciones adicionales -->
 	<slot name="acciones" />
 
 	{#if mostrarBoton}
-		<Button size="sm" variant="primary" href="/pos">Ir al POS</Button>
+		<Button size="md" variant="primary" href="/pos">Ir al POS</Button>
 	{/if}
 	{#if mostrarBotonUpgrade && mostrarBoton}
 		<a href="/admin/suscripcion/pagar" rel="noopener noreferrer">
@@ -228,6 +223,13 @@
 							{$usuarioActual.email}
 						</p>
 					</div>
+					{#if !mostrarBoton && ($usuarioActual?.rol === "admin" || $usuarioActual?.rol === "superadmin")}
+						<a
+							role="menuitem"
+							class="w-full inline-flex text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+							href="/admin/dashboard">Dashboard</a
+						>
+					{/if}
 					<button
 						onclick={abrirModalPassword}
 						class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

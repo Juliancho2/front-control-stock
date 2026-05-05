@@ -196,19 +196,22 @@
                                 >
                                 <td>
                                     <div class="flex items-center gap-3">
-                                        <button
-                                            onclick={() => imprimirTicket(venta.id)}
-                                            class="text-xs text-primary-600 hover:underline font-medium"
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            onclick={() =>
+                                                imprimirTicket(venta.id)}
                                             disabled={imprimiendo}
                                         >
                                             Ticket
-                                        </button>
+                                        </Button>
                                         {#if venta.estado !== "anulada"}
-                                            <button
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
                                                 onclick={() =>
                                                     (ventaAnular = venta)}
-                                                class="text-xs text-danger-500 hover:underline"
-                                                >Anular</button
+                                                >Anular</Button
                                             >
                                         {/if}
                                     </div>

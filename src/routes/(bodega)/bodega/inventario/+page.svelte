@@ -174,6 +174,7 @@
             };
             const res = await inventarioApi.movimientos(filtros, accessToken);
             movimientos = res.data;
+            console.log(res);
             totalMov = res.total;
         } catch {
             toastStore.error("Error al cargar movimientos");
@@ -409,10 +410,11 @@
                                 {/if}
                             </td>
                             <td class="text-right">
-                                <button
+                                <Button
+                                    variant="primary"
+                                    size="sm"
                                     onclick={() => abrirAjuste(s)}
-                                    class="text-xs text-primary-500 hover:underline"
-                                    >Ajustar</button
+                                    >Ajustar</Button
                                 >
                             </td>
                         </tr>
@@ -420,7 +422,11 @@
                 </tbody>
             </table>
         </div>
-        <Pagination total={totalStock} bind:currentPage={pagina} on:change={cargarStock} />
+        <Pagination
+            total={totalStock}
+            bind:currentPage={pagina}
+            on:change={cargarStock}
+        />
     {/if}
 {:else}
     <!-- Movimientos -->
@@ -460,8 +466,8 @@
                                     >{m.tipo.replace(/_/g, " ")}</Badge
                                 ></td
                             >
-                            <td class="font-medium">{m.productoNombre}</td>
-                            <td class="text-gray-500">{m.bodegaNombre}</td>
+                            <td class="font-medium">{m.producto?.nombre}</td>
+                            <td class="text-gray-500">{m.bodega?.nombre}</td>
                             <td
                                 class="text-right font-semibold {m.tipo.includes(
                                     'salida',
@@ -478,13 +484,17 @@
                             <td class="text-xs text-gray-400 max-w-xs truncate"
                                 >{m.motivo ?? "—"}</td
                             >
-                            <td class="text-xs">{m.usuarioNombre}</td>
+                            <td class="text-xs">{m.usuario?.nombre}</td>
                         </tr>
                     {/each}
                 </tbody>
             </table>
         </div>
-        <Pagination total={totalMov} bind:currentPage={paginaMov} on:change={cargarMovimientos} />
+        <Pagination
+            total={totalMov}
+            bind:currentPage={paginaMov}
+            on:change={cargarMovimientos}
+        />
     {/if}
 {/if}
 

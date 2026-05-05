@@ -164,7 +164,6 @@
     async function verDetalle(v: Venta) {
         try {
             ventaDetalle = await ventasApi.obtener(v.id, accessToken);
-            console.log(ventaDetalle);
         } catch {
             ventaDetalle = v;
         }
@@ -190,7 +189,7 @@
 <div class="flex items-center justify-between mb-6">
     <div>
         <h1 class="text-xl font-bold text-gray-900">Ventas</h1>
-        <p class="text-sm text-gray-400 mt-0.5">
+        <p class="text-sm text-gray-500 mt-0.5">
             Registro y gestión de transacciones
         </p>
     </div>
@@ -430,8 +429,8 @@
     />
 {:else}
     <!-- Tabla de ventas -->
-    <div class="rounded-2xl bg-white ring-1 ring-gray-100 overflow-x-auto">
-        <table class="w-full text-sm">
+    <div class="table-container">
+        <table class="table w-full text-sm">
             <thead>
                 <tr class="border-b border-gray-100">
                     <th
@@ -552,20 +551,21 @@
                             </Badge>
                         </td>
                         <td class="px-4 py-3.5 hidden lg:table-cell">
-                            <span class="text-xs text-gray-400"
+                            <span class="text-xs text-gray-500"
                                 >{formatFechaHora(v.createdAt)}</span
                             >
                         </td>
                         <td class="px-4 py-3.5 text-right">
-                            <div class="flex items-center justify-end gap-1">
+                            <div class="flex items-center justify-end gap-2">
                                 {#if v.estado !== "anulada"}
-                                    <button
+                                    <Button
+                                        variant="secondary"
+                                        size="sm"
                                         onclick={(e) => {
                                             e.stopPropagation();
                                             ventaAnular = v;
                                             motivoAnulacion = "";
                                         }}
-                                        class="p-1.5 rounded-lg text-gray-300 hover:text-danger-500 hover:bg-danger-50 transition-colors"
                                         title="Anular venta"
                                     >
                                         <svg
@@ -581,14 +581,15 @@
                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                             />
                                         </svg>
-                                    </button>
+                                    </Button>
                                 {/if}
-                                <button
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
                                     onclick={(e) => {
                                         e.stopPropagation();
                                         verDetalle(v);
                                     }}
-                                    class="p-1.5 rounded-lg text-gray-300 hover:text-primary-500 hover:bg-primary-50 transition-colors"
                                     title="Ver detalle"
                                 >
                                     <svg
@@ -604,7 +605,7 @@
                                             d="M9 5l7 7-7 7"
                                         />
                                     </svg>
-                                </button>
+                                </Button>
                             </div>
                         </td>
                     </tr>
@@ -686,7 +687,7 @@
                             }
                         ).label}
                     </Badge>
-                    <span class="text-xs text-gray-400"
+                    <span class="text-xs text-gray-500"
                         >{formatFechaHora(ventaDetalle.createdAt)}</span
                     >
                 </div>
@@ -694,20 +695,20 @@
                 <!-- Info general -->
                 <div class="rounded-xl bg-gray-50 p-4 space-y-3">
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Cliente</span>
+                        <span class="text-gray-500">Cliente</span>
                         <span class="font-medium text-gray-700"
                             >{ventaDetalle.cliente?.nombre ??
                                 "Consumidor final"}</span
                         >
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Cajero</span>
+                        <span class="text-gray-500">Cajero</span>
                         <span class="font-medium text-gray-700"
                             >{ventaDetalle.usuario?.nombre}</span
                         >
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Forma de pago</span>
+                        <span class="text-gray-500">Forma de pago</span>
                         <span class="font-medium text-gray-700 capitalize"
                             >{ventaDetalle.formaPago.replace("_", " ")}</span
                         >
@@ -717,7 +718,7 @@
                 <!-- Items -->
                 <div>
                     <h3
-                        class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3"
+                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3"
                     >
                         Productos
                     </h3>

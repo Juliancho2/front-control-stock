@@ -330,25 +330,27 @@
                         >
                         <td class="text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <button
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
                                     onclick={() => abrirCambioPassword(u)}
-                                    class="text-xs text-primary-500 hover:underline"
                                 >
                                     Cambiar contraseña
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="primary"
                                     onclick={() => abrirCambioRol(u)}
-                                    class="text-xs text-primary-500 hover:underline"
-                                    >Cambiar rol</button
                                 >
-                                <button
+                                    Cambiar rol
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant={u.activo ? "danger" : "primary"}
                                     onclick={() => (usuarioToggle = u)}
-                                    class="text-xs {u.activo
-                                        ? 'text-danger-500'
-                                        : 'text-primary-500'} hover:underline"
                                 >
                                     {u.activo ? "Desactivar" : "Activar"}
-                                </button>
+                                </Button>
                             </div>
                         </td>
                     </tr>
